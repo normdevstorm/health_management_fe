@@ -1,12 +1,24 @@
-
+import 'package:easy_localization/easy_localization.dart';
+import 'package:easy_localization_loader/easy_localization_loader.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/firebase_api.dart';
+import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FirebaseApi().initNotificaiton();
-  runApp(const MyApp());
+  if (!kIsWeb) {
+    await FirebaseApi().initNotificaiton();
+  }
+  runApp(EasyLocalization(
+    supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+    path: 'resources/langs/langs.csv',
+    assetLoader: CsvAssetLoader(),
+    startLocale: const Locale('vi', 'VN'),
+    useFallbackTranslations: true,
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -15,8 +27,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: context.locale,
+      supportedLocales: context.supportedLocales,
+      localizationsDelegates: context.localizationDelegates,
       title: 'Flutter Demo',
-      theme: ThemeManager.darkTheme,
+      theme: ThemeManager.lightTheme,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -50,8 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Text(
+              LocaleKeys.counterDescription.tr(),
             ),
             Text(
               '$_counter',

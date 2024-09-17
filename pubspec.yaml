@@ -40,6 +40,11 @@ dependencies:
   firebase_messaging: ^15.1.1
   flutter_launcher_icons: ^0.13.1
   firebase_analytics: ^11.3.2
+  sheet_loader_localization: ^0.3.0
+  build_runner: ^2.4.11
+  easy_localization: ^3.0.7
+  easy_localization_loader: ^2.0.2
+
 
 dev_dependencies:
   flutter_test:

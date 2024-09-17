@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,9 +28,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -39,16 +48,6 @@ class DefaultFirebaseOptions {
         );
     }
   }
-
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDDYM4sz0GneipO8W5nhFanLcClPJ3Z7Iw',
-    appId: '1:810131365389:web:4375594d27c15df7e77f44',
-    messagingSenderId: '810131365389',
-    projectId: 'cloud-message-test-1d41b',
-    authDomain: 'cloud-message-test-1d41b.firebaseapp.com',
-    storageBucket: 'cloud-message-test-1d41b.appspot.com',
-    measurementId: 'G-QYE5VQHZRM',
-  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ',
@@ -65,24 +64,5 @@ class DefaultFirebaseOptions {
     projectId: 'cloud-message-test-1d41b',
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
     iosBundleId: 'com.example.healthManagement',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDiQbNt3HAIWA6e9hZb4DHDjpZqHix4YIA',
-    appId: '1:810131365389:ios:3ed5ad2032fa5829e77f44',
-    messagingSenderId: '810131365389',
-    projectId: 'cloud-message-test-1d41b',
-    storageBucket: 'cloud-message-test-1d41b.appspot.com',
-    iosBundleId: 'com.example.healthManagement',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDDYM4sz0GneipO8W5nhFanLcClPJ3Z7Iw',
-    appId: '1:810131365389:web:120679da06b36943e77f44',
-    messagingSenderId: '810131365389',
-    projectId: 'cloud-message-test-1d41b',
-    authDomain: 'cloud-message-test-1d41b.firebaseapp.com',
-    storageBucket: 'cloud-message-test-1d41b.appspot.com',
-    measurementId: 'G-Q8ETWEZRKE',
   );
 }
