@@ -61,30 +61,30 @@ flutter {
 }
 
 android {
-    // ...
     //TODO: config flavor baseurl later on
     flavorDimensions "default"
-
-    productFlavors {
-        dev {
-            dimension "default"
-            resValue "string", "app_name", "Healh Management Dev"
-            applicationIdSuffix ".free"
-            // buildConfigField "String", "BASE_URL", '"https://dev.api.myapp.com"'
-
-        }
-
-        staging {
-            dimension "default"
-            resValue "string", "app_name", "Healh Management Staging"
-            applicationIdSuffix ".staging"
-            // buildConfigField "String", "BASE_URL", '"https://staging.api.myapp.com"'
-        }
-
-        prod {
-            dimension "default"
-            resValue "string", "app_name", "Healh Management"
-            // buildConfigField "String", "BASE_URL", '"https://api.myapp.com"'
+    android {
+        //TODO: config flavor baseurl later on
+        flavorDimensions "default"
+        productFlavors {
+            dev {
+                dimension "default"
+                resValue "string", "app_name", "Health Management Dev"
+                applicationIdSuffix ".dev"
+                // buildConfigField "String", "BASE_URL", '"https://dev.api.myapp.com"'
+            }
+            staging {
+                dimension "default"
+                resValue "string", "app_name", "Health Management Staging"
+                applicationIdSuffix ".staging"
+                // buildConfigField "String", "BASE_URL", '"https://staging.api.myapp.com"'
+            }
+            production {
+                dimension "default"
+                resValue "string", "app_name", "Health Management"
+                // buildConfigField "String", "BASE_URL", '"https://api.myapp.com"'
+            }
         }
     }
 }
+///todo: config google services later

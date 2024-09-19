@@ -5,17 +5,28 @@ import 'package:flutter/material.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
+import 'package:health_management/data/auth/api/authentication_api.dart';
+import 'package:health_management/data/auth/models/request/login_request_model.dart';
+import 'package:health_management/data/auth/models/response/login_response_model.dart';
+import 'package:health_management/data/common/api_response_model.dart';
+
+import 'app/di/injection.dart';
 
 void main() async {
+  //create before runApp method to wrap all the procedures
+  configureDependencies();
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await FirebaseApi().initNotificaiton();
   }
+  AuthenticationApi api = getIt.get<AuthenticationApi>();
+  LoginResponse response = await api.login(
+      const LoginRequest(email: "namuser5@gmail.com", password: "12345678"));
   runApp(EasyLocalization(
     supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-    path: 'resources/langs/langs.csv',
+    path: 'assets/resources/langs/langs.csv',
     assetLoader: CsvAssetLoader(),
-    startLocale: const Locale('vi', 'VN'),
+    startLocale: const Locale('en', 'US'),
     useFallbackTranslations: true,
     child: const MyApp(),
   ));

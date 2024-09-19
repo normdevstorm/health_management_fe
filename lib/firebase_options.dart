@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ',
-    appId: '1:810131365389:android:2e5ad1fb49e21175e77f44',
+    appId: '1:810131365389:android:c68ba9159afb083ae77f44',
     messagingSenderId: '810131365389',
     projectId: 'cloud-message-test-1d41b',
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
     iosBundleId: 'com.example.healthManagement',
   );
+
 }

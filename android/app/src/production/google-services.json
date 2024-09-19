@@ -26,44 +26,6 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:c3531c7d1b27024de77f44",
-        "android_client_info": {
-          "package_name": "com.example.health_management.dev"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:c68ba9159afb083ae77f44",
-        "android_client_info": {
-          "package_name": "com.example.health_management.staging"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:810131365389:android:2cb204926734553de77f44",
         "android_client_info": {
           "package_name": "com.example.test_push_noti_fcm"

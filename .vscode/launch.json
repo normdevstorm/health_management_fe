@@ -5,7 +5,9 @@
         "name": "dev",
         "request": "launch",
         "type": "dart",
-        "args": ["--flavor", "dev"]
+        "args": ["--flavor", "dev"
+        , "--web-port", "49430"
+      ]
       },
       {
         "name": "dev (profile)",
