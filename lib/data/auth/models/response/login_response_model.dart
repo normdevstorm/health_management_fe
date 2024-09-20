@@ -1,3 +1,4 @@
+import 'package:health_management/domain/login/entities/login_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'login_response_model.g.dart';
 

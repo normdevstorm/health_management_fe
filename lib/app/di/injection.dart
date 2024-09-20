@@ -5,9 +5,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:health_management/data/auth/api/authentication_api.dart';
+import 'package:health_management/data/auth/repositories/authentication_repository_impl.dart';
+import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 
+import '../../domain/login/repositories/authentication_repository.dart';
 import 'injection.config.dart';
 
 final getIt = GetIt.instance;
@@ -21,8 +24,8 @@ final getIt = GetIt.instance;
 )
 void configureDependencies() {
   getIt.init();
-  setUpAppComponent();
   setUpNetworkComponent();
+  setUpAppComponent();
 }
 
 void setUpNetworkComponent() {
@@ -31,13 +34,17 @@ void setUpNetworkComponent() {
     contentType: Headers.jsonContentType,
     headers: {
       HttpHeaders.accessControlAllowOriginHeader: "*",
-      HttpHeaders.accessControlAllowMethodsHeader: "GET, POST, PUT, DELETE, OPTIONS",
+      HttpHeaders.accessControlAllowMethodsHeader:
+          "GET, POST, PUT, DELETE, OPTIONS",
     },
-  
   ));
-  getIt.registerLazySingleton(() => AuthenticationApi(dio,baseUrl: "http://localhost:8080/api/v1/core"));
+  getIt.registerLazySingleton(() =>
+      AuthenticationApi(dio, baseUrl: "http://localhost:8080/api/v1/core"));
 }
 
 void setUpAppComponent() {
-  getIt.registerSingleton(() => Logger());
+  getIt.registerFactory<Logger>(() => Logger());
+  getIt.registerLazySingleton<AuthenticationRepository>(
+      () => AuthenticationRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton(() => AuthenticationUsecase(getIt()));
 }

@@ -9,19 +9,18 @@ import 'package:health_management/data/auth/api/authentication_api.dart';
 import 'package:health_management/data/auth/models/request/login_request_model.dart';
 import 'package:health_management/data/auth/models/response/login_response_model.dart';
 import 'package:health_management/data/common/api_response_model.dart';
+import 'package:health_management/domain/login/entities/login_entity.dart';
+import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
 
 import 'app/di/injection.dart';
 
 void main() async {
   //create before runApp method to wrap all the procedures
-  configureDependencies();
   WidgetsFlutterBinding.ensureInitialized();
+  configureDependencies();
   if (!kIsWeb) {
     await FirebaseApi().initNotificaiton();
   }
-  AuthenticationApi api = getIt.get<AuthenticationApi>();
-  LoginResponse response = await api.login(
-      const LoginRequest(email: "namuser5@gmail.com", password: "12345678"));
   runApp(EasyLocalization(
     supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
     path: 'assets/resources/langs/langs.csv',
@@ -60,6 +59,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  Future<LoginEntity?> _fetchData() async {
+    final AuthenticationUsecase authenticationUsecase =
+        getIt.get<AuthenticationUsecase>();
+    final LoginEntity? loginEntity = await authenticationUsecase.login(
+        const LoginRequest(email: "namuser5@gmail.com", password: "12345678"));
+    if (loginEntity != null) {
+      print(loginEntity.accessToken);
+      return loginEntity;
+    }
+    return null;
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -82,6 +93,19 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            FutureBuilder<LoginEntity?>(
+              future: _fetchData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Text(
+                    snapshot.data?.accessToken ?? 'null',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  );
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
             ),
           ],
         ),
