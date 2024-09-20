@@ -1,13 +1,14 @@
 {
   "project_info": {
-    "project_number": "810131365389",
-    "project_id": "cloud-message-test-1d41b",
-    "storage_bucket": "cloud-message-test-1d41b.appspot.com"
+    "project_number": "700556491614",
+    "firebase_url": "https://smart-home-52e19-default-rtdb.firebaseio.com",
+    "project_id": "smart-home-52e19",
+    "storage_bucket": "smart-home-52e19.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:2e5ad1fb49e21175e77f44",
+        "mobilesdk_app_id": "1:700556491614:android:ca7c71ef02179784026dcf",
         "android_client_info": {
           "package_name": "com.example.health_management"
         }
@@ -15,26 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:2cb204926734553de77f44",
-        "android_client_info": {
-          "package_name": "com.example.test_push_noti_fcm"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
+          "current_key": "AIzaSyCUNCXXusHvEcCKQD4XBqxfSyinOraU-VY"
         }
       ],
       "services": {

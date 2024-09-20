@@ -50,19 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ',
-    appId: '1:810131365389:android:c68ba9159afb083ae77f44',
-    messagingSenderId: '810131365389',
-    projectId: 'cloud-message-test-1d41b',
-    storageBucket: 'cloud-message-test-1d41b.appspot.com',
+    apiKey: 'AIzaSyCUNCXXusHvEcCKQD4XBqxfSyinOraU-VY',
+    appId: '1:700556491614:android:ca7c71ef02179784026dcf',
+    messagingSenderId: '700556491614',
+    projectId: 'smart-home-52e19',
+    databaseURL: 'https://smart-home-52e19-default-rtdb.firebaseio.com',
+    storageBucket: 'smart-home-52e19.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDiQbNt3HAIWA6e9hZb4DHDjpZqHix4YIA',
-    appId: '1:810131365389:ios:3ed5ad2032fa5829e77f44',
-    messagingSenderId: '810131365389',
-    projectId: 'cloud-message-test-1d41b',
-    storageBucket: 'cloud-message-test-1d41b.appspot.com',
+    apiKey: 'AIzaSyByPzhn9VyBLkRbrAlo0Yz8LJNgbv-YD2o',
+    appId: '1:700556491614:ios:6e78c086b1455c65026dcf',
+    messagingSenderId: '700556491614',
+    projectId: 'smart-home-52e19',
+    databaseURL: 'https://smart-home-52e19-default-rtdb.firebaseio.com',
+    storageBucket: 'smart-home-52e19.appspot.com',
     iosBundleId: 'com.example.healthManagement',
   );
 
