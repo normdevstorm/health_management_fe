@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:health_management/main.dart';
+
+import '../screens/temperature_humidity_sensor_screen.dart';
 
 class HumidityGraph extends StatefulWidget {
   const HumidityGraph({

@@ -81,7 +81,7 @@ android {
             }
             production {
                 dimension "default"
-                resValue "string", "app_name", "Health Management"
+                resValue "string", "app_name", "Smart Home"
                 // buildConfigField "String", "BASE_URL", '"https://api.myapp.com"'
             }
         }
