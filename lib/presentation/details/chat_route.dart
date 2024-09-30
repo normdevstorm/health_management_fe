@@ -1,14 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/prototypes/my_details_screen.dart';
-part 'details_route.g.dart';
+part 'chat_route.g.dart';
 
-@TypedGoRoute<DetailsRoute>(path: '/chat', routes: [
-  TypedGoRoute<PersonDetailsRoute>(
-    path: ':userId',
-  )
-])
-class DetailsRoute extends GoRouteData {
+@TypedGoRoute<ChatRoute>(
+    name: RouteDefine.chatRouteName,
+    path: '/chat',
+    routes: [
+      TypedGoRoute<PersonDetailsRoute>(
+        name: RouteDefine.chatDetails,
+        path: ':userId',
+      )
+    ])
+class ChatRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return MyDetailsScreen();

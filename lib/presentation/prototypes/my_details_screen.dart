@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_management/app/route/route_define.dart';
 
 class MyDetailsScreen extends StatelessWidget {
   final List<Map<String, String>> people = [
@@ -41,7 +42,8 @@ class MyDetailsScreen extends StatelessWidget {
               title: Text(person['name']!),
               subtitle: const Text('Tap to view details'),
               onTap: () {
-                context.push("/chat/${person['name']!}");
+                context.pushNamed(RouteDefineName.chatDetails,
+                    pathParameters: {'userId': person['name']!});
               },
             ),
           );

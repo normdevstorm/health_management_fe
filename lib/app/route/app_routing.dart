@@ -3,27 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/main.dart';
-import 'package:health_management/presentation/details/details_route.dart';
+import 'package:health_management/presentation/details/chat_route.dart';
 import 'package:health_management/presentation/settings/settings_route.dart';
 
-import '../../presentation/login/login_route.dart';
-
-enum RouteDefine {
-  // group routes of the same root with a comment
-  //Registration
-  registerScreen,
-  loginScreen,
-  codeVerifyScreen,
-
-  //Home
-  home,
-  //Settings
-  settings,
-  //Profile
-  profile,
-  //Appointment
-  appointment,
-}
+import '../../presentation/login/appointment_route.dart';
 
 ///TODO: group naviagtor keys into one separate file
 
@@ -61,10 +44,10 @@ class AppRouting {
                   ]),
               StatefulShellBranch(
                   navigatorKey: _rootNavigatorChat,
-                  routes: <RouteBase>[$detailsRoute]),
+                  routes: <RouteBase>[$chatRoute]),
               StatefulShellBranch(
                   navigatorKey: _rootNavigatorAppointment,
-                  routes: <RouteBase>[$loginRoute]),
+                  routes: <RouteBase>[$appointmentRoute]),
               StatefulShellBranch(
                   routes: <RouteBase>[$settingsRoute],
                   navigatorKey: _rootNavigatorProfile)

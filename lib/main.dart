@@ -2,7 +2,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/firebase_api.dart';
@@ -42,10 +44,17 @@ class MyApp extends StatelessWidget {
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       title: 'Flutter Demo',
-      theme: ThemeManager.lightTheme,
+      theme: ThemeManager.lightTheme.copyWith(
+          pageTransitionsTheme: const PageTransitionsTheme(builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder()
+      })),
       routerConfig: AppRouting.shellRouteConfig(),
     );
-    return mainApp;
+    return ScreenUtilInit(
+        designSize: const Size(430, 932),
+        useInheritedMediaQuery: true,
+        minTextAdapt: true,
+        builder: (context, child) => mainApp);
   }
 }
 
@@ -118,12 +127,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class SkeletonPage extends StatelessWidget {
+class SkeletonPage extends StatefulWidget {
   const SkeletonPage({super.key, required this.title, required this.child});
 
   final String title;
   final StatefulNavigationShell child;
-  // late  int currentIndex;
+
+  @override
+  State<SkeletonPage> createState() => _SkeletonPageState();
+}
+
+class _SkeletonPageState extends State<SkeletonPage> {
   @override
   Widget build(BuildContext context) {
     return BottomBar(
@@ -131,15 +145,25 @@ class SkeletonPage extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.7,
       hideOnScroll: true,
       reverse: true,
-      body: (context, controller) => Scaffold(body: child),
+      body: (context, controller) {
+        return Scaffold(
+            body: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            children: [
+              Expanded(child: widget.child),
+            ],
+          ),
+        ));
+      },
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(50)),
         child: BottomNavigationBar(
             enableFeedback: false,
-            currentIndex: child.currentIndex,
+            currentIndex: widget.child.currentIndex,
             selectedItemColor: Colors.blueAccent,
             unselectedItemColor: Colors.grey,
-            onTap: (value) => child.goBranch(value),
+            onTap: (value) => widget.child.goBranch(value),
             items: const [
               BottomNavigationBarItem(
                   icon: Icon(Icons.home_rounded), label: "Home"),
