@@ -1,4 +1,4 @@
-part of app_layer;
+part of '../app.dart';
 
 enum FlavorManager { dev, staging, production }
 

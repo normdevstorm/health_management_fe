@@ -2,13 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
+import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/firebase_api.dart';
+import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
-import 'package:health_management/data/auth/api/authentication_api.dart';
 import 'package:health_management/data/auth/models/request/login_request_model.dart';
-import 'package:health_management/data/auth/models/response/login_response_model.dart';
-import 'package:health_management/data/common/api_response_model.dart';
 import 'package:health_management/domain/login/entities/login_entity.dart';
 import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
 
@@ -21,6 +21,7 @@ void main() async {
   if (!kIsWeb) {
     await FirebaseApi().initNotificaiton();
   }
+
   runApp(EasyLocalization(
     supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
     path: 'assets/resources/langs/langs.csv',
@@ -36,14 +37,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    MaterialApp mainApp = MaterialApp.router(
       locale: context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       title: 'Flutter Demo',
       theme: ThemeManager.lightTheme,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      routerConfig: AppRouting.shellRouteConfig(),
     );
+    return mainApp;
   }
 }
 
@@ -65,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final LoginEntity? loginEntity = await authenticationUsecase.login(
         const LoginRequest(email: "namuser5@gmail.com", password: "12345678"));
     if (loginEntity != null) {
-      print(loginEntity.accessToken);
+      // print(loginEntity.accessToken);
       return loginEntity;
     }
     return null;
@@ -80,9 +82,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -114,6 +113,44 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: _incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class SkeletonPage extends StatelessWidget {
+  const SkeletonPage({super.key, required this.title, required this.child});
+
+  final String title;
+  final StatefulNavigationShell child;
+  // late  int currentIndex;
+  @override
+  Widget build(BuildContext context) {
+    return BottomBar(
+      barColor: Colors.transparent,
+      width: MediaQuery.of(context).size.width * 0.7,
+      hideOnScroll: true,
+      reverse: true,
+      body: (context, controller) => Scaffold(body: child),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(50)),
+        child: BottomNavigationBar(
+            enableFeedback: false,
+            currentIndex: child.currentIndex,
+            selectedItemColor: Colors.blueAccent,
+            unselectedItemColor: Colors.grey,
+            onTap: (value) => child.goBranch(value),
+            items: const [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.home_rounded), label: "Home"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.inbox_rounded), label: "Chat"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_month_rounded),
+                  label: "Appointment"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.person_rounded), label: "Profile"),
+            ]),
       ),
     );
   }

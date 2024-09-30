@@ -1,4 +1,3 @@
-import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/data/auth/models/request/login_request_model.dart';
 import 'package:health_management/data/auth/models/response/login_response_model.dart';
 import 'package:logger/logger.dart';
