@@ -42,7 +42,7 @@ class MyDetailsScreen extends StatelessWidget {
               title: Text(person['name']!),
               subtitle: const Text('Tap to view details'),
               onTap: () {
-                context.pushNamed(RouteDefineName.chatDetails,
+                context.pushNamed(RouteDefine.chatDetails,
                     pathParameters: {'userId': person['name']!});
               },
             ),

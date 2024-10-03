@@ -27,7 +27,7 @@ class ThemeManager {
       color: ColorManager.iconColorLight,
     ),
     inputDecorationTheme: InputDecorationTheme(
-      filled: true,
+      filled: false,
       fillColor: ColorManager.iconButtonColorLight,
       hintStyle: StyleManager.hintText,
       enabledBorder: const OutlineInputBorder(

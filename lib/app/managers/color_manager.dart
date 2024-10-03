@@ -28,6 +28,7 @@ class ColorManager {
   static const Color textFieldColorLight = Color(0xFF212121);
   static const Color textFieldCheckoutColorLight = Color(0xFF212121);
   static const Color buttonColorLight = Color(0xFF2979FF);
+  static const Color toggleBackgroundColorLight = Color(0xFFEEEEEE);
   static const Color searchBarColorLight = Color(0xFF212121);
   static const Color mapViewPinColorLight = Color(0xFF2979FF);
   static const Color bottomNavColorLight = Color(0xFF212121);
@@ -94,5 +95,4 @@ class ColorManager {
   static const Color dialogBackgroundColorDark = Color(0xFF1E1E1E);
   static const Color secondaryButtonColorDark = Color(0xFF757575);
   static const Color captionColorDark = Color(0xFFBDBDBD);
-
 }

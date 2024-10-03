@@ -31,7 +31,7 @@ void configureDependencies() {
 
 void setUpNetworkComponent() {
   Dio dio = Dio(BaseOptions(
-    baseUrl: "http://localhost:8080/api/v1/core",
+    baseUrl: "https://api.duynguyendev.xyz/api/v1/core",
     contentType: Headers.jsonContentType,
     headers: {
       HttpHeaders.accessControlAllowOriginHeader: "*",
@@ -40,8 +40,8 @@ void setUpNetworkComponent() {
     },
   ));
   dio.interceptors.add(ChuckerDioInterceptor());
-  getIt.registerLazySingleton(() =>
-      AuthenticationApi(dio, baseUrl: "http://localhost:8080/api/v1/core"));
+  getIt.registerLazySingleton(() => AuthenticationApi(dio,
+      baseUrl: "https://api.duynguyendev.xyz/api/v1/core"));
 }
 
 void setUpAppComponent() {

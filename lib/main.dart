@@ -3,6 +3,7 @@ import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -10,9 +11,8 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
-import 'package:health_management/data/auth/models/request/login_request_model.dart';
-import 'package:health_management/domain/login/entities/login_entity.dart';
 import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
+import 'package:health_management/presentation/login/bloc/login_bloc.dart';
 
 import 'app/di/injection.dart';
 
@@ -30,8 +30,22 @@ void main() async {
     assetLoader: CsvAssetLoader(),
     startLocale: const Locale('en', 'US'),
     useFallbackTranslations: true,
-    child: const MyApp(),
-  ));
+    child: MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              LoginBloc(authenticationUsecase: getIt<AuthenticationUsecase>()),
+        ),
+        // BlocProvider(
+        //   create: (context) => SubjectBloc(),
+        // ),
+      ],
+  
+
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -46,14 +60,15 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeManager.lightTheme.copyWith(
           pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: CupertinoPageTransitionsBuilder()
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: CupertinoPageTransitionsBuilder()
       })),
       routerConfig: AppRouting.shellRouteConfig(),
+      debugShowCheckedModeBanner: false,
     );
     return ScreenUtilInit(
-        designSize: const Size(430, 932),
+        designSize: const Size(375, 812),
         useInheritedMediaQuery: true,
-        minTextAdapt: true,
         builder: (context, child) => mainApp);
   }
 }
@@ -70,17 +85,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  Future<LoginEntity?> _fetchData() async {
-    final AuthenticationUsecase authenticationUsecase =
-        getIt.get<AuthenticationUsecase>();
-    final LoginEntity? loginEntity = await authenticationUsecase.login(
-        const LoginRequest(email: "namuser5@gmail.com", password: "12345678"));
-    if (loginEntity != null) {
-      // print(loginEntity.accessToken);
-      return loginEntity;
-    }
-    return null;
-  }
+  // Future<LoginEntity?> _fetchData() async {
+  //   final AuthenticationUsecase authenticationUsecase =
+  //       getIt.get<AuthenticationUsecase>();
+  //   final LoginEntity? loginEntity = await authenticationUsecase.login(
+  //       const LoginRequest(email: "namuser5@gmail.com", password: "12345678"));
+  //   if (loginEntity != null) {
+  //     // print(loginEntity.accessToken);
+  //     return loginEntity;
+  //   }
+  //   return null;
+  // }
 
   void _incrementCounter() {
     setState(() {
@@ -102,18 +117,9 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            FutureBuilder<LoginEntity?>(
-              future: _fetchData(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return Text(
-                    snapshot.data?.accessToken ?? 'null',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  );
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              },
+            Text(
+              'null',
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),

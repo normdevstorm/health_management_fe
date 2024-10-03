@@ -6,7 +6,7 @@
         "request": "launch",
         "type": "dart",
         "args": ["--flavor", "dev"
-        // , "--web-port", "49430"
+        , "--web-port", "49430"
       ]
       },
       {

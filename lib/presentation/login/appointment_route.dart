@@ -5,7 +5,7 @@ import 'package:health_management/presentation/prototypes/my_overview_screen.dar
 part 'appointment_route.g.dart';
 
 @TypedGoRoute<AppointmentRoute>(
-    name: RouteDefineName.appointment, path: '/appointment')
+    name: RouteDefine.appointment, path: '/appointment')
 class AppointmentRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
