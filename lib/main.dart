@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,42 +9,66 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/route/app_routing.dart';
+import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
 import 'package:health_management/presentation/login/bloc/login_bloc.dart';
 
 import 'app/di/injection.dart';
+import 'app/managers/local_storage.dart';
 
 void main() async {
   //create before runApp method to wrap all the procedures
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
+  await SharedPreferenceManager.init();
   if (!kIsWeb) {
     await FirebaseApi().initNotificaiton();
   }
 
-  runApp(EasyLocalization(
-    supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-    path: 'assets/resources/langs/langs.csv',
-    assetLoader: CsvAssetLoader(),
-    startLocale: const Locale('en', 'US'),
-    useFallbackTranslations: true,
-    child: MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-              LoginBloc(authenticationUsecase: getIt<AuthenticationUsecase>()),
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+      path: 'assets/resources/langs/langs.csv',
+      assetLoader: CsvAssetLoader(),
+      startLocale: const Locale('vi', 'VN'),
+      useFallbackTranslations: true,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => LoginBloc(
+                authenticationUsecase: getIt<AuthenticationUsecase>()),
+          ),
+        ],
+        child: BlocListener<LoginBloc, LoginState>(
+          listener: (context, state) {
+            // TODO: implement listener in a separate mehthod/function
+            _authenticationListener(context, state);
+          },
+          child: const MyApp(),
         ),
-        // BlocProvider(
-        //   create: (context) => SubjectBloc(),
-        // ),
-      ],
-  
-
-        child: const MyApp(),
       ),
     ),
   );
+}
+
+void _authenticationListener(BuildContext context, LoginState state) {
+  BuildContext currentContext =
+      globalRootNavigatorKey.currentContext ?? context;
+  if (state is LoginSuccess) {
+    GoRouter.of(currentContext).goNamed(RouteDefine.home);
+  }
+
+  if (state is LoginError) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Text(state.message),
+    );
+  }
+
+  if (state is LoginInitial) {
+    GoRouter.of(currentContext).goNamed(RouteDefine.login);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -54,6 +77,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     MaterialApp mainApp = MaterialApp.router(
+      
       locale: context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
@@ -85,19 +109,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  // Future<LoginEntity?> _fetchData() async {
-  //   final AuthenticationUsecase authenticationUsecase =
-  //       getIt.get<AuthenticationUsecase>();
-  //   final LoginEntity? loginEntity = await authenticationUsecase.login(
-  //       const LoginRequest(email: "namuser5@gmail.com", password: "12345678"));
-  //   if (loginEntity != null) {
-  //     // print(loginEntity.accessToken);
-  //     return loginEntity;
-  //   }
-  //   return null;
-  // }
+  void _incrementCounter() async {
+    AuthenticationUsecase authenticationUsecase =
+        getIt<AuthenticationUsecase>();
 
-  void _incrementCounter() {
+    await authenticationUsecase.getAppointment(3);
+    // context.read<LoginBloc>().add(const RegisterEvent(
+    //     "namuser1gmail.com", "12345678", "normdevstorm2021", Role.doctor));
     setState(() {
       _counter++;
     });

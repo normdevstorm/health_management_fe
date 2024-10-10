@@ -14,14 +14,16 @@ class LoginRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return BlocListener<LoginBloc, LoginState>(
-      listenWhen: (previous, current) => previous != current,
+      listenWhen: (previous, current) =>
+          (previous != current),
       listener: (context, state) {
         // TODO: implement listener
-        if (state is LoginSuccess) {
-          GoRouter.of(context).replaceNamed(RouteDefine.home);
-        }
+        // if (state is LoginSuccess) {
+        //   GoRouter.of(context).replaceNamed(RouteDefine.home);
+        //   return;
+        // }
       },
-      child: LoginScreen(),
+      child: const LoginScreen(),
     );
   }
 }

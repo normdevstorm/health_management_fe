@@ -10,7 +10,7 @@ class ChatBlock extends StatelessWidget {
   final TextStyle senderTextStyle;
 
   const ChatBlock({
-    Key? key,
+    super.key,
     required this.message,
     required this.sender,
     this.isSentByMe = false,
@@ -18,7 +18,7 @@ class ChatBlock extends StatelessWidget {
     this.receivedMessageColor = Colors.grey,
     this.messageTextStyle = const TextStyle(color: Colors.white),
     this.senderTextStyle = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

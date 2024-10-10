@@ -4,7 +4,7 @@ part 'locale_keys.g.dart';
 
 @SheetLocalization(
   docId: '1mdbqXweQ3PWoQpp1f1BaWXo0oASe-tN-wZE5Q4Veiaw',
-  version: 4,
+  version: 2,
   // the `1` is the generated version.
   //You must increment it each time you want to regenerate a new version of the labels.
   outDir: 'assets/resources/langs',
@@ -12,4 +12,5 @@ part 'locale_keys.g.dart';
   outName: 'langs',
   //default CSV file name
   preservedKeywords: [],)
+// ignore: unused_element
 class _LocaleKeys {}

@@ -18,7 +18,14 @@ abstract class AuthenticationApi {
   @POST('/auth/login')
   Future<LoginResponse> login(@Body() LoginRequest request);
 
-  // @POST('/logout')
-  // Future<ApiResponse<void>> logout();
+  @POST('/auth/logout')
+  Future<void> logout(@Body() Map<String, String> refreshToken);
+
+  @POST('/auth/refresh-token')
+  Future<LoginResponse> refreshToken(@Body() Map<String, String> refreshToken);
+
+  @GET('/appointment/{id}')
+  Future<ApiResponse> getAppointment(@Path('id') int id);
+
 }
 

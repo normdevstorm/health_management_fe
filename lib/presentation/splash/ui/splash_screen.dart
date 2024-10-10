@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/main.dart'; // Adjust the import according to your project structure
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../login/bloc/login_bloc.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<LoginBloc>().add(const CheckLoginStatusEvent());
     _navigateToHome();
   }
 
   _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 3), () {});
-    context.goNamed(RouteDefine.login);
   }
 
   @override

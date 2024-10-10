@@ -1,3 +1,4 @@
+import 'package:health_management/data/common/api_response_model.dart';
 import 'package:health_management/domain/login/entities/login_entity.dart';
 import 'package:health_management/domain/login/repositories/authentication_repository.dart';
 
@@ -20,5 +21,23 @@ class AuthenticationUsecase {
     return LoginEntity(
         accessToken: loginResponse?.accessToken,
         refreshToken: loginResponse?.refreshToken);
+  }
+
+  Future<ApiResponse?> getAppointment(int id) async {
+    ApiResponse? apiResponse =
+        await _authenticationRepository.getAppointment(id);
+    return apiResponse;
+  }
+
+  Future<LoginEntity?> refreshToken(String refreshToken) async {
+    LoginResponse? loginResponse =
+        await _authenticationRepository.refreshToken(refreshToken);
+    return LoginEntity(
+        accessToken: loginResponse?.accessToken,
+        refreshToken: loginResponse?.refreshToken);
+  } 
+
+  Future<void> logout(String refreshToken) async {
+    await _authenticationRepository.logout(refreshToken);
   }
 }

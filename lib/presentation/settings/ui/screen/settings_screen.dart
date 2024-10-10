@@ -23,23 +23,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = List.generate(
-        6,
-        (index) => Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Colors.grey.shade300,
-              ),
-              margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              child: SizedBox(
-                height: 280.h,
-                child: Center(
-                    child: Text(
-                  "Page $index",
-                  style: const TextStyle(color: Colors.indigo),
-                )),
-              ),
-            ));
+    // final pages = List.generate(
+    //     6,
+    //     (index) => Container(
+    //           decoration: BoxDecoration(
+    //             borderRadius: BorderRadius.circular(16),
+    //             color: Colors.grey.shade300,
+    //           ),
+    //           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    //           child: SizedBox(
+    //             height: 280.h,
+    //             child: Center(
+    //                 child: Text(
+    //               "Page $index",
+    //               style: const TextStyle(color: Colors.indigo),
+    //             )),
+    //           ),
+    //         ));
     return Column(
       children: [
         10.verticalSpace,
