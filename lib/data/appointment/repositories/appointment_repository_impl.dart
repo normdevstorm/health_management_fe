@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:logger/logger.dart';
 

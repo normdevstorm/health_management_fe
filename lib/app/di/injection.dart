@@ -8,8 +8,11 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:health_management/app/config/refresh_token_interceptor.dart';
 import 'package:health_management/app/config/request_interceptor.dart';
+import 'package:health_management/data/appointment/api/appointment_api.dart';
+import 'package:health_management/data/appointment/repositories/appointment_repository_impl.dart';
 import 'package:health_management/data/auth/api/authentication_api.dart';
 import 'package:health_management/data/auth/repositories/authentication_repository_impl.dart';
+import 'package:health_management/domain/appointment/repositories/appointment_repository.dart';
 import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
@@ -63,6 +66,8 @@ void setUpNetworkComponent() {
   ]);
   getIt.registerLazySingleton(() =>
       AuthenticationApi(dio, baseUrl: "http://localhost:8080/api/v1/core"));
+  getIt.registerLazySingleton(
+      () => AppointmentApi(dio, baseUrl: "http://localhost:8080/api/v1/core"));
 }
 
 void setUpAppComponent() {
@@ -72,4 +77,6 @@ void setUpAppComponent() {
   getIt.registerLazySingleton<AuthenticationRepository>(
       () => AuthenticationRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton(() => AuthenticationUsecase(getIt()));
+  getIt.registerLazySingleton<AppointmentRepository>(
+      () => AppointmentRepositoryImpl(getIt(), getIt()));
 }
