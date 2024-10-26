@@ -10,7 +10,8 @@
     "btn_continue": "Continue",
     "lbl_phone": "Phone Number",
     "placeholder_search": "Search here",
-    "counter_description": "You have pushed the button this many times:"
+    "counter_description": "You have pushed the button this many times:",
+    "email_hint_text": "Email"
   },
   "vi_VN": {
     "btn_submit": "Gửi",
@@ -23,6 +24,7 @@
     "btn_continue": "Tiếp tục",
     "lbl_phone": "Số điện thoại",
     "placeholder_search": "Tìm kiếm ở đây",
-    "counter_description": "Bạn đã nhấn nút từng này lần: "
+    "counter_description": "Bạn đã nhấn nút từng này lần: ",
+    "email_hint_text": ""
   }
 }

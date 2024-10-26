@@ -8,3 +8,53 @@ enum Role {
   @JsonValue('DOCTOR')
   doctor
 }
+
+enum AppointmentType {
+  @JsonValue('TELEMEDICINE')
+  telemedicine,
+  @JsonValue('IN_PERSON')
+  inPerson
+}
+
+enum AppointmentStatus {
+  @JsonValue('PENDING')
+  pending,
+  @JsonValue('CONFIRMED')
+  confirmed,
+  @JsonValue('CANCELLED')
+  cancelled,
+  @JsonValue('COMPLETED')
+  completed
+}
+
+enum MedicalConditionStatus {
+  @JsonValue('ACTIVE')
+  active,
+  @JsonValue('RESOLVED')
+  resolved
+}
+
+enum AllergyType {
+  @JsonValue('PEANUTS')
+  peanuts,
+  @JsonValue('SHELLFISH')
+  shellfish,
+  @JsonValue('DAIRY')
+  dairy,
+  @JsonValue('GLUTEN')
+  gluten,
+  @JsonValue('POLLEN')
+  pollen,
+  @JsonValue('DUST')
+  dust,
+  @JsonValue('LATEX')
+  latex,
+  @JsonValue('INSECT_STINGS')
+  insectStings,
+  @JsonValue('MEDICATIONS')
+  medications,
+  @JsonValue('MOLD')
+  mold,
+  @JsonValue('PET_DANDER')
+  petDander
+}
