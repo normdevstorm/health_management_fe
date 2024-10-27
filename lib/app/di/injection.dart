@@ -13,6 +13,7 @@ import 'package:health_management/data/appointment/repositories/appointment_repo
 import 'package:health_management/data/auth/api/authentication_api.dart';
 import 'package:health_management/data/auth/repositories/authentication_repository_impl.dart';
 import 'package:health_management/domain/appointment/repositories/appointment_repository.dart';
+import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
@@ -79,4 +80,5 @@ void setUpAppComponent() {
   getIt.registerLazySingleton(() => AuthenticationUsecase(getIt()));
   getIt.registerLazySingleton<AppointmentRepository>(
       () => AppointmentRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));
 }

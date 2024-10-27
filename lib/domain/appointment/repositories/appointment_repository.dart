@@ -3,5 +3,8 @@
 
 abstract class AppointmentRepository {
     Future<List<AppointmentRecordEntity>> getAllAppointmentRecords();
+    Future<AppointmentRecordEntity> createAppointmentRecord(AppointmentRecordEntity appointment);
+    Future<AppointmentRecordEntity> updateAppointmentRecord(AppointmentRecordEntity appointment);
+    Future<String> deleteAppointmentRecord(String appointmentId);
 }
 

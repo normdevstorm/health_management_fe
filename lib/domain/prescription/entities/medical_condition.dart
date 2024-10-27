@@ -1,40 +1,18 @@
 //todo: move into a sepatate directory in case this enitty used for its dedicated feature
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../app/app.dart';
+part 'medical_condition.freezed.dart';
+part 'medical_condition.g.dart';
+@freezed
+class MedicalCondition with _$MedicalCondition {
+  const MedicalCondition._();
+  const factory MedicalCondition({
+     int? id,
+     String? conditionName,
+     MedicalConditionStatus? medicalConditionStatus,
+     String? description,
+  }) = _MedicalCondition;
 
-class MedicalCondition extends Equatable {
-  final int id;
-  final String conditionName;
-  final MedicalConditionStatus medicalConditionStatus;
-  final String description;
-
-  MedicalCondition({
-    required this.id,
-    required this.conditionName,
-    required this.medicalConditionStatus,
-    required this.description,
-  });
-
-  @override
-  List<Object?> get props => [
-    id,
-    conditionName,
-    medicalConditionStatus,
-    description,
-  ];
-
-  MedicalCondition copyWith({
-    int? id,
-    String? conditionName,
-    MedicalConditionStatus? medicalConditionStatus,
-    String? description,
-  }) {
-    return MedicalCondition(
-      id: id ?? this.id,
-      conditionName: conditionName ?? this.conditionName,
-      medicalConditionStatus: medicalConditionStatus ?? this.medicalConditionStatus,
-      description: description ?? this.description,
-    );
-  }
+  factory MedicalCondition.fromJson(Map<String, dynamic> json) => _$MedicalConditionFromJson(json);
 }

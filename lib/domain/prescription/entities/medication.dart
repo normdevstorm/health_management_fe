@@ -1,24 +1,26 @@
 // this class is used to represent a medicine information
 import 'package:json_annotation/json_annotation.dart';
 part 'medication.g.dart';
+
 @JsonSerializable()
 class Medication {
-  final int id;
-  final String name;
-  final String imageUrl;
-  final String description;
-  final String mfgDate;
-  final String expDate;
+  int id;
+  String? name;
+  String? imageUrl;
+  String? description;
+  String? mfgDate;
+  String? expDate;
 
   Medication({
     required this.id,
-    required this.name,
-    required this.imageUrl,
-    required this.description,
-    required this.mfgDate,
-    required this.expDate,
+    this.name,
+    this.imageUrl,
+    this.description,
+    this.mfgDate,
+    this.expDate,
   });
 
-  factory Medication.fromJson(Map<String, dynamic> json) => _$MedicationFromJson(json);
+  factory Medication.fromJson(Map<String, dynamic> json) =>
+      _$MedicationFromJson(json);
   Map<String, dynamic> toJson() => _$MedicationToJson(this);
 }

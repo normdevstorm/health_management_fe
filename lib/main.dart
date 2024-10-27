@@ -11,11 +11,18 @@ import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
+import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
+import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
+import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
+import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
 import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/login/bloc/login_bloc.dart';
+import 'package:logger/logger.dart';
 
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
+import 'domain/appointment/repositories/appointment_repository.dart';
 
 void main() async {
   //create before runApp method to wrap all the procedures
@@ -77,7 +84,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     MaterialApp mainApp = MaterialApp.router(
-      
       locale: context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
@@ -112,8 +118,18 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() async {
     AuthenticationUsecase authenticationUsecase =
         getIt<AuthenticationUsecase>();
-
-    await authenticationUsecase.getAppointment(3);
+    AppointmentUseCase appointmentUseCase = getIt.get<AppointmentUseCase>();
+    Logger logger = getIt.get<Logger>();
+    AppointmentRecordEntity response = await appointmentUseCase
+        .createAppointmentRecord(AppointmentRecordEntity(
+            note: "note",
+            status: AppointmentStatus.pending,
+            scheduledAt: DateTime.now(),
+            appointmentType: AppointmentType.inPerson,
+            doctor: const DoctorEntity(id: 3),
+            healthProvider: HealthProviderEntity(id: 1),
+            user: const UserEntity(id: 6)));
+    // await authenticationUsecase.getAppointment(3);
     // context.read<LoginBloc>().add(const RegisterEvent(
     //     "namuser1gmail.com", "12345678", "normdevstorm2021", Role.doctor));
     setState(() {

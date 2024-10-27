@@ -12,7 +12,7 @@ class PrescriptionResponse with _$PrescriptionResponse {
       {required int id,
       String? notes,
       String? diagnosis,
-      PrescriptionDetails? details,
+      List<PrescriptionDetails>? details,
       String? frequency,
       String? duration,
       String? instruction,
