@@ -39,4 +39,16 @@ class SharedPreferenceManager {
   static bool? readLoginStatus() {
     return _instance.getBool("isLogin");
   }
+
+  static String? readUserId() {
+    return _instance.getString("user-id");
+  }
+
+  static Future<void> setUserId(String userId) async {
+    _instance.setString("user-id", userId);
+  }
+
+  static Future<bool> deleteUserId() {
+    return _instance.remove("user-id");
+  }
 }

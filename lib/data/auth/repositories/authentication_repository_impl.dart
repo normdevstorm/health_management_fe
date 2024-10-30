@@ -1,7 +1,9 @@
 import 'package:health_management/app/config/api_exception.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/data/auth/models/request/login_request_model.dart';
 import 'package:health_management/data/auth/models/response/login_response_model.dart';
 import 'package:logger/logger.dart';
+
 import '../../../domain/login/repositories/authentication_repository.dart';
 import '../../common/api_response_model.dart';
 import '../api/authentication_api.dart';
@@ -27,17 +29,10 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   @override
   Future<LoginResponse?> login(LoginRequest request) async {
     try {
-      LoginResponse? apiResponse = await api.login(request);
-      return apiResponse;
-    } catch (e) {
-      throw ApiException.getDioException(e);
-    }
-  }
-
-  @override
-  Future<ApiResponse?> getAppointment(int id) async {
-    try {
-      ApiResponse apiResponse = await api.getAppointment(id);
+      LoginResponse apiResponse = await api.login(request);
+      SharedPreferenceManager.setUserId(apiResponse.userId);
+      SharedPreferenceManager.setAccessToken(apiResponse.accessToken);
+      SharedPreferenceManager.setRefreshToken(apiResponse.refreshToken);
       return apiResponse;
     } catch (e) {
       throw ApiException.getDioException(e);
@@ -59,6 +54,9 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<void> logout(String refreshToken) async {
     try {
       await api.logout({"refresh_token": refreshToken});
+      await SharedPreferenceManager.deleteAccessToken();
+      await SharedPreferenceManager.deleteRefreshToken();
+      await SharedPreferenceManager.deleteUserId();
     } catch (e) {
       throw ApiException.getDioException(e);
     }

@@ -78,7 +78,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       SessionManager().clearSession();
       emit(LoginInitial());
     } on Exception catch (e) {
-        getIt<Logger>().e(e);
+      getIt<Logger>().e(e);
       emit(LoginError(e.toString()));
     }
   }

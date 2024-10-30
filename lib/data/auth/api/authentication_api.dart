@@ -13,7 +13,8 @@ abstract class AuthenticationApi {
   factory AuthenticationApi(Dio dio, {String baseUrl}) = _AuthenticationApi;
 
   @POST('/auth/register')
-  Future<ApiResponse<RegisterResponse>> register(@Body() RegisterRequest request);
+  Future<ApiResponse<RegisterResponse>> register(
+      @Body() RegisterRequest request);
 
   @POST('/auth/login')
   Future<LoginResponse> login(@Body() LoginRequest request);
@@ -23,9 +24,4 @@ abstract class AuthenticationApi {
 
   @POST('/auth/refresh-token')
   Future<LoginResponse> refreshToken(@Body() Map<String, String> refreshToken);
-
-  @GET('/appointment/{id}')
-  Future<ApiResponse> getAppointment(@Path('id') int id);
-
 }
-

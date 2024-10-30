@@ -121,14 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
     AppointmentUseCase appointmentUseCase = getIt.get<AppointmentUseCase>();
     Logger logger = getIt.get<Logger>();
     AppointmentRecordEntity response = await appointmentUseCase
-        .createAppointmentRecord(AppointmentRecordEntity(
-            note: "note",
-            status: AppointmentStatus.pending,
-            scheduledAt: DateTime.now(),
-            appointmentType: AppointmentType.inPerson,
-            doctor: const DoctorEntity(id: 3),
-            healthProvider: HealthProviderEntity(id: 1),
-            user: const UserEntity(id: 6)));
+        .updateAppointmentRecord(const AppointmentRecordEntity());
     // await authenticationUsecase.getAppointment(3);
     // context.read<LoginBloc>().add(const RegisterEvent(
     //     "namuser1gmail.com", "12345678", "normdevstorm2021", Role.doctor));

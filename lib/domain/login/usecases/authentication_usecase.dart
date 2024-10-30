@@ -23,19 +23,13 @@ class AuthenticationUsecase {
         refreshToken: loginResponse?.refreshToken);
   }
 
-  Future<ApiResponse?> getAppointment(int id) async {
-    ApiResponse? apiResponse =
-        await _authenticationRepository.getAppointment(id);
-    return apiResponse;
-  }
-
   Future<LoginEntity?> refreshToken(String refreshToken) async {
     LoginResponse? loginResponse =
         await _authenticationRepository.refreshToken(refreshToken);
     return LoginEntity(
         accessToken: loginResponse?.accessToken,
         refreshToken: loginResponse?.refreshToken);
-  } 
+  }
 
   Future<void> logout(String refreshToken) async {
     await _authenticationRepository.logout(refreshToken);
