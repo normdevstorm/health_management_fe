@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:either_dart/either.dart';
 import 'package:health_management/app/utils/enums/message_type.dart';
 import 'package:health_management/app/utils/errors/failure.dart';
-import 'package:health_management/data/chat/datasource/chat_detail.dart';
+import 'package:health_management/data/chat/datasource/chat_detail_datasource.dart';
 import 'package:health_management/domain/chat/chat_detail/chat_detail_repository.dart';
 import 'package:health_management/domain/chat/message/message_model.dart';
 import 'package:health_management/domain/chat/message/message_reply_model.dart';

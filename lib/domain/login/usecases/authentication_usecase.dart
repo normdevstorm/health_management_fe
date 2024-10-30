@@ -1,4 +1,3 @@
-import 'package:health_management/data/common/api_response_model.dart';
 import 'package:health_management/domain/login/entities/login_entity.dart';
 import 'package:health_management/domain/login/repositories/authentication_repository.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:health_management/domain/chat/enums/message_type.dart';
+import 'package:health_management/app/utils/enums/message_type.dart';
 
 class MessageReplyModel {
   final String message;

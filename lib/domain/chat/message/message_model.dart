@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:health_management/domain/chat/enums/message_type.dart';
+import 'package:health_management/app/utils/enums/message_type.dart';
 
 class Message {
   final String messageId;
