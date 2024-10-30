@@ -46,7 +46,7 @@ void setUpNetworkComponent() {
       showInspectorOnShake: true);
   chuck.showInspector();
   Dio dio = Dio(BaseOptions(
-    baseUrl: "https://api.duynguyendev.xyz/api/v1/core",
+    baseUrl: "http://localhost:8080/api/v1/core",
     contentType: Headers.jsonContentType,
     headers: {
       HttpHeaders.accessControlAllowOriginHeader: "*",
@@ -65,10 +65,8 @@ void setUpNetworkComponent() {
     RefreshTokenInterceptor(),
     chuck.getDioInterceptor()
   ]);
-  getIt.registerLazySingleton(() =>
-      AuthenticationApi(dio, baseUrl: "http://localhost:8080/api/v1/core"));
-  getIt.registerLazySingleton(
-      () => AppointmentApi(dio, baseUrl: "http://localhost:8080/api/v1/core"));
+  getIt.registerLazySingleton(() => AuthenticationApi(dio));
+  getIt.registerLazySingleton(() => AppointmentApi(dio));
 }
 
 void setUpAppComponent() {

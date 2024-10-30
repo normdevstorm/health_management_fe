@@ -41,9 +41,6 @@ class AuthenticationBloc
           fcmToken:
               "cAdhk0s-QIacSG-bsRbLsC:APA91bEOrduaBH8NRaQCvchuX1MYNMtpFyTQe1yu5aLadWblHN7v8Ik6pCBbn26VoMP5kHfvGGoJpGTIXPZumNTXflRwBcnO6e0Qo2PIlyESq_s1oAnYcvt7BXEn33JxJUm-tkq8130Q");
       final loginEntity = await authenticationUsecase.login(loginRequest);
-      SessionManager().setSession(
-          loginEntity ?? LoginEntity(accessToken: null, refreshToken: null),
-          true);
       emit(LoginSuccess(loginEntity));
     } on ApiException catch (e) {
       getIt<Logger>().e(e);
@@ -79,7 +76,6 @@ class AuthenticationBloc
       final String refreshToken =
           SessionManager().getSession()?.refreshToken ?? "";
       await authenticationUsecase.logout(refreshToken);
-      SessionManager().clearSession();
       emit(AuthenticationInitial());
     } on Exception catch (e) {
       getIt<Logger>().e(e);

@@ -6,9 +6,7 @@ import 'package:health_management/data/auth/models/response/login_response_model
 import 'package:health_management/domain/auth/entities/login_entity.dart';
 import 'package:health_management/domain/auth/entities/register_entity.dart';
 import 'package:logger/logger.dart';
-
 import '../../../domain/auth/repositories/authentication_repository.dart';
-import '../../common/api_response_model.dart';
 import '../api/authentication_api.dart';
 import '../models/request/register_request_model.dart';
 import '../models/response/register_response_model.dart';
@@ -38,7 +36,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<LoginResponse?> login(LoginRequest request) async {
     try {
       LoginResponse apiResponse = await api.login(request);
-      SharedPreferenceManager.setUserId(apiResponse.userId);
+      // SharedPreferenceManager.setUserId(apiResponse.userId);
       SharedPreferenceManager.setAccessToken(apiResponse.accessToken);
       SharedPreferenceManager.setRefreshToken(apiResponse.refreshToken);
       return apiResponse;
@@ -62,8 +60,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<void> logout(String refreshToken) async {
     try {
       await api.logout({"refresh_token": refreshToken});
-      await SharedPreferenceManager.deleteAccessToken();
-      await SharedPreferenceManager.deleteRefreshToken();
+      SessionManager().clearSession();
       await SharedPreferenceManager.deleteUserId();
     } catch (e) {
       throw ApiException.getDioException(e);

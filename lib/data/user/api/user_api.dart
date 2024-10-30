@@ -6,5 +6,7 @@
 // @RestApi()
 // abstract class UserApi {
 //   factory UserApi(Dio dio, {String baseUrl}) = _UserApi;
+
+//   @GET('/users')
 // }
 

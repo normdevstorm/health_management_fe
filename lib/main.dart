@@ -1,7 +1,9 @@
+import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,11 +20,11 @@ import 'package:health_management/domain/health_provider/entities/health_provide
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
+import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'package:logger/logger.dart';
 
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
-import 'domain/appointment/repositories/appointment_repository.dart';
 
 void main() async {
   //create before runApp method to wrap all the procedures
@@ -106,7 +108,14 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
         designSize: const Size(375, 812),
         useInheritedMediaQuery: true,
-        builder: (context, child) => mainApp);
+        builder: (context, child) => Directionality(
+              textDirection: ui.TextDirection.ltr,
+              child: Stack(children: [
+                mainApp,
+                Positioned(bottom: 5.sp, right: 5.sp, child: ChuckerLogButton())
+              ]),
+            ),
+        child: mainApp);
   }
 }
 
@@ -128,13 +137,21 @@ class _MyHomePageState extends State<MyHomePage> {
     AppointmentUseCase appointmentUseCase = getIt.get<AppointmentUseCase>();
     Logger logger = getIt.get<Logger>();
     AppointmentRecordEntity response = await appointmentUseCase
-        .updateAppointmentRecord(const AppointmentRecordEntity());
+        .createAppointmentRecord(AppointmentRecordEntity(
+            note: "note",
+            status: AppointmentStatus.pending,
+            scheduledAt: DateTime.now(),
+            appointmentType: AppointmentType.inPerson,
+            doctor: const DoctorEntity(id: 3),
+            healthProvider: HealthProviderEntity(id: 1),
+            user: const UserEntity(id: 6)));
     // await authenticationUsecase.getAppointment(3);
     // context.read<LoginBloc>().add(const RegisterEvent(
     //     "namuser1gmail.com", "12345678", "normdevstorm2021", Role.doctor));
     setState(() {
       _counter++;
     });
+    // ChuckerFlutter.showChuckerScreen();
   }
 
   @override
