@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../login/bloc/login_bloc.dart';
+import '../../auth/bloc/authentication_bloc.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,7 +13,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<LoginBloc>().add(const CheckLoginStatusEvent());
+    context.read<AuthenticationBloc>().add(const CheckLoginStatusEvent());
     _navigateToHome();
   }
 

@@ -15,9 +15,9 @@ import 'package:health_management/domain/appointment/entities/appointment_record
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
-import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
+import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
-import 'package:health_management/presentation/login/bloc/login_bloc.dart';
+import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:logger/logger.dart';
 
 import 'app/di/injection.dart';
@@ -43,11 +43,11 @@ void main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => LoginBloc(
+            create: (context) => AuthenticationBloc(
                 authenticationUsecase: getIt<AuthenticationUsecase>()),
           ),
         ],
-        child: BlocListener<LoginBloc, LoginState>(
+        child: BlocListener<AuthenticationBloc, AuthenticationState>(
           listener: (context, state) {
             // TODO: implement listener in a separate mehthod/function
             _authenticationListener(context, state);
@@ -59,21 +59,28 @@ void main() async {
   );
 }
 
-void _authenticationListener(BuildContext context, LoginState state) {
+void _authenticationListener(BuildContext context, AuthenticationState state) {
   BuildContext currentContext =
       globalRootNavigatorKey.currentContext ?? context;
-  if (state is LoginSuccess) {
+  //todo: Redirect to profile page after register sucess
+  if (state is LoginSuccess || state is RegisterSuccess) {
     GoRouter.of(currentContext).goNamed(RouteDefine.home);
   }
 
-  if (state is LoginError) {
+  if (state is LoginError || state is RegisterError) {
+    String errorMessage = state is LoginError
+        ? state.message
+        : state is RegisterError
+            ? state.message
+            //todo: localize this message
+            : "There's something wrong!";
     showModalBottomSheet(
       context: context,
-      builder: (context) => Text(state.message),
+      builder: (context) => Text(errorMessage),
     );
   }
 
-  if (state is LoginInitial) {
+  if (state is AuthenticationInitial) {
     GoRouter.of(currentContext).goNamed(RouteDefine.login);
   }
 }

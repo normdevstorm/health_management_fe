@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/common/button.dart';
 import 'package:health_management/presentation/common/input_field.dart';
-import 'package:health_management/presentation/login/bloc/login_bloc.dart';
-
+import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -96,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     // Handle login logic here
                     if (_emailFormKey.currentState!.validate()) {
-                      context.read<LoginBloc>().add(LoginSubmitEvent(
+                      context.read<AuthenticationBloc>().add(LoginSubmitEvent(
                             _emailController.text,
                             _passwordController.text,
                           ));

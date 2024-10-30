@@ -14,11 +14,11 @@ import 'package:health_management/data/auth/api/authentication_api.dart';
 import 'package:health_management/data/auth/repositories/authentication_repository_impl.dart';
 import 'package:health_management/domain/appointment/repositories/appointment_repository.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
-import 'package:health_management/domain/login/usecases/authentication_usecase.dart';
+import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import '../../domain/login/repositories/authentication_repository.dart';
+import '../../domain/auth/repositories/authentication_repository.dart';
 import '../route/app_routing.dart';
 import 'injection.config.dart';
 

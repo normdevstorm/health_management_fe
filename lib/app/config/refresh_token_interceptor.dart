@@ -3,9 +3,9 @@ import 'package:dio/dio.dart';
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/app/managers/session_manager.dart';
 import 'package:health_management/app/route/app_routing.dart';
-import 'package:health_management/presentation/login/bloc/login_bloc.dart';
+import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:logger/logger.dart';
-import '../../domain/login/usecases/authentication_usecase.dart';
+import '../../domain/auth/usecases/authentication_usecase.dart';
 import '../di/injection.dart';
 
 class RefreshTokenInterceptor extends Interceptor {
@@ -16,7 +16,8 @@ class RefreshTokenInterceptor extends Interceptor {
     if ([401].contains(err.response?.statusCode) &&
         err.response?.requestOptions.path != '/auth/login') {
       if (SessionManager().getSession()?.refreshToken == null) {
-        BlocProvider.of<LoginBloc>(globalRootNavigatorKey.currentContext!)
+        BlocProvider.of<AuthenticationBloc>(
+                globalRootNavigatorKey.currentContext!)
             .add(const CheckLoginStatusEvent());
 
         return handler.reject(err);
@@ -29,7 +30,7 @@ class RefreshTokenInterceptor extends Interceptor {
 
             SessionManager().setSession(refreshTokenResponse, true);
             err.requestOptions.headers['Authorization'] =
-                'Bearer ${refreshTokenResponse.accessToken}';
+                'Bearer ${SessionManager().getSession()!.accessToken}';
             // TODO Retry all the requests that were added to the queue
             getIt<Logger>().i(SessionManager().getSession()?.accessToken);
             for (var request in failedRequests) {
@@ -37,14 +38,16 @@ class RefreshTokenInterceptor extends Interceptor {
             }
           } else {
             err.copyWith(message: 'Failed to refresh token');
-            BlocProvider.of<LoginBloc>(globalRootNavigatorKey.currentContext!)
+            BlocProvider.of<AuthenticationBloc>(
+                    globalRootNavigatorKey.currentContext!)
                 .add(const CheckLoginStatusEvent());
             // If the refresh process fails, reject with the previous error
             return handler.next(err);
           }
         } catch (e) {
           SessionManager().clearSession();
-          BlocProvider.of<LoginBloc>(globalRootNavigatorKey.currentContext!)
+          BlocProvider.of<AuthenticationBloc>(
+                  globalRootNavigatorKey.currentContext!)
               .add(const CheckLoginStatusEvent());
 
           throw ApiException.getDioException(e);

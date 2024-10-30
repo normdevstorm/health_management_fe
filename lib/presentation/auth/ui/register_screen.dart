@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:health_management/app/config/refresh_token_interceptor.dart';
+import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/button.dart';
 import 'package:health_management/presentation/common/input_field.dart';
+
+import '../../../app/app.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -9,6 +14,9 @@ class RegisterScreen extends StatelessWidget {
       ValueNotifier<bool>(true);
 
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +31,7 @@ class RegisterScreen extends StatelessWidget {
           child: Column(
             children: <Widget>[
               CommonTextFormField(
+                controller: _usernameController,
                 width: 327.w,
                 height: 64.h,
                 hintText: 'Username',
@@ -30,6 +39,7 @@ class RegisterScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16.0),
               CommonTextFormField(
+                controller: _emailController,
                 width: 327.w,
                 height: 64.h,
                 hintText: 'Email',
@@ -49,6 +59,7 @@ class RegisterScreen extends StatelessWidget {
                 valueListenable: _isHiddenPasswordNotifier,
                 builder: (context, isHiddenPassword, child) =>
                     CommonTextFormField(
+                  controller: _passwordController,
                   width: 327.w,
                   height: 64.h,
                   hintText: 'Password',
@@ -68,7 +79,13 @@ class RegisterScreen extends StatelessWidget {
               Button(
                 text: 'Register',
                 onPressed: () {
-                  _formKey.currentState!.validate();
+                  if (_formKey.currentState!.validate()) {
+                    context.read<AuthenticationBloc>().add(RegisterSubmitEvent(
+                        _emailController.text,
+                        _passwordController.text,
+                        _usernameController.text,
+                        Role.user));
+                  }
                   // Handle registration logic
                 },
               ),

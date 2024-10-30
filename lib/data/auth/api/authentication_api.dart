@@ -13,7 +13,7 @@ abstract class AuthenticationApi {
   factory AuthenticationApi(Dio dio, {String baseUrl}) = _AuthenticationApi;
 
   @POST('/auth/register')
-  Future<ApiResponse<RegisterResponse>> register(
+  Future<RegisterResponse> register(
       @Body() RegisterRequest request);
 
   @POST('/auth/login')

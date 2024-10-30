@@ -1,5 +1,5 @@
 import 'package:health_management/app/managers/local_storage.dart';
-import 'package:health_management/domain/login/entities/login_entity.dart';
+import 'package:health_management/domain/auth/entities/login_entity.dart';
 
 class SessionManager {
   static final SessionManager _instance = SessionManager._internal();

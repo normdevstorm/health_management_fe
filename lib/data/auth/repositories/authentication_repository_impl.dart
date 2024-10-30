@@ -1,10 +1,13 @@
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/app/managers/local_storage.dart';
+import 'package:health_management/app/managers/session_manager.dart';
 import 'package:health_management/data/auth/models/request/login_request_model.dart';
 import 'package:health_management/data/auth/models/response/login_response_model.dart';
+import 'package:health_management/domain/auth/entities/login_entity.dart';
+import 'package:health_management/domain/auth/entities/register_entity.dart';
 import 'package:logger/logger.dart';
 
-import '../../../domain/login/repositories/authentication_repository.dart';
+import '../../../domain/auth/repositories/authentication_repository.dart';
 import '../../common/api_response_model.dart';
 import '../api/authentication_api.dart';
 import '../models/request/register_request_model.dart';
@@ -16,11 +19,16 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
 
   AuthenticationRepositoryImpl(this.api, this.logger);
   @override
-  Future<RegisterResponse?> register(RegisterRequest request) async {
+  Future<RegisterEntity> register(RegisterRequest request) async {
     try {
-      ApiResponse<RegisterResponse> apiResponse = await api.register(request);
-      RegisterResponse? registerResponse = apiResponse.data;
-      return registerResponse;
+      RegisterResponse? registerResponse = await api.register(request);
+      RegisterEntity registerEntity = registerResponse.toEntity();
+      SessionManager().setSession(
+          LoginEntity(
+              accessToken: registerEntity.accessToken,
+              refreshToken: registerEntity.refreshToken),
+          true);
+      return registerEntity;
     } catch (e) {
       throw ApiException.getDioException(e);
     }

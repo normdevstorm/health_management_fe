@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/presentation/login/ui/login_screen.dart';
-import 'package:health_management/presentation/login/ui/register_screen.dart';
+import 'package:health_management/presentation/auth/ui/login_screen.dart';
+import 'package:health_management/presentation/auth/ui/register_screen.dart';
 
-import 'bloc/login_bloc.dart';
+import 'bloc/authentication_bloc.dart';
 
 part 'auth_route.g.dart';
 
@@ -13,9 +13,8 @@ part 'auth_route.g.dart';
 class LoginRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return BlocListener<LoginBloc, LoginState>(
-      listenWhen: (previous, current) =>
-          (previous != current),
+    return BlocListener<AuthenticationBloc, AuthenticationState>(
+      listenWhen: (previous, current) => (previous != current),
       listener: (context, state) {
         // TODO: implement listener
         // if (state is LoginSuccess) {
