@@ -1,8 +1,8 @@
-import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
@@ -13,18 +13,20 @@ import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
-import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
-import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
-import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
-import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'package:logger/logger.dart';
 
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
+import 'domain/appointment/entities/appointment_record_entity.dart';
+import 'domain/doctor/entities/doctor_entity.dart';
+import 'domain/health_provider/entities/health_provider_entity.dart';
+import 'domain/user/entities/user_entity.dart';
+import 'domain/verify_code/entities/validate_code_entity.dart';
+import 'domain/verify_code/usecases/verify_code_usecase.dart';
 
 void main() async {
   //create before runApp method to wrap all the procedures
@@ -46,7 +48,8 @@ void main() async {
         providers: [
           BlocProvider(
             create: (context) => AuthenticationBloc(
-                authenticationUsecase: getIt<AuthenticationUsecase>()),
+                authenticationUsecase: getIt<AuthenticationUsecase>(),
+                verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
           ),
         ],
         child: BlocListener<AuthenticationBloc, AuthenticationState>(
@@ -132,22 +135,23 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() async {
-    AuthenticationUsecase authenticationUsecase =
+    AuthenticationUsecase appointmentUseCaseauthenticationUsecase =
         getIt<AuthenticationUsecase>();
+    VerifyCodeUseCase verifyCodeUseCase = getIt.get<VerifyCodeUseCase>();
     AppointmentUseCase appointmentUseCase = getIt.get<AppointmentUseCase>();
-    Logger logger = getIt.get<Logger>();
-    AppointmentRecordEntity response = await appointmentUseCase
-        .createAppointmentRecord(AppointmentRecordEntity(
-            note: "note",
-            status: AppointmentStatus.pending,
-            scheduledAt: DateTime.now(),
-            appointmentType: AppointmentType.inPerson,
-            doctor: const DoctorEntity(id: 3),
-            healthProvider: HealthProviderEntity(id: 1),
-            user: const UserEntity(id: 6)));
-    // await authenticationUsecase.getAppointment(3);
-    // context.read<LoginBloc>().add(const RegisterEvent(
-    //     "namuser1gmail.com", "12345678", "normdevstorm2021", Role.doctor));
+    context.read<AuthenticationBloc>().add(LogOutEvent());
+
+    // AppointmentRecordEntity response = await appointmentUseCase
+    //     .createAppointmentRecord(AppointmentRecordEntity(
+    //         note: "note",
+    //         status: AppointmentStatus.pending,
+    //         scheduledAt: DateTime.now(),
+    //         appointmentType: AppointmentType.inPerson,
+    //         doctor: const DoctorEntity(id: 3),
+    //         healthProvider: HealthProviderEntity(id: 1),
+    //         user: const UserEntity(id: 6)));
+
+    // verifyCodeUseCase.validateCode(ValidateCodeEntity(code: "123", email: "langtocde@gmail.com"));
     setState(() {
       _counter++;
     });
@@ -195,6 +199,35 @@ class SkeletonPage extends StatefulWidget {
 }
 
 class _SkeletonPageState extends State<SkeletonPage> {
+  late ScrollController _scrollController;
+  late ValueNotifier<bool> _navBarVisibleNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _navBarVisibleNotifier = ValueNotifier<bool>(true);
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_navBarVisibleNotifier.value) {
+          _navBarVisibleNotifier.value = false;
+        }
+      } else if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_navBarVisibleNotifier.value) {
+          _navBarVisibleNotifier.value = true;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BottomBar(
@@ -208,30 +241,54 @@ class _SkeletonPageState extends State<SkeletonPage> {
           height: MediaQuery.of(context).size.height,
           child: Column(
             children: [
-              Expanded(child: widget.child),
+              Expanded(
+                  child: Padding(
+                      padding: EdgeInsets.only(right: 10.w, left: 10.w),
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: (scrollNotification) {
+                          if (scrollNotification is ScrollUpdateNotification) {
+                            if (scrollNotification.scrollDelta! > 0 &&
+                                _navBarVisibleNotifier.value) {
+                              _navBarVisibleNotifier.value = false;
+                            } else if (scrollNotification.scrollDelta! < 0 &&
+                                !_navBarVisibleNotifier.value) {
+                              _navBarVisibleNotifier.value = true;
+                            }
+                          }
+                          return true;
+                        },
+                        child: widget.child,
+                      ))),
             ],
           ),
         ));
       },
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(50)),
-        child: BottomNavigationBar(
-            enableFeedback: false,
-            currentIndex: widget.child.currentIndex,
-            selectedItemColor: Colors.blueAccent,
-            unselectedItemColor: Colors.grey,
-            onTap: (value) => widget.child.goBranch(value),
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.home_rounded), label: "Home"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.inbox_rounded), label: "Chat"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_month_rounded),
-                  label: "Appointment"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.person_rounded), label: "Profile"),
-            ]),
+      child: ValueListenableBuilder(
+        valueListenable: _navBarVisibleNotifier,
+        builder: (context, navbarVisible, child) => AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          height: navbarVisible ? kBottomNavigationBarHeight * 1.2 : 0.0,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(50)),
+            child: BottomNavigationBar(
+                enableFeedback: false,
+                currentIndex: widget.child.currentIndex,
+                selectedItemColor: Colors.blueAccent,
+                unselectedItemColor: Colors.grey,
+                onTap: (value) => widget.child.goBranch(value),
+                items: const [
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.home_rounded), label: "Home"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.inbox_rounded), label: "Chat"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.calendar_month_rounded),
+                      label: "Appointment"),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.person_rounded), label: "Profile"),
+                ]),
+          ),
+        ),
       ),
     );
   }

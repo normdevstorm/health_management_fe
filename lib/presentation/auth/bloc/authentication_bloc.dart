@@ -6,6 +6,7 @@ import 'package:health_management/app/managers/session_manager.dart';
 import 'package:health_management/data/auth/models/request/login_request_model.dart';
 import 'package:health_management/domain/auth/entities/login_entity.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
+import 'package:health_management/domain/verify_code/usecases/verify_code_usecase.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:logger/logger.dart';
 
@@ -19,7 +20,9 @@ part 'authentication_state.dart';
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final AuthenticationUsecase authenticationUsecase;
-  AuthenticationBloc({required this.authenticationUsecase})
+  final VerifyCodeUseCase verifyCodeUseCase;
+  AuthenticationBloc(
+      {required this.authenticationUsecase, required this.verifyCodeUseCase})
       : super(AuthenticationInitial()) {
     on<AuthenticationEvent>((event, emit) {
       // TODO: implement event handler
@@ -73,9 +76,7 @@ class AuthenticationBloc
   onLogOutEvent(LogOutEvent event, Emitter<AuthenticationState> emit) async {
     emit(LoginLoading());
     try {
-      final String refreshToken =
-          SessionManager().getSession()?.refreshToken ?? "";
-      await authenticationUsecase.logout(refreshToken);
+      await authenticationUsecase.logout();
       emit(AuthenticationInitial());
     } on Exception catch (e) {
       getIt<Logger>().e(e);
@@ -87,15 +88,16 @@ class AuthenticationBloc
       RegisterSubmitEvent event, Emitter<AuthenticationState> emit) async {
     try {
       emit(LoginLoading());
-      final registerEntity = await authenticationUsecase.register(
-          RegisterRequest(
-              email: event.email,
-              password: event.password,
-              username: event.username,
-              role: event.role));
+      // final registerEntity = await authenticationUsecase.register(
+      //     RegisterRequest(
+      //         email: event.email,
+      //         password: event.password,
+      //         username: event.username,
+      //         role: event.role));
+      await verifyCodeUseCase.verifyCode(event.email);
       emit(LoginSuccess(LoginEntity(
-          accessToken: registerEntity?.accessToken,
-          refreshToken: registerEntity?.refreshToken)));
+          accessToken: "sdfbsdjf",
+          refreshToken: "sfjshdfsjfhksj")));
     } on ApiException catch (e) {
       emit(LoginError(ApiException.getErrorMessage(e)));
     }

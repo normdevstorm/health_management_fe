@@ -31,7 +31,7 @@ class AuthenticationUsecase {
         refreshToken: loginResponse?.refreshToken);
   }
 
-  Future<void> logout(String refreshToken) async {
-    await _authenticationRepository.logout(refreshToken);
+  Future<void> logout() async {
+    await _authenticationRepository.logout();
   }
 }

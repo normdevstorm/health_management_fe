@@ -23,7 +23,7 @@ final GlobalKey<NavigatorState> _rootNavigatorProfile =
     GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _rootNavigatorAuthentication =
     GlobalKey<NavigatorState>();
- final  GlobalKey<NavigatorState> globalRootNavigatorKey =
+final GlobalKey<NavigatorState> globalRootNavigatorKey =
     GlobalKey<NavigatorState>();
 
 class AppRouting {
@@ -59,8 +59,7 @@ class AppRouting {
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) =>
-                            const MyHomePage(title: 'Flutter Demo Home Page')),
+                        builder: (context, state) => MyHomePage(title: 'home',)),
                   ]),
               StatefulShellBranch(
                   navigatorKey: _rootNavigatorChat,

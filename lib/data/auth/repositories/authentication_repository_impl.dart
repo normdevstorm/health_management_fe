@@ -57,9 +57,9 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   }
 
   @override
-  Future<void> logout(String refreshToken) async {
+  Future<void> logout() async {
     try {
-      await api.logout({"refresh_token": refreshToken});
+      await api.logout();
       SessionManager().clearSession();
       await SharedPreferenceManager.deleteUserId();
     } catch (e) {

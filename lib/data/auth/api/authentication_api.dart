@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:health_management/data/auth/models/request/register_request_model.dart';
 import 'package:health_management/data/auth/models/response/register_response_model.dart';
 import 'package:retrofit/retrofit.dart';
-import '../../common/api_response_model.dart';
 import '../models/request/login_request_model.dart';
 import '../models/response/login_response_model.dart';
 
@@ -20,7 +19,7 @@ abstract class AuthenticationApi {
   Future<LoginResponse> login(@Body() LoginRequest request);
 
   @POST('/auth/logout')
-  Future<void> logout(@Body() Map<String, String> refreshToken);
+  Future<void> logout();
 
   @POST('/auth/refresh-token')
   Future<LoginResponse> refreshToken(@Body() Map<String, String> refreshToken);

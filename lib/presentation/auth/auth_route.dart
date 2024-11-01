@@ -13,17 +13,7 @@ part 'auth_route.g.dart';
 class LoginRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return BlocListener<AuthenticationBloc, AuthenticationState>(
-      listenWhen: (previous, current) => (previous != current),
-      listener: (context, state) {
-        // TODO: implement listener
-        // if (state is LoginSuccess) {
-        //   GoRouter.of(context).replaceNamed(RouteDefine.home);
-        //   return;
-        // }
-      },
-      child: const LoginScreen(),
-    );
+    return const LoginScreen();
   }
 }
 

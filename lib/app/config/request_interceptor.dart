@@ -6,10 +6,17 @@ class RequestInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     // TODO: implement onRequest
     // super.onRequest(options, handler);
-    if (options.path.startsWith('/auth')) {
+    if (['/auth/register', '/auth/login', '/auth/refresh-token', '/mail/verify_code']
+        .contains(options.path)) {
       handler.next(options);
       return;
-    }  else {
+    } else if (options.path == '/auth/logout') {
+      final refreshToken =
+          'Bearer ${SessionManager().getSession()?.refreshToken}';
+      options.headers.addAll({'Authorization': refreshToken});
+      handler.next(options);
+      return;
+    } else {
       final accessToken =
           'Bearer ${SessionManager().getSession()?.accessToken}';
       options.headers.addAll({'Authorization': accessToken});

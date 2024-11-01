@@ -4,23 +4,27 @@ import 'package:health_management/app/app.dart';
 
 class TagChip extends StatelessWidget {
   final double height;
+  final double? width;
   final double fontSize;
   final Color fontColor;
-  final Color inactiveColor;
-  final Color activeColor;
+  final Color unselectedColor;
+  final Color selectedColor;
   final IconData? icon;
   final String text;
-  final bool isActive;
+  final bool isSelected;
+  final bool active;
 
   const TagChip({
     super.key,
-    this.height = 40.0,
+    this.height = 35.0,
+    this.width,
     this.fontSize = 12.0,
     this.fontColor = Colors.black,
-    this.inactiveColor = const Color(0xFFEEEEEE),
-    this.activeColor = ColorManager.buttonColorLight,
-    this.isActive = false,
+    this.unselectedColor = const Color(0xFFEEEEEE),
+    this.selectedColor = ColorManager.buttonColorLight,
+    this.isSelected = false,
     this.icon,
+    this.active = true,
     required this.text,
   });
 
@@ -30,12 +34,17 @@ class TagChip extends StatelessWidget {
       children: [
         IntrinsicWidth(
           child: Container(
+            foregroundDecoration: active
+                ? null
+                : BoxDecoration(color: Colors.white.withOpacity(0.8)),
             height: height.h,
+            width: width?.w,
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
             decoration: ShapeDecoration(
-              color: isActive ? activeColor : inactiveColor,
+              color: (isSelected ? selectedColor : unselectedColor),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(20), right: Radius.circular(20)),
               ),
             ),
             child: Row(
@@ -47,7 +56,7 @@ class TagChip extends StatelessWidget {
                   text,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: fontColor,
+                    color: isSelected ? Colors.white : fontColor,
                     fontSize: fontSize.sp,
                     fontWeight: FontWeight.w500,
                   ),
