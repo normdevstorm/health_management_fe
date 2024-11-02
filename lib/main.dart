@@ -64,9 +64,19 @@ void main() async {
 void _authenticationListener(BuildContext context, AuthenticationState state) {
   BuildContext currentContext =
       globalRootNavigatorKey.currentContext ?? context;
-  //todo: Redirect to profile page after register sucess
-  if (state is LoginSuccess || state is RegisterSuccess) {
+
+  if (state is AuthenticationInitial) {
+    GoRouter.of(currentContext).goNamed(RouteDefine.login);
+    return;
+  }
+
+  if (state is LoginSuccess) {
     GoRouter.of(currentContext).goNamed(RouteDefine.home);
+    return;
+  }
+
+  if (state is RegisterSuccess) {
+    GoRouter.of(currentContext).goNamed(RouteDefine.login);
     return;
   }
 
@@ -83,11 +93,6 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
       context: context,
       builder: (context) => Text(errorMessage),
     );
-    return;
-  }
-
-  if (state is AuthenticationInitial) {
-    GoRouter.of(currentContext).goNamed(RouteDefine.login);
     return;
   }
 }
