@@ -1,15 +1,35 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import '../../../app/app.dart';
-part 'allergy_entity.freezed.dart';
+part 'allergy_entity.g.dart';
 
-@freezed
-class AllergyEntity with _$AllergyEntity {
-  const AllergyEntity._();
-  const factory AllergyEntity({
-  required int id,
+@JsonSerializable()
+class AllergyEntity {
+  final int id;
+  final AllergyType? allergyType;
+  final String? severity;
+  final String? note;
+
+  AllergyEntity({
+    required this.id,
+    this.allergyType,
+    this.severity,
+    this.note,
+  });
+
+  AllergyEntity copyWith({
+    int? id,
     AllergyType? allergyType,
     String? severity,
     String? note,
-  }) = _AllergyEntity;
+  }) {
+    return AllergyEntity(
+      id: id ?? this.id,
+      allergyType: allergyType ?? this.allergyType,
+      severity: severity ?? this.severity,
+      note: note ?? this.note,
+    );
+  }
 
+  factory AllergyEntity.fromJson(Map<String, dynamic> json) => _$AllergyEntityFromJson(json);
+  Map<String, dynamic> toJson() => _$AllergyEntityToJson(this);
 }

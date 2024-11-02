@@ -1,65 +1,42 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-part 'doctor_entity.freezed.dart';
+import 'package:json_annotation/json_annotation.dart';
+part 'doctor_entity.g.dart';
 
-@freezed
-class DoctorEntity with _$DoctorEntity {
-  const DoctorEntity._();
-  const factory DoctorEntity({
-    required int id,
-    // required UserEntity user,
+@JsonSerializable()
+class DoctorEntity {
+  final int? id;
+  final String? specialization;
+  final double? experience;
+  final String? qualification;
+  final double? rating;
+  final String? about;
+
+  DoctorEntity({
+    this.id,
+    this.specialization,
+    this.experience,
+    this.qualification,
+    this.rating,
+    this.about,
+  });
+
+  DoctorEntity copyWith({
+    int? id,
     String? specialization,
     double? experience,
     String? qualification,
     double? rating,
-    String? about
-  }) = _DoctorEntity;
-  // final int id;
-  // //todo: create user entitya
-  // // final UserEntity user;
-  // final String? specialization;
-  // final double? experience;
-  // final String? qualification;
-  // final double? rating;
-  // final String? about;
+    String? about,
+  }) {
+    return DoctorEntity(
+      id: id ?? this.id,
+      specialization: specialization ?? this.specialization,
+      experience: experience ?? this.experience,
+      qualification: qualification ?? this.qualification,
+      rating: rating ?? this.rating,
+      about: about ?? this.about,
+    );
+  }
 
-  // const DoctorEntity({
-  //   required this.id,
-  //   // required this.user,
-  //   this.specialization,
-  //   this.experience,
-  //   this.qualification,
-  //   this.rating,
-  //   this.about
-  // });
-
-  // @override
-  // List<Object?> get props => [
-  //   id,
-  //   // user,
-  //   specialization,
-  //   experience,
-  //   qualification,
-  //   rating,
-  //   about
-  // ];
-
-  // DoctorEntity copyWith({
-  //   int? id,
-  //   // UserEntity? user,
-  //   String? specialization,
-  //   double? experience,
-  //   String? qualification,
-  //   double? rating,
-  //   String? about
-  // }) {
-  //   return DoctorEntity(
-  //     id: id ?? this.id,
-  //     // user: user ?? this.user,
-  //     specialization: specialization ?? this.specialization,
-  //     experience: experience ?? this.experience,
-  //     qualification: qualification ?? this.qualification,
-  //     rating: rating ?? this.rating,
-  //     about: about ?? this.about
-  //   );
-  // }
+  factory DoctorEntity.fromJson(Map<String, dynamic> json) => _$DoctorEntityFromJson(json);
+  Map<String, dynamic> toJson() => _$DoctorEntityToJson(this);
 }

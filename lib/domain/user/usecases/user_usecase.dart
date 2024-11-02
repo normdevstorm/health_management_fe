@@ -4,5 +4,7 @@ class UserUseCase {
   final UserRepository _repository;
 
   UserUseCase(this._repository);
+
+  
 }
 

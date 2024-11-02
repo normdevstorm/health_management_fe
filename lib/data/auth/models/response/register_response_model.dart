@@ -1,17 +1,20 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:health_management/domain/auth/entities/register_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
-part 'register_response_model.freezed.dart';
+import 'package:health_management/domain/auth/entities/register_entity.dart';
+
 part 'register_response_model.g.dart';
 
-@freezed
-class RegisterResponse with _$RegisterResponse {
-  const RegisterResponse._();
-  const factory RegisterResponse({
-    required String accessToken,
-    required String refreshToken,
-  }) = _RegisterResponse;
+@JsonSerializable()
+class RegisterResponse {
+  final String accessToken;
+  final String refreshToken;
+
+  RegisterResponse({
+    required this.accessToken,
+    required this.refreshToken,
+  });
+
   factory RegisterResponse.fromJson(Map<String, dynamic> json) => _$RegisterResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$RegisterResponseToJson(this);
 
   RegisterEntity toEntity() {
     return RegisterEntity(

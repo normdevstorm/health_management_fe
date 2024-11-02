@@ -1,11 +1,15 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-part 'verify_code_response.freezed.dart';
+import 'package:json_annotation/json_annotation.dart';
 part 'verify_code_response.g.dart';
 
-@freezed
-class VerifyCodeResponse with _$VerifyCodeResponse {
-  factory VerifyCodeResponse({ String? message, String? error}) = _VerifyCodeResponse;
+@JsonSerializable()
+class VerifyCodeResponse {
+  final String? message;
+  final String? error;
+
+  VerifyCodeResponse({this.message, this.error});
 
   factory VerifyCodeResponse.fromJson(Map<String, dynamic> json) =>
       _$VerifyCodeResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$VerifyCodeResponseToJson(this);
 }

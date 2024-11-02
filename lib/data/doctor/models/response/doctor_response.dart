@@ -4,7 +4,7 @@ part 'doctor_response.g.dart';
 
 @JsonSerializable()
 class DoctorResponse {
-  final int id;
+  final int? id;
   //todo: create user entitya
   // final UserEntity user;
   final String? specialization;
@@ -14,7 +14,7 @@ class DoctorResponse {
   final String? about;
 
     const DoctorResponse({
-    required this.id,
+    this.id,
     // required this.user,
     this.specialization,
     this.experience,
@@ -32,6 +32,18 @@ class DoctorResponse {
       qualification: qualification,
       rating: rating,
       about: about,
+    );
+  }
+
+  factory DoctorResponse.fromEntity(DoctorEntity? entity) {
+    return DoctorResponse(
+      id: entity?.id,
+      // user: entity.user,
+      specialization: entity?.specialization,
+      experience: entity?.experience,
+      qualification: entity?.qualification,
+      rating: entity?.rating,
+      about: entity?.about,
     );
   }
 

@@ -1,23 +1,33 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:health_management/domain/prescription/entities/prescription_entity.dart';
 import '../../../../domain/prescription/entities/prescription_details.dart';
-part 'prescription_response.freezed.dart';
+
 part 'prescription_response.g.dart';
-@Freezed(copyWith: false, toJson: true, fromJson: true)
-class PrescriptionResponse with _$PrescriptionResponse {
-  //Sometimes, you may want to manually define methods/properties in our classes.
+
+@JsonSerializable()
+class PrescriptionResponse {
+  final int id;
+  final String? notes;
+  final String? diagnosis;
+  final List<PrescriptionDetails>? details;
+  final String? frequency;
+  final String? duration;
+  final String? instruction;
+  final String? createdAt;
+  final String? updatedAt;
+
   // Added constructor. Must not have any parameter
-  const PrescriptionResponse._();
-  const factory PrescriptionResponse(
-      {required int id,
-      String? notes,
-      String? diagnosis,
-      List<PrescriptionDetails>? details,
-      String? frequency,
-      String? duration,
-      String? instruction,
-      String? createdAt,
-      String? updatedAt}) = _PrescriptionResponse;
+  const PrescriptionResponse({
+    required this.id,
+    this.notes,
+    this.diagnosis,
+    this.details,
+    this.frequency,
+    this.duration,
+    this.instruction,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   PrescriptionEntity toEntity() => PrescriptionEntity(
       id: id,
@@ -32,4 +42,6 @@ class PrescriptionResponse with _$PrescriptionResponse {
 
   factory PrescriptionResponse.fromJson(Map<String, dynamic> json) =>
       _$PrescriptionResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PrescriptionResponseToJson(this);
 }

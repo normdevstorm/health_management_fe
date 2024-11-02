@@ -58,3 +58,10 @@ enum AllergyType {
   @JsonValue('PET_DANDER')
   petDander
 }
+
+enum AccountStatus {
+  @JsonValue('ACTIVE')
+  active,
+  @JsonValue('INACTIVE')
+  inactive
+}
