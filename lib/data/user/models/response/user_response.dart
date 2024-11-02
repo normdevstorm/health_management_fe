@@ -10,42 +10,44 @@ part 'user_response.g.dart';
 @JsonSerializable()
 class UserResponse {
   final int id;
-  final String? firstname;
-  final String? lastname;
+  final String? firstName;
+  final String? lastName;
   final DateTime? dateOfBirth;
+  
   final String? gender;
   final String? avatarUrl;
   final AccountResponse? account;
   final List<AddressEntity>? addresses;
-  final DoctorResponse? doctor;
+  final DoctorResponse? doctorProfile;
 
   UserResponse({
     required this.id,
-    this.firstname,
-    this.lastname,
+    this.firstName,
+    this.lastName,
     this.dateOfBirth,
     this.gender,
     this.avatarUrl,
     this.account,
     this.addresses,
-    this.doctor,
+    this.doctorProfile,
   });
 
-  factory UserResponse.fromJson(Map<String, dynamic> json) => _$UserResponseFromJson(json);
+  factory UserResponse.fromJson(Map<String, dynamic> json) =>
+      _$UserResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserResponseToJson(this);
 
   UserEntity toEntity() {
     return UserEntity(
       id: id,
-      firstName: firstname,
-      lastName: lastname,
+      firstName: firstName,
+      lastName: lastName,
       dateOfBirth: dateOfBirth,
       gender: gender,
       avatarUrl: avatarUrl,
       account: account?.toEntity(),
       addresses: addresses,
-      doctorProfile: doctor?.toEntity(),
+      doctorProfile: doctorProfile?.toEntity(),
     );
   }
 }

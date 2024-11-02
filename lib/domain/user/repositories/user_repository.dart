@@ -12,9 +12,9 @@ import '../../../data/user/models/response/user_summary_response.dart';
 abstract class UserRepository {
     Future<List<UserEntity>> getDoctors();
     Future<List<UserEntity>> getPatients();
-    Future<String> deleteUser(Long userId);
-    Future<UserEntity> getUserSummary(Long id);
-    Future<UserEntity> updateUser(UpdateUserRequest updateUserRequest, Long userId);
+    Future<String> deleteUser(int userId);
+    Future<UserEntity> getUserSummary(int id);
+    Future<UserEntity> updateUser(UpdateUserRequest updateUserRequest, int userId);
     Future<UserEntity> getUserByEmail(String email);
     Future<List<DoctorEntity>> getTopRatedDoctors();
 }

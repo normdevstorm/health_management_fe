@@ -21,15 +21,15 @@ abstract class UserApi {
   Future<ApiResponse<List<UserResponse>>> getPatients();
 
   @DELETE('/users/delete')
-  Future<String> deleteUser(@Query("userId") Long userId);
+  Future<String> deleteUser(@Query("userId") int userId);
 
   @GET('/users/summary/{id}')
-  Future<ApiResponse<UserSummaryResponse>> getUserSummary(@Path("id") Long id);
+  Future<ApiResponse<UserSummaryResponse>> getUserSummary(@Path("id") int id);
 
   @POST('/users/update-user')
   Future<ApiResponse<UserResponse>> updateUser(
       @Body() UpdateUserRequest updateUserRequest,
-      @Query("userId") Long userId);
+      @Query("userId") int userId);
 
   @GET('/users/email')
   Future<ApiResponse<UserSummaryResponse>> getUserByEmail(

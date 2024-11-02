@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/data/common/api_response_model.dart';
@@ -9,8 +8,6 @@ import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/domain/user/repositories/user_repository.dart';
 import 'package:logger/logger.dart';
-
-import '../../../domain/chat/user/user_repository.dart';
 import '../api/user_api.dart';
 import '../models/response/user_summary_response.dart';
 
@@ -21,7 +18,7 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this.api, this.logger);
 
   @override
-  Future<String> deleteUser(Long userId) async  {
+  Future<String> deleteUser(int userId) async  {
     try {
       return await api.deleteUser(userId);
     } catch (e) {
@@ -80,7 +77,7 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<UserEntity> getUserSummary(Long id) async {
+  Future<UserEntity> getUserSummary(int id) async {
     try {
       ApiResponse apiResponse = await api.getUserSummary(id);
       UserEntity user = (apiResponse.data as UserSummaryResponse).toEntity();
@@ -92,7 +89,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<UserEntity> updateUser(
-      UpdateUserRequest updateUserRequest, Long userId) async {
+      UpdateUserRequest updateUserRequest, int userId) async {
     try {
       ApiResponse apiResponse = await api.updateUser(updateUserRequest, userId);
       UserEntity user = (apiResponse.data as UserResponse).toEntity();

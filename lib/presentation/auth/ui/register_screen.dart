@@ -30,7 +30,7 @@ class RegisterScreen extends StatelessWidget {
                   _emailController.text,
                   _passwordController.text,
                   _usernameController.text,
-                  Role.user));
+                  Role.doctor));
         }
       },
       child: Scaffold(

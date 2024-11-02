@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
@@ -11,7 +12,6 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
-import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/domain/user/usecases/user_usecase.dart';
@@ -155,6 +155,8 @@ class _MyHomePageState extends State<MyHomePage> {
     //         doctor: const DoctorEntity(id: 3),
     //         healthProvider: HealthProviderEntity(id: 1),
     //         user: const UserEntity(id: 6)));
+    UserEntity doctors = await getIt<UserUseCase>().getUserSummary(2);
+    getIt<Logger>().i(doctors);
     setState(() {
       _counter++;
     });

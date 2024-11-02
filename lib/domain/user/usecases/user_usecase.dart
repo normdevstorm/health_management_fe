@@ -10,7 +10,7 @@ class UserUseCase {
 
   UserUseCase(this._repository);
 
-  Future<String> deleteUser(Long userId) async {
+  Future<String> deleteUser(int userId) async {
     return await _repository.deleteUser(userId);
   }
 
@@ -22,12 +22,12 @@ class UserUseCase {
     return await _repository.getPatients();
   }
 
-  Future<UserEntity> getUserSummary(Long id) async {
+  Future<UserEntity> getUserSummary(int id) async {
     return await _repository.getUserSummary(id);
   }
 
   Future<UserEntity> updateUser(
-      UpdateUserRequest updateUserRequest, Long userId) async {
+      UpdateUserRequest updateUserRequest, int userId) async {
     return await _repository.updateUser(updateUserRequest, userId);
   }
 
