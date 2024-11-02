@@ -13,6 +13,7 @@ import 'package:logger/logger.dart';
 import '../../../app/app.dart';
 import '../../../data/auth/models/request/register_request_model.dart';
 import '../../../domain/auth/entities/register_entity.dart';
+import '../../../domain/verify_code/entities/validate_code_entity.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
@@ -32,11 +33,14 @@ class AuthenticationBloc
         (event, emit) => onCheckLoginStatusEvent(event, emit));
     on<LogOutEvent>((event, emit) => onLogOutEvent(event, emit));
     on<RegisterSubmitEvent>((event, emit) => onRegisterEvent(event, emit));
+    on<VerifyCodeSubmitEvent>(
+        (event, emit) => onVerifyCodeSubmitEvent(event, emit));
+    on<GetVerifyCodeEvent>((event, emit) => onGetVerifyCodeEvent(event, emit));
   }
 
   onLoginSubmit(
       LoginSubmitEvent event, Emitter<AuthenticationState> emit) async {
-    emit(LoginLoading());
+    emit(AuthenticationLoading());
     try {
       LoginRequest loginRequest = LoginRequest(
           email: event.email,
@@ -53,10 +57,14 @@ class AuthenticationBloc
 
   onCheckLoginStatusEvent(
       CheckLoginStatusEvent event, Emitter<AuthenticationState> emit) {
-    emit(LoginLoading());
+    emit(AuthenticationLoading());
     try {
       final loginEntity = SessionManager().getSession();
-      if (loginEntity == null) {
+      final bool isLogin = SessionManager().getLoginStatus() ?? false;
+      if (loginEntity == null || isLogin == false) {
+        if (loginEntity != null) {
+          SessionManager().clearSession();
+        }
         emit(AuthenticationInitial());
         return;
       } else {
@@ -74,7 +82,7 @@ class AuthenticationBloc
   }
 
   onLogOutEvent(LogOutEvent event, Emitter<AuthenticationState> emit) async {
-    emit(LoginLoading());
+    emit(AuthenticationLoading());
     try {
       await authenticationUsecase.logout();
       emit(AuthenticationInitial());
@@ -87,19 +95,39 @@ class AuthenticationBloc
   onRegisterEvent(
       RegisterSubmitEvent event, Emitter<AuthenticationState> emit) async {
     try {
-      emit(LoginLoading());
-      // final registerEntity = await authenticationUsecase.register(
-      //     RegisterRequest(
-      //         email: event.email,
-      //         password: event.password,
-      //         username: event.username,
-      //         role: event.role));
-      await verifyCodeUseCase.verifyCode(event.email);
-      emit(LoginSuccess(LoginEntity(
-          accessToken: "sdfbsdjf",
-          refreshToken: "sfjshdfsjfhksj")));
+      emit(AuthenticationLoading());
+      final registerEntity = await authenticationUsecase.register(
+          RegisterRequest(
+              email: event.email,
+              password: event.password,
+              username: event.username,
+              role: event.role));
+      emit(RegisterSuccess(registerEntity));
     } on ApiException catch (e) {
       emit(LoginError(ApiException.getErrorMessage(e)));
+    }
+  }
+
+  onVerifyCodeSubmitEvent(
+      VerifyCodeSubmitEvent event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationLoading());
+    try {
+      final result = await verifyCodeUseCase.validateCode(
+          ValidateCodeEntity(email: event.email, code: event.code));
+      emit(VerifyCodeSuccess(result, event.registerSubmitEvent));
+    } on ApiException catch (e) {
+      emit(VerifyCodeError(ApiException.getErrorMessage(e)));
+    }
+  }
+
+  onGetVerifyCodeEvent(
+      GetVerifyCodeEvent event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationLoading());
+    try {
+      final result = await verifyCodeUseCase.verifyCode(event.email);
+      emit(GetVerifyCodeSuccess(result));
+    } on ApiException catch (e) {
+      emit(GetVerifyCodeError(ApiException.getErrorMessage(e)));
     }
   }
 }

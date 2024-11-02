@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:health_management/app/config/api_exception.dart';
+import 'package:health_management/app/managers/session_manager.dart';
 import 'package:health_management/data/verify_code/models/request/validate_code_request.dart';
 import 'package:health_management/data/verify_code/models/request/verify_code_request.dart';
 import 'package:health_management/domain/verify_code/entities/validate_code_entity.dart';
@@ -17,8 +19,14 @@ class VerifyCodeRepositoryImpl implements VerifyCodeRepository {
   @override
   Future<String> verifyCode(String email) async {
     try {
-      await api.verifyCode(VerifyCodeRequest(email: email));
-      return "Code sent successfully";
+      VerifyCodeResponse verifyCodeResponse =
+          await api.verifyCode(VerifyCodeRequest(email: email));
+      return verifyCodeResponse.message!;
+    } on DioException catch (e) {
+      logger.e(e);
+      throw ApiException.defaultError(
+          VerifyCodeResponse.fromJson(e.response?.data as Map<String, dynamic>)
+              .error!);
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
@@ -31,7 +39,13 @@ class VerifyCodeRepositoryImpl implements VerifyCodeRepository {
       VerifyCodeResponse verifyCodeResponse = await api.validateCode(
           ValidateCodeRequest(
               code: validateCodeEntity.code, email: validateCodeEntity.email));
-      return verifyCodeResponse.message;
+      SessionManager().setLoginStatus(false);
+      return verifyCodeResponse.message!;
+    } on DioException catch (e) {
+      logger.e(e);
+      throw ApiException.defaultError(
+          VerifyCodeResponse.fromJson(e.response?.data as Map<String, dynamic>)
+              .error!);
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);

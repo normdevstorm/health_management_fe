@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/auth/ui/login_screen.dart';
 import 'package:health_management/presentation/auth/ui/register_screen.dart';
 
-import 'bloc/authentication_bloc.dart';
+import '../verify_code/ui/screens/verify_code_screen.dart';
 
 part 'auth_route.g.dart';
 
@@ -17,10 +16,19 @@ class LoginRoute extends GoRouteData {
   }
 }
 
-@TypedGoRoute<RegisterRoute>(name: RouteDefine.register, path: '/register')
+@TypedGoRoute<RegisterRoute>(name: RouteDefine.register, path: '/register', routes: [
+  TypedGoRoute<VerifyCodeRoute>(name: RouteDefine.verifyCode, path: '/verify-code'),
+])
 class RegisterRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return RegisterScreen();
+  }
+}
+
+class VerifyCodeRoute extends GoRouteData {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const VerifyCodeScreen();
   }
 }

@@ -59,7 +59,9 @@ class AppRouting {
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) => MyHomePage(title: 'home',)),
+                        builder: (context, state) => MyHomePage(
+                              title: 'Home',
+                            )),
                   ]),
               StatefulShellBranch(
                   navigatorKey: _rootNavigatorChat,

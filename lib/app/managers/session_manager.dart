@@ -27,6 +27,15 @@ class SessionManager {
     return null;
   }
 
+  bool? getLoginStatus() {
+    return SharedPreferenceManager.readLoginStatus();
+  }
+
+  void setLoginStatus(bool isLogin) async {
+    await SharedPreferenceManager.setLoginStatus(isLogin);
+    return null;
+  }
+
   void clearSession() {
     if (getSession() != null) {
       SharedPreferenceManager.deleteAccessToken();

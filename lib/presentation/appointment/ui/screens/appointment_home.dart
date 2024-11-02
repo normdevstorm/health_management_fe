@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:health_management/main.dart';
 import 'package:health_management/presentation/appointment/ui/widgets/timeline_schedule.dart';
-import 'package:health_management/presentation/common/button.dart';
 
 class AppointmentHome extends StatelessWidget {
   const AppointmentHome({super.key});

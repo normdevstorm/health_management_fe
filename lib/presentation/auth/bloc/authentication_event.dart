@@ -30,6 +30,29 @@ final class RegisterSubmitEvent extends AuthenticationEvent {
   List<Object> get props => [email, password, username, role];
 }
 
+final class GetVerifyCodeEvent extends AuthenticationEvent {
+  final String email;
+
+  const GetVerifyCodeEvent(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+final class VerifyCodeSubmitEvent extends AuthenticationEvent {
+  final String email;
+  final String code;
+  final RegisterSubmitEvent registerSubmitEvent;
+
+  const VerifyCodeSubmitEvent(
+      {required this.code,
+      required this.email,
+      required this.registerSubmitEvent});
+
+  @override
+  List<Object> get props => [email, code, registerSubmitEvent];
+}
+
 final class LogOutEvent extends AuthenticationEvent {
   const LogOutEvent();
 

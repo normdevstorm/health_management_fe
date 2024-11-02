@@ -83,7 +83,6 @@ void setUpAppComponent() {
   getIt.registerLazySingleton(() => AuthenticationUsecase(getIt()));
   getIt.registerLazySingleton<VerifyCodeRepository>(
       () => VerifyCodeRepositoryImpl(getIt(), getIt()));
-  
   getIt.registerLazySingleton<VerifyCodeUseCase>(
       () =>VerifyCodeUseCase(getIt()));
   getIt.registerLazySingleton<AppointmentRepository>(

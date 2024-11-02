@@ -7,10 +7,18 @@ sealed class AuthenticationState extends Equatable {
   List<Object?> get props => [];
 }
 
-
 final class AuthenticationInitial extends AuthenticationState {}
-// Login state
-final class LoginLoading extends AuthenticationState {}
+
+final class AuthenticationLoading extends AuthenticationState {}
+
+final class AuthenticationError extends AuthenticationState {
+  final String message;
+
+  const AuthenticationError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
 
 final class LoginSuccess extends AuthenticationState {
   final LoginEntity? loginEntity;
@@ -21,18 +29,14 @@ final class LoginSuccess extends AuthenticationState {
   List<Object?> get props => [loginEntity];
 }
 
-final class LoginError extends AuthenticationState {
-  final String message;
-
-  const LoginError(this.message);
+final class LoginError extends AuthenticationError {
+  const LoginError(super.message);
 
   @override
   List<Object?> get props => [message];
 }
 
 // Register state
-final class RegisterLoading extends AuthenticationState {}
-
 final class RegisterSuccess extends AuthenticationState {
   final RegisterEntity? registerEntity;
 
@@ -42,10 +46,43 @@ final class RegisterSuccess extends AuthenticationState {
   List<Object?> get props => [registerEntity];
 }
 
-final class RegisterError extends AuthenticationState {
+final class RegisterError extends AuthenticationError {
+  const RegisterError(super.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// Verify code state
+final class GetVerifyCodeSuccess extends AuthenticationState {
   final String message;
 
-  const RegisterError(this.message);
+  const GetVerifyCodeSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+final class GetVerifyCodeError extends AuthenticationError {
+  const GetVerifyCodeError(super.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+final class VerifyCodeSuccess extends AuthenticationState {
+  final String message;
+  final RegisterSubmitEvent registerSubmitEvent;
+
+  const VerifyCodeSuccess(this.message, this.registerSubmitEvent);
+
+  @override
+  List<Object?> get props => [message,registerSubmitEvent];
+}
+
+final class VerifyCodeError extends AuthenticationError {
+
+  const VerifyCodeError(super.message);
 
   @override
   List<Object?> get props => [message];

@@ -4,7 +4,7 @@ part 'verify_code_response.g.dart';
 
 @freezed
 class VerifyCodeResponse with _$VerifyCodeResponse {
-  factory VerifyCodeResponse({required String message}) = _VerifyCodeResponse;
+  factory VerifyCodeResponse({ String? message, String? error}) = _VerifyCodeResponse;
 
   factory VerifyCodeResponse.fromJson(Map<String, dynamic> json) =>
       _$VerifyCodeResponseFromJson(json);

@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
@@ -9,7 +8,6 @@ import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
-import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
@@ -17,15 +15,14 @@ import 'package:health_management/domain/appointment/usecases/appointment_usecas
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
-import 'package:logger/logger.dart';
 
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
-import 'domain/appointment/entities/appointment_record_entity.dart';
-import 'domain/doctor/entities/doctor_entity.dart';
-import 'domain/health_provider/entities/health_provider_entity.dart';
-import 'domain/user/entities/user_entity.dart';
-import 'domain/verify_code/entities/validate_code_entity.dart';
+// import 'domain/appointment/entities/appointment_record_entity.dart';
+// import 'domain/doctor/entities/doctor_entity.dart';
+// import 'domain/health_provider/entities/health_provider_entity.dart';
+// import 'domain/user/entities/user_entity.dart';
+// import 'domain/verify_code/entities/validate_code_entity.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
 
 void main() async {
@@ -33,9 +30,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureDependencies();
   await SharedPreferenceManager.init();
-  if (!kIsWeb) {
-    await FirebaseApi().initNotificaiton();
-  }
+  // if (!kIsWeb) {
+  //   await FirebaseApi().initNotificaiton();
+  // }
 
   runApp(
     EasyLocalization(
@@ -70,23 +67,28 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   //todo: Redirect to profile page after register sucess
   if (state is LoginSuccess || state is RegisterSuccess) {
     GoRouter.of(currentContext).goNamed(RouteDefine.home);
+    return;
   }
 
-  if (state is LoginError || state is RegisterError) {
-    String errorMessage = state is LoginError
-        ? state.message
-        : state is RegisterError
-            ? state.message
-            //todo: localize this message
-            : "There's something wrong!";
+  if (state is VerifyCodeSuccess) {
+    context.read<AuthenticationBloc>().add(state.registerSubmitEvent);
+    return;
+  }
+
+  if (state is AuthenticationError) {
+    String errorMessage = state.message;
+    //todo: localize this message
+
     showModalBottomSheet(
       context: context,
       builder: (context) => Text(errorMessage),
     );
+    return;
   }
 
   if (state is AuthenticationInitial) {
     GoRouter.of(currentContext).goNamed(RouteDefine.login);
+    return;
   }
 }
 
@@ -135,12 +137,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() async {
-    AuthenticationUsecase appointmentUseCaseauthenticationUsecase =
-        getIt<AuthenticationUsecase>();
-    VerifyCodeUseCase verifyCodeUseCase = getIt.get<VerifyCodeUseCase>();
-    AppointmentUseCase appointmentUseCase = getIt.get<AppointmentUseCase>();
+    // AuthenticationUsecase appointmentUseCaseauthenticationUsecase =
+    //     getIt<AuthenticationUsecase>();
+    // AppointmentUseCase appointmentUseCase = getIt.get<AppointmentUseCase>();
     context.read<AuthenticationBloc>().add(LogOutEvent());
-
     // AppointmentRecordEntity response = await appointmentUseCase
     //     .createAppointmentRecord(AppointmentRecordEntity(
     //         note: "note",
@@ -150,12 +150,9 @@ class _MyHomePageState extends State<MyHomePage> {
     //         doctor: const DoctorEntity(id: 3),
     //         healthProvider: HealthProviderEntity(id: 1),
     //         user: const UserEntity(id: 6)));
-
-    // verifyCodeUseCase.validateCode(ValidateCodeEntity(code: "123", email: "langtocde@gmail.com"));
     setState(() {
       _counter++;
     });
-    // ChuckerFlutter.showChuckerScreen();
   }
 
   @override

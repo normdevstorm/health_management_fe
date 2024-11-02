@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:health_management/domain/verify_code/entities/validate_code_entity.dart';
 import 'package:health_management/domain/verify_code/entities/verify_code_entity.dart';
 part 'verify_code_request.freezed.dart';
 part 'verify_code_request.g.dart';

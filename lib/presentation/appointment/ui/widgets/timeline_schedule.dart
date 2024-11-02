@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:health_management/main.dart';
 
 class TimelineSchedule extends StatelessWidget {
   const TimelineSchedule({super.key});

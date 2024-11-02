@@ -5,7 +5,6 @@ import 'package:health_management/domain/auth/repositories/authentication_reposi
 import '../../../data/auth/models/request/login_request_model.dart';
 import '../../../data/auth/models/request/register_request_model.dart';
 import '../../../data/auth/models/response/login_response_model.dart';
-import '../../../data/auth/models/response/register_response_model.dart';
 
 class AuthenticationUsecase {
   final AuthenticationRepository _authenticationRepository;

@@ -6,5 +6,6 @@ class RouteDefine {
   static const String settings = 'settings';
   static const String login = 'login';
   static const String register = 'register';
+  static const String verifyCode = 'verify-code';
   static const String auth = 'auth';
 }

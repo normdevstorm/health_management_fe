@@ -12,7 +12,7 @@ abstract class VerifyCodeApi {
   factory VerifyCodeApi(Dio dio, {String baseUrl}) = _VerifyCodeApi;
 
   @POST('/mail/verify_code')
-  Future<void> verifyCode(@Body() VerifyCodeRequest email);
+  Future<VerifyCodeResponse> verifyCode(@Body() VerifyCodeRequest email);
 
   @POST('/mail/validate_code')
   Future<VerifyCodeResponse> validateCode(@Body() ValidateCodeRequest validateCodeRequest);
