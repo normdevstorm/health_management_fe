@@ -4,7 +4,7 @@ import 'package:health_management/data/chat/datasource/user_datasource.dart';
 import 'package:health_management/domain/chat/user/user_model.dart';
 import 'package:health_management/domain/chat/user/user_repository.dart';
 
-class UserRepositoryImpl implements UserRepository {
+class UserRepositoryImpl implements UserChatRepository {
   final UserRemoteDataSource _userRemoteDataSource;
   UserRepositoryImpl(this._userRemoteDataSource);
   @override

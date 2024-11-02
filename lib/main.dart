@@ -13,8 +13,11 @@ import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
+import 'package:health_management/domain/user/usecases/user_usecase.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
+import 'package:logger/logger.dart';
 
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
@@ -142,10 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() async {
-    // AuthenticationUsecase appointmentUseCaseauthenticationUsecase =
-    //     getIt<AuthenticationUsecase>();
-    // AppointmentUseCase appointmentUseCase = getIt.get<AppointmentUseCase>();
-    context.read<AuthenticationBloc>().add(LogOutEvent());
+    // context.read<AuthenticationBloc>().add(LogOutEvent());
     // AppointmentRecordEntity response = await appointmentUseCase
     //     .createAppointmentRecord(AppointmentRecordEntity(
     //         note: "note",

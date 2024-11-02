@@ -2,7 +2,6 @@ import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/data/appointment/models/request/appointment_record_request.dart';
 import 'package:health_management/data/appointment/models/request/update_appointment_record_request.dart';
 import 'package:logger/logger.dart';
-
 import '../../../domain/appointment/entities/appointment_record_entity.dart';
 import '../../../domain/appointment/repositories/appointment_repository.dart';
 import '../api/appointment_api.dart';

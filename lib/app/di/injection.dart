@@ -16,12 +16,16 @@ import 'package:health_management/data/verify_code/api/verify_code_api.dart';
 import 'package:health_management/domain/appointment/repositories/appointment_repository.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
+import 'package:health_management/domain/user/repositories/user_repository.dart';
 import 'package:health_management/domain/verify_code/usecases/verify_code_usecase.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import '../../data/user/api/user_api.dart';
+import '../../data/user/repositories/user_repository_impl.dart';
 import '../../data/verify_code/repositories/verify_code_repository_impl.dart';
 import '../../domain/auth/repositories/authentication_repository.dart';
+import '../../domain/user/usecases/user_usecase.dart';
 import '../../domain/verify_code/repositories/verify_code_repository.dart';
 import '../route/app_routing.dart';
 import 'injection.config.dart';
@@ -71,6 +75,7 @@ void setUpNetworkComponent() {
   ]);
   getIt.registerLazySingleton(() => AuthenticationApi(dio));
   getIt.registerLazySingleton(() => AppointmentApi(dio));
+  getIt.registerLazySingleton(() => UserApi(dio));
   getIt.registerLazySingleton(
       () => VerifyCodeApi(dio, baseUrl: 'https://api.duynguyendev.xyz/api/v1'));
 }
@@ -79,14 +84,19 @@ void setUpAppComponent() {
   getIt.registerSingleton<Logger>(Logger(
     printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
   ));
+  //Inject repositories
   getIt.registerLazySingleton<AuthenticationRepository>(
       () => AuthenticationRepositoryImpl(getIt(), getIt()));
-  getIt.registerLazySingleton(() => AuthenticationUsecase(getIt()));
   getIt.registerLazySingleton<VerifyCodeRepository>(
       () => VerifyCodeRepositoryImpl(getIt(), getIt()));
-  getIt.registerLazySingleton<VerifyCodeUseCase>(
-      () => VerifyCodeUseCase(getIt()));
   getIt.registerLazySingleton<AppointmentRepository>(
       () => AppointmentRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton<UserRepository>(()=>UserRepositoryImpl(getIt(), getIt()));
+
+  //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));
+  getIt.registerLazySingleton(() => AuthenticationUsecase(getIt()));
+  getIt.registerLazySingleton<VerifyCodeUseCase>(
+      () => VerifyCodeUseCase(getIt()));
+  getIt.registerLazySingleton(() => UserUseCase(getIt()));
 }

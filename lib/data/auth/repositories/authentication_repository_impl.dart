@@ -37,8 +37,11 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     try {
       LoginResponse apiResponse = await api.login(request);
       // SharedPreferenceManager.setUserId(apiResponse.userId);
-      SharedPreferenceManager.setAccessToken(apiResponse.accessToken);
-      SharedPreferenceManager.setRefreshToken(apiResponse.refreshToken);
+      SessionManager().setSession(
+          LoginEntity(
+              accessToken: apiResponse.accessToken,
+              refreshToken: apiResponse.refreshToken),
+          true);
       return apiResponse;
     } catch (e) {
       throw ApiException.getDioException(e);
