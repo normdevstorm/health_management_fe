@@ -13,7 +13,7 @@ class ToggleSwitch extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.size = 40.0,
-    this.thumbColor = ColorManager.buttonColorLight,
+    this.thumbColor = ColorManager.buttonEnabledColorLight,
     this.backgroundColor = ColorManager.backgroundColorLight,
   });
 

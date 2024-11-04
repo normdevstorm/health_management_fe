@@ -1,13 +1,7 @@
 
-  import 'dart:ffi';
-
-import 'package:health_management/data/user/models/response/user_response.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
-
-import '../../../data/doctor/models/response/doctor_response.dart';
 import '../../../data/user/models/request/update_user_request.dart';
-import '../../../data/user/models/response/user_summary_response.dart';
 
 abstract class UserRepository {
     Future<List<UserEntity>> getDoctors();

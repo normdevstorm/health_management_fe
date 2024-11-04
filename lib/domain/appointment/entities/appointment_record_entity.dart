@@ -12,13 +12,13 @@ class AppointmentRecordEntity {
   final String? note;
   final PrescriptionEntity? prescription;
   final UserEntity? user;
-  final DoctorEntity? doctor;
+  final UserEntity? doctor;
   final HealthProviderEntity? healthProvider;
   final AppointmentType? appointmentType;
   final DateTime? scheduledAt;
   final AppointmentStatus? status;
 
-  AppointmentRecordEntity({
+  const AppointmentRecordEntity._({
     this.id,
     this.note,
     this.prescription,
@@ -30,12 +30,38 @@ class AppointmentRecordEntity {
     this.status,
   });
 
+
+  const AppointmentRecordEntity({
+    this.id,
+    this.note,
+    this.prescription,
+    this.user,
+    this.doctor,
+    this.healthProvider,
+    this.appointmentType,
+    this.scheduledAt,
+    this.status,
+  });
+
+  //todo: REMOVE IN CASE OF REDUNDANCY
+
+  factory AppointmentRecordEntity.update(
+    final String? note,
+    final int userId,
+    final int? doctorId,
+    final int healthProviderId,
+    final AppointmentType? appointmentType,
+    final String? scheduledAt,
+    final AppointmentStatus? status) {
+    return AppointmentRecordEntity._(note: note, appointmentType: appointmentType, scheduledAt: DateTime.parse(scheduledAt!), status: status, user: UserEntity(id: userId), doctor:UserEntity(doctorProfile: DoctorEntity(id: doctorId) ), healthProvider: HealthProviderEntity(id: healthProviderId));
+  }
+
   AppointmentRecordEntity copyWith({
     int? id,
     String? note,
     PrescriptionEntity? prescription,
     UserEntity? user,
-    DoctorEntity? doctor,
+    UserEntity? doctor,
     HealthProviderEntity? healthProvider,
     AppointmentType? appointmentType,
     DateTime? scheduledAt,

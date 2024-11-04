@@ -59,9 +59,21 @@ class AppRouting {
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) => MyHomePage(
-                              title: 'Home',
-                            )),
+                        builder: (context, state) => MyHomePage(title: 'Home',)
+                        // DoctorProfileDetailsScreen(
+                        //     doctor: UserEntity(
+                        //         id: 1,
+                        //         firstName: "Norm",
+                        //         lastName: "Nguyen",
+                        //         doctorProfile: DoctorEntity(
+                        //             id: 1,
+                        //             specialization: "Doctor",
+                        //             experience: 10,
+                        //             qualification: "PhD",
+                        //             rating: 5,
+                        //             about:
+                        //                 "Dr. Norm Nguyen is a highly experienced and qualified doctor with a PhD in his field. With over 10 years of experience and a perfect rating of 5, he is dedicated to providing exceptional care to his patients"))),
+                        )
                   ]),
               StatefulShellBranch(
                   navigatorKey: _rootNavigatorChat,

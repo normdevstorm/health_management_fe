@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/tag.dart';
 import 'package:health_management/presentation/common/tag_list.dart';
 
@@ -18,6 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    context.read<AuthenticationBloc>().add(LogOutEvent());
     controller = PageController(initialPage: 1);
   }
 

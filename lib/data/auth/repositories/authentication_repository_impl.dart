@@ -28,6 +28,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
           true);
       return registerEntity;
     } catch (e) {
+      logger.e(e);
       throw ApiException.getDioException(e);
     }
   }

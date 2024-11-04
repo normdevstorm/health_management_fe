@@ -1,11 +1,8 @@
-import 'dart:ffi';
-
 import 'package:dio/dio.dart';
 import 'package:health_management/data/common/api_response_model.dart';
 import 'package:health_management/data/doctor/models/response/doctor_response.dart';
 import 'package:health_management/data/user/models/response/user_summary_response.dart';
 import 'package:retrofit/retrofit.dart';
-
 import '../models/request/update_user_request.dart';
 import '../models/response/user_response.dart';
 part 'user_api.g.dart';

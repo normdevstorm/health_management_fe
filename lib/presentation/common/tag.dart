@@ -21,7 +21,7 @@ class TagChip extends StatelessWidget {
     this.fontSize = 12.0,
     this.fontColor = Colors.black,
     this.unselectedColor = const Color(0xFFEEEEEE),
-    this.selectedColor = ColorManager.buttonColorLight,
+    this.selectedColor = ColorManager.buttonEnabledColorLight,
     this.isSelected = false,
     this.icon,
     this.active = true,

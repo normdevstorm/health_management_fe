@@ -33,94 +33,97 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _emailFormKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                CommonTextFormField(
-                  controller: _emailController,
-                  width: 327.w,
-                  height: 64.h,
-                  hintText: 'Email',
-                  validator: (value) {
-                    //todo: create a regex manager later on
-                    if (!RegExp(
-                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-                        .hasMatch(value ?? "")) {
-                      return 'Invalid email!';
-                    }
-                    return null;
-                  },
-                ),
-                16.verticalSpace,
-                ValueListenableBuilder(
-                  valueListenable: _isHiddenPasswordNotifier,
-                  builder: (context, isHiddenPassword, child) =>
-                      CommonTextFormField(
-                    controller: _passwordController,
-                    width: 327.w,
-                    height: 64.h,
-                    hintText: 'Password',
-                    obscureText: isHiddenPassword,
-                    suffixIcon: GestureDetector(
-                      child: Icon(
-                          isHiddenPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: Colors.grey,
-                          size: 20.r),
-                      onTap: () => onTapIconHidden(_isHiddenPasswordNotifier),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: TextButton(
-                    onPressed: () {
-                      // Handle forgot password logic here
-                    },
-                    child: const Text('Forgot password?'),
-                  ),
-                ),
-                5.verticalSpace,
-                Button(
-                  width: 327.w,
-                  height: 60.h,
-                  text: 'Login',
-                  onPressed: () {
-                    // Handle login logic here
-                    if (_emailFormKey.currentState!.validate()) {
-                      context.read<AuthenticationBloc>().add(LoginSubmitEvent(
-                            _emailController.text,
-                            _passwordController.text,
-                          ));
-                      // context.pushNamed(RouteDefine.register);
-                    }
-                  },
-                ),
-                5.verticalSpace,
-                Row(
+        return SafeArea(
+          child: Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _emailFormKey,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Text('Don\'t have an account?'),
-                    TextButton(
-                      onPressed: () {
-                        context.goNamed(RouteDefine.register);
+                    CommonTextFormField(
+                      controller: _emailController,
+                      width: 327.w,
+                      height: 64.h,
+                      hintText: 'Email',
+                      validator: (value) {
+                        //todo: create a regex manager later on
+                        if (!RegExp(
+                                r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                            .hasMatch(value ?? "")) {
+                          return 'Invalid email!';
+                        }
+                        return null;
                       },
-                      child: const Text('Register'),
+                    ),
+                    16.verticalSpace,
+                    ValueListenableBuilder(
+                      valueListenable: _isHiddenPasswordNotifier,
+                      builder: (context, isHiddenPassword, child) =>
+                          CommonTextFormField(
+                        controller: _passwordController,
+                        width: 327.w,
+                        height: 64.h,
+                        hintText: 'Password',
+                        obscureText: isHiddenPassword,
+                        suffixIcon: GestureDetector(
+                          child: Icon(
+                              isHiddenPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: Colors.grey,
+                              size: 20.r),
+                          onTap: () =>
+                              onTapIconHidden(_isHiddenPasswordNotifier),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: TextButton(
+                        onPressed: () {
+                          // Handle forgot password logic here
+                        },
+                        child: const Text('Forgot password?'),
+                      ),
+                    ),
+                    5.verticalSpace,
+                    Button(
+                      width: 327.w,
+                      height: 60.h,
+                      text: 'Login',
+                      onPressed: () {
+                        // Handle login logic here
+                        if (_emailFormKey.currentState!.validate()) {
+                          context
+                              .read<AuthenticationBloc>()
+                              .add(LoginSubmitEvent(
+                                _emailController.text,
+                                _passwordController.text,
+                              ));
+                          // context.pushNamed(RouteDefine.register);
+                        }
+                      },
+                    ),
+                    5.verticalSpace,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('Don\'t have an account?'),
+                        TextButton(
+                          onPressed: () {
+                            context.goNamed(RouteDefine.register);
+                          },
+                          child: const Text('Register'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 

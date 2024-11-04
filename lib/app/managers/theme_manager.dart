@@ -20,7 +20,7 @@ class ThemeManager {
       headlineLarge: StyleManager.h3,
     ),
     buttonTheme: const ButtonThemeData(
-      buttonColor: ColorManager.buttonColorLight,
+      buttonColor: ColorManager.buttonEnabledColorLight,
       textTheme: ButtonTextTheme.primary,
     ),
     iconTheme: const IconThemeData(

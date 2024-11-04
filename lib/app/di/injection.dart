@@ -54,7 +54,7 @@ void setUpNetworkComponent() {
       showInspectorOnShake: true);
   chuck.showInspector();
   Dio dio = Dio(BaseOptions(
-    baseUrl: "http://localhost:8081/api/v1/core",
+    baseUrl: "https://api.duynguyendev.xyz/api/v1/core",
     contentType: Headers.jsonContentType,
     headers: {
       HttpHeaders.accessControlAllowOriginHeader: "*",
