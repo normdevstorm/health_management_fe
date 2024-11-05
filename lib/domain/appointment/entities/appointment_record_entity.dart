@@ -4,7 +4,6 @@ import 'package:health_management/domain/health_provider/entities/health_provide
 import 'package:health_management/domain/prescription/entities/prescription_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import '../../../app/app.dart';
-part 'appointment_record_entity.g.dart';
 
 @JsonSerializable()
 class AppointmentRecordEntity {
@@ -53,7 +52,4 @@ class AppointmentRecordEntity {
       status: status ?? this.status,
     );
   }
-
-  factory AppointmentRecordEntity.fromJson(Map<String, dynamic> json) => _$AppointmentRecordEntityFromJson(json);
-  Map<String, dynamic> toJson() => _$AppointmentRecordEntityToJson(this);
 }

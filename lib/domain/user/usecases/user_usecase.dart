@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import '../../../data/user/models/request/update_user_request.dart';
 import '../../doctor/entities/doctor_entity.dart';
 import '../entities/user_entity.dart';

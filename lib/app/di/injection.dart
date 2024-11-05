@@ -54,7 +54,7 @@ void setUpNetworkComponent() {
       showInspectorOnShake: true);
   chuck.showInspector();
   Dio dio = Dio(BaseOptions(
-    baseUrl: "http://localhost:8081/api/v1/core",
+    baseUrl: "http://localhost:8080/api/v1/core",
     contentType: Headers.jsonContentType,
     headers: {
       HttpHeaders.accessControlAllowOriginHeader: "*",
@@ -91,7 +91,8 @@ void setUpAppComponent() {
       () => VerifyCodeRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton<AppointmentRepository>(
       () => AppointmentRepositoryImpl(getIt(), getIt()));
-  getIt.registerLazySingleton<UserRepository>(()=>UserRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton<UserRepository>(
+      () => UserRepositoryImpl(getIt(), getIt()));
 
   //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));

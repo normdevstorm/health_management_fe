@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:dio/dio.dart';
 import 'package:health_management/data/common/api_response_model.dart';
 import 'package:health_management/data/doctor/models/response/doctor_response.dart';
@@ -28,8 +26,7 @@ abstract class UserApi {
 
   @POST('/users/update-user')
   Future<ApiResponse<UserResponse>> updateUser(
-      @Body() UpdateUserRequest updateUserRequest,
-      @Query("userId") int userId);
+      @Body() UpdateUserRequest updateUserRequest, @Query("userId") int userId);
 
   @GET('/users/email')
   Future<ApiResponse<UserSummaryResponse>> getUserByEmail(
