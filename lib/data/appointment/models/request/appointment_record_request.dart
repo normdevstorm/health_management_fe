@@ -42,4 +42,5 @@ class AppointmentRecordRequest {
       status: entity.status,
     );
   }
+
 }

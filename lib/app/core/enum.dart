@@ -19,12 +19,13 @@ enum AppointmentType {
 enum AppointmentStatus {
   @JsonValue('PENDING')
   pending,
-  @JsonValue('CONFIRMED')
-  confirmed,
+  @JsonValue('SCHEDULED')
+  scheduled,
   @JsonValue('CANCELLED')
   cancelled,
   @JsonValue('COMPLETED')
-  completed
+  completed,
+
 }
 
 enum MedicalConditionStatus {
@@ -64,4 +65,17 @@ enum AccountStatus {
   active,
   @JsonValue('INACTIVE')
   inactive
+}
+
+enum BlocStatus {
+  @JsonValue('INITIAL')
+  initial,
+  @JsonValue('LOADING')
+  loading,
+  @JsonValue('LOADED')
+  loaded,
+  @JsonValue('ERROR')
+  error,
+  @JsonValue('SUCCESS')
+  success
 }

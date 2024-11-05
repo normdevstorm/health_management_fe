@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
@@ -17,14 +18,8 @@ import 'package:health_management/domain/user/usecases/user_usecase.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'package:logger/logger.dart';
-
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
-// import 'domain/appointment/entities/appointment_record_entity.dart';
-// import 'domain/doctor/entities/doctor_entity.dart';
-// import 'domain/health_provider/entities/health_provider_entity.dart';
-// import 'domain/user/entities/user_entity.dart';
-// import 'domain/verify_code/entities/validate_code_entity.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
 
 void main() async {
@@ -37,26 +32,28 @@ void main() async {
   // }
 
   runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-      path: 'assets/resources/langs/langs.csv',
-      assetLoader: CsvAssetLoader(),
-      startLocale: const Locale('vi', 'VN'),
-      useFallbackTranslations: true,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => AuthenticationBloc(
-                authenticationUsecase: getIt<AuthenticationUsecase>(),
-                verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
+    Material(
+      child: EasyLocalization(
+        supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+        path: 'assets/resources/langs/langs.csv',
+        assetLoader: CsvAssetLoader(),
+        startLocale: const Locale('vi', 'VN'),
+        useFallbackTranslations: true,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => AuthenticationBloc(
+                  authenticationUsecase: getIt<AuthenticationUsecase>(),
+                  verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
+            ),
+          ],
+          child: BlocListener<AuthenticationBloc, AuthenticationState>(
+            listener: (context, state) {
+              // TODO: implement listener in a separate mehthod/function
+              _authenticationListener(context, state);
+            },
+            child: const MyApp(),
           ),
-        ],
-        child: BlocListener<AuthenticationBloc, AuthenticationState>(
-          listener: (context, state) {
-            // TODO: implement listener in a separate mehthod/function
-            _authenticationListener(context, state);
-          },
-          child: const MyApp(),
         ),
       ),
     ),
@@ -90,7 +87,6 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   if (state is AuthenticationError) {
     String errorMessage = state.message;
     //todo: localize this message
-
     showModalBottomSheet(
       context: context,
       builder: (context) => Text(errorMessage),
@@ -105,15 +101,50 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     MaterialApp mainApp = MaterialApp.router(
+      builder: FToastBuilder(),
       locale: context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       title: 'Flutter Demo',
+      themeMode: ThemeMode.light,
+      darkTheme: ThemeManager.darkTheme,
       theme: ThemeManager.lightTheme.copyWith(
+          textTheme: ThemeManager.lightTheme.textTheme.copyWith(
+            bodyLarge: ThemeManager.lightTheme.textTheme.bodyLarge
+                ?.copyWith(fontFamily: 'Poppins'),
+            bodyMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+                ?.copyWith(fontFamily: 'Poppins'),
+            bodySmall: ThemeManager.lightTheme.textTheme.bodySmall
+                ?.copyWith(fontFamily: 'Poppins'),
+            headlineLarge: ThemeManager.lightTheme.textTheme.displayLarge
+                ?.copyWith(fontFamily: 'Poppins'),
+            headlineMedium: ThemeManager.lightTheme.textTheme.headlineMedium
+                ?.copyWith(fontFamily: 'Poppins'),
+            displayLarge: ThemeManager.lightTheme.textTheme.displayLarge
+                ?.copyWith(fontFamily: 'Poppins'),
+            displayMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+                ?.copyWith(fontFamily: 'Poppins'),
+            displaySmall: ThemeManager.lightTheme.textTheme.displaySmall
+                ?.copyWith(fontFamily: 'Poppins'),
+            headlineSmall: ThemeManager.lightTheme.textTheme.headlineSmall
+                ?.copyWith(fontFamily: 'Poppins'),
+            labelLarge: ThemeManager.lightTheme.textTheme.labelLarge
+                ?.copyWith(fontFamily: 'Poppins'),
+            labelMedium: ThemeManager.lightTheme.textTheme.labelMedium
+                ?.copyWith(fontFamily: 'Poppins'),
+            labelSmall: ThemeManager.lightTheme.textTheme.labelSmall
+                ?.copyWith(fontFamily: 'Poppins'),
+            titleLarge: ThemeManager.lightTheme.textTheme.titleLarge
+                ?.copyWith(fontFamily: 'Poppins'),
+            titleMedium: ThemeManager.lightTheme.textTheme.titleMedium
+                ?.copyWith(fontFamily: 'Poppins'),
+            titleSmall: ThemeManager.lightTheme.textTheme.titleSmall
+                ?.copyWith(fontFamily: 'Poppins'),
+          ),
           pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.windows: CupertinoPageTransitionsBuilder()
-      })),
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.windows: CupertinoPageTransitionsBuilder()
+          })),
       routerConfig: AppRouting.shellRouteConfig(),
       debugShowCheckedModeBanner: false,
     );
@@ -210,19 +241,19 @@ class _SkeletonPageState extends State<SkeletonPage> {
     super.initState();
     _scrollController = ScrollController();
     _navBarVisibleNotifier = ValueNotifier<bool>(true);
-    _scrollController.addListener(() {
-      if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        if (_navBarVisibleNotifier.value) {
-          _navBarVisibleNotifier.value = false;
-        }
-      } else if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-        if (!_navBarVisibleNotifier.value) {
-          _navBarVisibleNotifier.value = true;
-        }
-      }
-    });
+    // _scrollController.addListener(() {
+    //   if (_scrollController.position.userScrollDirection ==
+    //       ScrollDirection.reverse) {
+    //     if (_navBarVisibleNotifier.value) {
+    //       _navBarVisibleNotifier.value = false;
+    //     }
+    //   } else if (_scrollController.position.userScrollDirection ==
+    //       ScrollDirection.forward) {
+    //     if (!_navBarVisibleNotifier.value) {
+    //       _navBarVisibleNotifier.value = true;
+    //     }
+    //   }
+    // });
   }
 
   @override
@@ -245,23 +276,22 @@ class _SkeletonPageState extends State<SkeletonPage> {
           child: Column(
             children: [
               Expanded(
-                  child: Padding(
-                      padding: EdgeInsets.only(right: 10.w, left: 10.w),
-                      child: NotificationListener<ScrollNotification>(
-                        onNotification: (scrollNotification) {
-                          if (scrollNotification is ScrollUpdateNotification) {
-                            if (scrollNotification.scrollDelta! > 0 &&
-                                _navBarVisibleNotifier.value) {
-                              _navBarVisibleNotifier.value = false;
-                            } else if (scrollNotification.scrollDelta! < 0 &&
-                                !_navBarVisibleNotifier.value) {
-                              _navBarVisibleNotifier.value = true;
-                            }
-                          }
-                          return true;
-                        },
-                        child: widget.child,
-                      ))),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (scrollNotification) {
+                    if (scrollNotification is ScrollUpdateNotification) {
+                      if (scrollNotification.scrollDelta! > 0 &&
+                          _navBarVisibleNotifier.value) {
+                        _navBarVisibleNotifier.value = false;
+                      } else if (scrollNotification.scrollDelta! < 0 &&
+                          !_navBarVisibleNotifier.value) {
+                        _navBarVisibleNotifier.value = true;
+                      }
+                    }
+                    return true;
+                  },
+                  child: widget.child,
+                ),
+              ),
             ],
           ),
         ));

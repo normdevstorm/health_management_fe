@@ -36,7 +36,7 @@ class CustomSlider extends StatelessWidget {
           controller: controller,
           count: pages.length,
           effect: const ExpandingDotsEffect(
-              activeDotColor: ColorManager.buttonColorLight),
+              activeDotColor: ColorManager.buttonEnabledColorLight),
           onDotClicked: onDotClicked ??
               (value) {
                 controller.animateToPage(value,

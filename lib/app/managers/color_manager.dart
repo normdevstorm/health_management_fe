@@ -2,7 +2,7 @@ part of '../app.dart';
 
 class ColorManager {
   // Light Theme Colors
-  static const Color primaryColorLight = Color(0xFF2979FF);
+  static const Color primaryColorLight = Color(0xff1c6ba4);
   static const Color primaryVariantColorLight = Color(0xFF2979FF);
   static const Color secondaryColorLight = Color(0xFF03DAC6);
   static const Color secondaryVariantColorLight = Color(0xFF018786);
@@ -23,11 +23,10 @@ class ColorManager {
   static const Color splashColorLight = Color(0xFF2979FF);
   static const Color unselectedWidgetColorLight = Color(0xFF757575);
 
-  static const Color iconButtonColorLight = Color(0xFF4CAF50);
+  static const Color iconButtonColorLight = Color(0xFFeff5f9);
   static const Color textBlockColorLight = Color(0xFF212121);
   static const Color textFieldColorLight = Color(0xFF212121);
   static const Color textFieldCheckoutColorLight = Color(0xFF212121);
-  static const Color buttonColorLight = Color(0xFF2979FF);
   static const Color toggleBackgroundColorLight = Color(0xFFEEEEEE);
   static const Color searchBarColorLight = Color(0xFF212121);
   static const Color mapViewPinColorLight = Color(0xFF2979FF);
@@ -48,6 +47,11 @@ class ColorManager {
   static const Color dialogBackgroundColorLight = Color(0xFFFFFFFF);
   static const Color secondaryButtonColorLight = Color(0xFF757575);
   static const Color captionColorLight = Color(0xFF757575);
+  //button element colors
+  static const Color buttonEnabledColorLight = Color(0xff1c6ba4);
+  static const Color buttonDisbledColorLight = Color(0xFFeff5f9);
+  static const Color buttonBorderColorLight = Color(0xFF9ba9b7);
+  static Color buttonShadowColorLight = Colors.grey.withOpacity(0.2);
 
   ///Dark Theme Colors
   static const Color primaryColorDark = Color(0xFF2979FF);

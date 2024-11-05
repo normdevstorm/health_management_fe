@@ -3,12 +3,13 @@ import 'package:health_management/domain/address/entities/address_entity.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/user/entities/account_entity.dart';
+import '../../../app/app.dart';
 import 'allergy_entity.dart';
 part 'user_entity.g.dart';
 
 @JsonSerializable()
 class UserEntity {
-  final int id;
+  final int? id;
   final String? lastName;
   final String? firstName;
   final DateTime? dateOfBirth;
@@ -21,9 +22,11 @@ class UserEntity {
   final String? address;
   final String? photo;
   final List<AllergyEntity>? allergies;
+  final String? email;
+  final Role? role;
 
   UserEntity({
-    required this.id,
+    this.id,
     this.lastName,
     this.firstName,
     this.dateOfBirth,
@@ -36,6 +39,8 @@ class UserEntity {
     this.address,
     this.photo,
     this.allergies,
+    this.email,
+    this.role,
   });
 
   UserEntity copyWith({
@@ -52,6 +57,8 @@ class UserEntity {
     String? address,
     String? photo,
     List<AllergyEntity>? allergies,
+    String? email,
+    Role? role,
   }) {
     return UserEntity(
       id: id ?? this.id,
@@ -67,9 +74,12 @@ class UserEntity {
       address: address ?? this.address,
       photo: photo ?? this.photo,
       allergies: allergies ?? this.allergies,
+      email: email ?? this.email,
+      role: role ?? this.role,
     );
   }
 
-  factory UserEntity.fromJson(Map<String, dynamic> json) => _$UserEntityFromJson(json);
+  factory UserEntity.fromJson(Map<String, dynamic> json) =>
+      _$UserEntityFromJson(json);
   Map<String, dynamic> toJson() => _$UserEntityToJson(this);
 }

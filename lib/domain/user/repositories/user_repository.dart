@@ -1,6 +1,5 @@
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
-
 import '../../../data/user/models/request/update_user_request.dart';
 
 abstract class UserRepository {

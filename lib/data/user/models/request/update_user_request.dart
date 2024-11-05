@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:health_management/data/doctor/models/response/doctor_response.dart';
 import 'package:health_management/data/user/models/request/update_account_request.dart';
 import 'package:health_management/domain/address/entities/address_entity.dart';
 
@@ -17,7 +16,7 @@ class UpdateUserRequest {
   final String? avatarUrl;
   final UpdateAccountRequest? account;
   final List<AddressEntity>? addresses;
-  final DoctorResponse? doctorProfile;
+  // final DoctorResponse? doctorProfile;
 
   UpdateUserRequest({
     this.id,
@@ -28,7 +27,7 @@ class UpdateUserRequest {
     this.avatarUrl,
     this.account,
     this.addresses,
-    this.doctorProfile,
+    // this.doctorProfile,
   });
 
   factory UpdateUserRequest.fromEntity(UserEntity entity) {
@@ -41,7 +40,7 @@ class UpdateUserRequest {
       avatarUrl: entity.avatarUrl,
       account: UpdateAccountRequest.fromEntity(entity.account, entity.account?.password),
       addresses: entity.addresses,
-      doctorProfile: DoctorResponse.fromEntity(entity.doctorProfile),
+      // doctorProfile: DoctorResponse.fromEntity(entity.doctorProfile),
     );
   }
 

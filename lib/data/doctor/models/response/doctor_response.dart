@@ -35,17 +35,17 @@ class DoctorResponse {
     );
   }
 
-  factory DoctorResponse.fromEntity(DoctorEntity? entity) {
-    return DoctorResponse(
-      id: entity?.id,
-      // user: entity.user,
-      specialization: entity?.specialization,
-      experience: entity?.experience,
-      qualification: entity?.qualification,
-      rating: entity?.rating,
-      about: entity?.about,
-    );
-  }
+  // factory DoctorResponse.fromEntity(DoctorEntity? entity) {
+  //   return DoctorResponse(
+  //     id: entity?.id,
+  //     // user: entity.user,
+  //     specialization: entity?.specialization,
+  //     experience: entity?.experience,
+  //     qualification: entity?.qualification,
+  //     rating: entity?.rating,
+  //     about: entity?.about,
+  //   );
+  // }
 
   factory DoctorResponse.fromJson(Map<String, dynamic> json) => _$DoctorResponseFromJson(json);
   Map<String, dynamic> toJson() => _$DoctorResponseToJson(this);

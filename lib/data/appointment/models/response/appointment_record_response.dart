@@ -1,4 +1,4 @@
-import 'package:health_management/data/doctor/models/response/doctor_response.dart';
+import 'package:health_management/data/doctor/models/response/doctor_summary_response.dart';
 import 'package:health_management/data/health_provider/models/response/health_provider_response.dart';
 import 'package:health_management/data/prescription/models/response/prescription_response.dart';
 import 'package:health_management/data/user/models/response/user_summary_response.dart';
@@ -14,7 +14,7 @@ class AppointmentRecordResponse {
   final String? note;
   final PrescriptionResponse? prescription;
   final UserSummaryResponse? user;
-  final DoctorResponse? doctor;
+  final DoctorSummaryResponse? doctor;
   final HealthProviderResponse? healthProvider;
   final AppointmentType? appointmentType;
   final DateTime? scheduledAt;
