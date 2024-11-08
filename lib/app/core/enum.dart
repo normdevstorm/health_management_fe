@@ -77,5 +77,70 @@ enum BlocStatus {
   @JsonValue('ERROR')
   error,
   @JsonValue('SUCCESS')
-  success
+  success,
+  //use for create, update= flow
+  @JsonValue('IN_PROGRESS')
+  inProgress
+}
+
+enum HospitalSpecialty {
+  @JsonValue('EMERGENCY_MEDICINE')
+  emergencyMedicine,
+
+  @JsonValue('INTERNAL_MEDICINE')
+  internalMedicine,
+
+  @JsonValue('PEDIATRICS')
+  pediatrics,
+
+  @JsonValue('SURGERY')
+  surgery,
+
+  @JsonValue('OBSTETRICS_AND_GYNECOLOGY')
+  obstetricsAndGynecology,
+
+  @JsonValue('CARDIOLOGY')
+  cardiology,
+
+  @JsonValue('NEUROLOGY')
+  neurology,
+
+  @JsonValue('ORTHOPEDICS')
+  orthopedics,
+
+  @JsonValue('ONCOLOGY')
+  oncology,
+
+  @JsonValue('RADIOLOGY')
+  radiology,
+
+  @JsonValue('ANESTHESIOLOGY')
+  anesthesiology,
+
+  @JsonValue('GASTROENTEROLOGY')
+  gastroenterology,
+
+  @JsonValue('ENDOCRINOLOGY')
+  endocrinology,
+
+  @JsonValue('PSYCHIATRY')
+  psychiatry,
+
+  @JsonValue('PULMONOLOGY')
+  pulmonology,
+
+  @JsonValue('NEPHROLOGY')
+  nephrology,
+
+  @JsonValue('DERMATOLOGY')
+  dermatology,
+
+  @JsonValue('UROLOGY')
+  urology,
+
+  @JsonValue('RHEUMATOLOGY')
+  rheumatology,
+
+  @JsonValue('INFECTIOUS_DISEASE')
+  infectiousDisease,
 }

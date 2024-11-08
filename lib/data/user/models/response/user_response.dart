@@ -1,6 +1,6 @@
+import 'package:health_management/data/address/models/response/address_response.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:health_management/data/doctor/models/response/doctor_response.dart';
-import 'package:health_management/domain/address/entities/address_entity.dart';
 
 import '../../../../domain/user/entities/user_entity.dart';
 import 'account_response.dart';
@@ -17,7 +17,7 @@ class UserResponse {
   final String? gender;
   final String? avatarUrl;
   final AccountResponse? account;
-  final List<AddressEntity>? addresses;
+  final List<AddressResponse>? addresses;
   final DoctorResponse? doctorProfile;
 
   UserResponse({
@@ -46,7 +46,7 @@ class UserResponse {
       gender: gender,
       avatarUrl: avatarUrl,
       account: account?.toEntity(),
-      addresses: addresses,
+      addresses: addresses?.map((e) => e.toEntity()).toList(),
       doctorProfile: doctorProfile?.toEntity(),
     );
   }

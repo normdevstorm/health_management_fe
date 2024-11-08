@@ -26,5 +26,6 @@
       "source.fixAll": "explicit"
     }
   },
-  "dart.flutterSdkPath": ".fvm/versions/3.24.3"
+  "dart.flutterSdkPath": ".fvm/versions/3.24.3",
+  "cmake.sourceDirectory": "D:/WEB DEV/BE/HEALTH MANAGEMENT/health_management/windows/runner"
 }

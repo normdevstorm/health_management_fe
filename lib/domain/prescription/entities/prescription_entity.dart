@@ -55,6 +55,22 @@ class PrescriptionEntity {
     );
   }
 
+  factory PrescriptionEntity.update({
+    required final int id,
+    final String? notes,
+    final String? diagnosis,
+    final List<PrescriptionDetails>? details,
+    final List<MedicalCondition>? medicalCondition,
+  }) {
+    return PrescriptionEntity(
+      id: id,
+      notes: notes,
+      diagnosis: diagnosis,
+      details: details,
+      medicalCondition: medicalCondition,
+    );
+  }  
+
   factory PrescriptionEntity.fromJson(Map<String, dynamic> json) => _$PrescriptionEntityFromJson(json);
   Map<String, dynamic> toJson() => _$PrescriptionEntityToJson(this);
 }

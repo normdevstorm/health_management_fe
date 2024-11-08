@@ -13,23 +13,24 @@ import 'route_define.dart';
 
 ///TODO: group naviagtor keys into one separate file
 
-final GlobalKey<NavigatorState> _rootNavigatorHome =
+final GlobalKey<NavigatorState> rootNavigatorHome =
     GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _rootNavigatorChat =
+final GlobalKey<NavigatorState> rootNavigatorChat =
     GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _rootNavigatorAppointment =
+final GlobalKey<NavigatorState> rootNavigatorAppointment =
     GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _rootNavigatorProfile =
+final GlobalKey<NavigatorState> rootNavigatorProfile =
     GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _rootNavigatorAuthentication =
+final GlobalKey<NavigatorState> rootNavigatorAuthentication =
     GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> globalRootNavigatorKey =
     GlobalKey<NavigatorState>();
 
 class AppRouting {
+  static final RouteObserver<ModalRoute<void>> _routeObserver = RouteObserver<ModalRoute<void>>();
   static GoRouter shellRouteConfig() => _shellRoute;
   static final GoRouter _shellRoute = GoRouter(
-      observers: [ChuckerFlutter.navigatorObserver],
+      observers: [ChuckerFlutter.navigatorObserver,_routeObserver],
       navigatorKey: globalRootNavigatorKey,
       initialLocation: '/',
       debugLogDiagnostics: true,
@@ -44,7 +45,7 @@ class AppRouting {
           branches: <StatefulShellBranch>[
             StatefulShellBranch(
               routes: [$loginRoute, $registerRoute],
-              navigatorKey: _rootNavigatorAuthentication,
+              navigatorKey: rootNavigatorAuthentication,
             )
           ],
           builder: (context, state, navigationShell) => navigationShell,
@@ -54,36 +55,25 @@ class AppRouting {
                 SkeletonPage(title: "Skeleton page", child: navigationShell),
             branches: <StatefulShellBranch>[
               StatefulShellBranch(
-                  navigatorKey: _rootNavigatorHome,
+                  navigatorKey: rootNavigatorHome,
                   routes: <RouteBase>[
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) => MyHomePage(title: 'Home',)
-                        // DoctorProfileDetailsScreen(
-                        //     doctor: UserEntity(
-                        //         id: 1,
-                        //         firstName: "Norm",
-                        //         lastName: "Nguyen",
-                        //         doctorProfile: DoctorEntity(
-                        //             id: 1,
-                        //             specialization: "Doctor",
-                        //             experience: 10,
-                        //             qualification: "PhD",
-                        //             rating: 5,
-                        //             about:
-                        //                 "Dr. Norm Nguyen is a highly experienced and qualified doctor with a PhD in his field. With over 10 years of experience and a perfect rating of 5, he is dedicated to providing exceptional care to his patients"))),
+                        builder: (context, state) => MyHomePage(
+                              title: 'Home',
+                            )
                         )
                   ]),
               StatefulShellBranch(
-                  navigatorKey: _rootNavigatorChat,
+                  navigatorKey: rootNavigatorChat,
                   routes: <RouteBase>[$chatRoute]),
               StatefulShellBranch(
-                  navigatorKey: _rootNavigatorAppointment,
+                  navigatorKey: rootNavigatorAppointment,
                   routes: <RouteBase>[$appointmentRoute]),
               StatefulShellBranch(
                   routes: <RouteBase>[$settingsRoute],
-                  navigatorKey: _rootNavigatorProfile)
+                  navigatorKey: rootNavigatorProfile)
             ])
       ]);
 }

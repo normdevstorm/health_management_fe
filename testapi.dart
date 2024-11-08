@@ -3,7 +3,7 @@ import 'package:health_management/domain/appointment/repositories/appointment_re
 import 'package:logger/logger.dart';
 
 void main() async {
-  configureDependencies();
+  // configureDependencies();
   AppointmentRepository repository = getIt.get<AppointmentRepository>();
   Logger logger = getIt.get<Logger>();
   List? response = await repository.getAllAppointmentRecords();

@@ -1,6 +1,6 @@
+import 'package:health_management/data/address/models/request/address_request.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:health_management/data/user/models/request/update_account_request.dart';
-import 'package:health_management/domain/address/entities/address_entity.dart';
 
 import '../../../../domain/user/entities/user_entity.dart';
 
@@ -15,7 +15,7 @@ class UpdateUserRequest {
   final String? gender;
   final String? avatarUrl;
   final UpdateAccountRequest? account;
-  final List<AddressEntity>? addresses;
+  final List<AddressRequest>? addresses;
   // final DoctorResponse? doctorProfile;
 
   UpdateUserRequest({
@@ -39,7 +39,7 @@ class UpdateUserRequest {
       gender: entity.gender,
       avatarUrl: entity.avatarUrl,
       account: UpdateAccountRequest.fromEntity(entity.account, entity.account?.password),
-      addresses: entity.addresses,
+      addresses: entity.addresses?.map((e) => AddressRequest.fromEntity(e)).toList(),
       // doctorProfile: DoctorResponse.fromEntity(entity.doctorProfile),
     );
   }

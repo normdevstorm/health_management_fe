@@ -52,8 +52,9 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   @override
   Future<LoginResponse?> refreshToken(String refreshToken) async {
     try {
-      LoginResponse loginResponse =
+      final  response =
           await api.refreshToken({"refresh_token": refreshToken});
+      LoginResponse? loginResponse = response.data;
       return loginResponse;
     } catch (e) {
       throw ApiException.getDioException(e);
