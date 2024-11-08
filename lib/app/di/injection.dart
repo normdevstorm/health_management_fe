@@ -63,9 +63,10 @@ void setUpNetworkComponent(FlavorManager flavor) {
         responseBody: true,
         request: true),
     ChuckerDioInterceptor(),
-    RequestInterceptor(),
     RefreshTokenInterceptor(),
+    RequestInterceptor(),
   ]);
+  getIt.registerSingleton<Dio>(dio);
   getIt.registerLazySingleton(() => AuthenticationApi(dio));
   getIt.registerLazySingleton(() => AppointmentApi(dio));
   getIt.registerLazySingleton(() => UserApi(dio));

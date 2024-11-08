@@ -31,10 +31,16 @@ class RefreshTokenInterceptor extends Interceptor {
             SessionManager().setSession(refreshTokenResponse, true);
             err.requestOptions.headers['Authorization'] =
                 'Bearer ${SessionManager().getSession()!.accessToken}';
+            failedRequests.add({'handler': handler, 'err': err});
             // TODO Retry all the requests that were added to the queue
             getIt<Logger>().i(SessionManager().getSession()?.accessToken);
             for (var request in failedRequests) {
-              request['handler'].resolve(request['err']);
+              await getIt<Dio>()
+                  .fetch((request['err'] as DioException).requestOptions)
+                  .then(
+                    (value) => request['handler'].resolve(value),
+                    onError: (e) => request['handler'].reject(e),
+                  );
             }
             failedRequests.clear();
           } else {
@@ -50,7 +56,6 @@ class RefreshTokenInterceptor extends Interceptor {
           BlocProvider.of<AuthenticationBloc>(
                   globalRootNavigatorKey.currentContext!)
               .add(const CheckLoginStatusEvent());
-
           throw ApiException.getDioException(e);
         }
         // Adding errored request to the queue
