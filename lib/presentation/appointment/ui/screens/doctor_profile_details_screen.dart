@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
-import '../widgets/app_bar_icon_button.dart';
 import '../widgets/doctor_info_summary_card.dart';
 import '../widgets/doctor_profile_app_bar.dart';
 import '../widgets/doctor_stat_list_view.dart';

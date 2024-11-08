@@ -39,7 +39,7 @@ class UpdateAppointmentRecordRequest {
       id: entity.id,
       note: entity.note,
       userId: entity.user?.id,
-      doctorId: entity.doctor?.id,
+      doctorId: entity.doctor?.doctorProfile?.id,
       healthProviderId: entity.healthProvider?.id,
       prescription: UpdatePrescriptionRequest.fromEntity(entity.prescription),
       appointmentType: entity.appointmentType,

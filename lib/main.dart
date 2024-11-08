@@ -27,7 +27,10 @@ import 'domain/verify_code/usecases/verify_code_usecase.dart';
 void main() async {
   //create before runApp method to wrap all the procedures
   WidgetsFlutterBinding.ensureInitialized();
-  configureDependencies();
+  const String flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+  configureDependencies(FlavorManager.values.firstWhere(
+      (element) => element.name == flavor,
+      orElse: () => FlavorManager.dev));
   await SharedPreferenceManager.init();
   // if (!kIsWeb) {
   //   await FirebaseApi().initNotificaiton();

@@ -2,18 +2,49 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/utils/date_converter.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/presentation/appointment/ui/widgets/timeline_schedule.dart';
 import '../../../../app/managers/toast_manager.dart';
+import '../../../../app/route/route_define.dart';
 import '../../../common/shimmer_loading.dart';
-import '../../bloc/appointment_bloc.dart';
+import '../../bloc/appointment/appointment_bloc.dart';
 import '../widgets/shadow_edge.dart';
 
-class AppointmentHome extends StatelessWidget {
-  AppointmentHome({super.key});
+class AppointmentHome extends StatefulWidget {
+  const AppointmentHome({super.key});
+
+  @override
+  State<AppointmentHome> createState() => _AppointmentHomeState();
+}
+
+class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    RouteObserver<ModalRoute>().subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    RouteObserver<ModalRoute>().unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // This is called when the route is popped and this screen becomes visible again
+    context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
+  }
 
   final shimmerGradient = LinearGradient(
     colors: [
@@ -38,23 +69,21 @@ class AppointmentHome extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(15),
           child: BlocConsumer<AppointmentBloc, AppointmentState>(
+            listenWhen: (previous, current) => previous != current,
             listener: (context, state) {
               if (state.status == BlocStatus.error) {
                 ToastManager.showToast(
                     context: context,
                     message: state.errorMessage ?? 'An error occurred');
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   SnackBar(
-                //     showCloseIcon: true,
-                //     duration: Duration(seconds: 10),
-                //     elevation: 100.h,
-                //     content: Text(state.errorMessage ?? 'An error occurred'),
-                //     backgroundColor: Colors.red,
-                //   ),
-                // );
+                return;
+              }
+              if (state.runtimeType == CreateAppointmentRecordState && state.status == BlocStatus.success) {
+                    context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
               }
             },
-            buildWhen: (previous, current) => previous.status != current.status,
+            buildWhen: (previous, current) =>
+                previous.status != current.status &&
+                current.runtimeType != CreateAppointmentRecordState,
             builder: (context, state) {
               List<AppointmentRecordEntity> appointmentRecords = [];
               bool isLoading = true;
@@ -79,7 +108,12 @@ class AppointmentHome extends StatelessWidget {
                           const Text('Today',
                               style: TextStyle(
                                   fontSize: 24, fontWeight: FontWeight.bold)),
-                          AddButtonWidget()
+                          AddButtonWidget(
+                            onPressed: () {
+                              context.pushNamed(
+                                  RouteDefine.createAppointmentChooseProvider);
+                            },
+                          )
                         ]),
                     const SizedBox(height: 16),
                     WeekDaysRowWidget(),
@@ -205,14 +239,17 @@ class WeekDaysRowWidget extends StatelessWidget {
 }
 
 class AddButtonWidget extends StatelessWidget {
+  final VoidCallback? onPressed;
   const AddButtonWidget({
     super.key,
+    this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
         style: ButtonStyle(
+            enableFeedback: true,
             backgroundColor:
                 WidgetStateProperty.all(ColorManager.buttonEnabledColorLight),
             padding: WidgetStateProperty.all(
@@ -222,7 +259,7 @@ class AddButtonWidget extends StatelessWidget {
           size: 30.r,
           color: ColorManager.iconButtonColorLight,
         ),
-        onPressed: () {},
+        onPressed: onPressed,
         label: Text(
           "Add",
           style: StyleManager.buttonText,

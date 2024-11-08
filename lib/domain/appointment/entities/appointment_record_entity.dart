@@ -45,17 +45,39 @@ class AppointmentRecordEntity {
   //todo: REMOVE IN CASE OF REDUNDANCY
 
   factory AppointmentRecordEntity.update(
+      {required final int id,
       final String? note,
-      final int userId,
+      required final int userId,
       final int? doctorId,
-      final int healthProviderId,
+      final PrescriptionEntity? prescription,
+      required final int healthProviderId,
       final AppointmentType? appointmentType,
       final String? scheduledAt,
-      final AppointmentStatus? status) {
+      final AppointmentStatus? status}) {
     return AppointmentRecordEntity._(
+        id: id,
+        prescription: prescription,
         note: note,
         appointmentType: appointmentType,
         scheduledAt: DateTime.parse(scheduledAt!),
+        status: status,
+        user: UserEntity(id: userId),
+        doctor: UserEntity(doctorProfile: DoctorEntity(id: doctorId)),
+        healthProvider: HealthProviderEntity(id: healthProviderId));
+  }
+
+  factory AppointmentRecordEntity.create(
+      {final String? note,
+      required final int userId,
+      final int? doctorId,
+      required final int healthProviderId,
+      final AppointmentType? appointmentType,
+      required final String scheduledAt,
+      final AppointmentStatus? status}) {
+    return AppointmentRecordEntity._(
+        note: note,
+        appointmentType: appointmentType,
+        scheduledAt: DateTime.parse(scheduledAt),
         status: status,
         user: UserEntity(id: userId),
         doctor: UserEntity(doctorProfile: DoctorEntity(id: doctorId)),
@@ -88,6 +110,5 @@ class AppointmentRecordEntity {
 
   factory AppointmentRecordEntity.fromJson(Map<String, dynamic> json) =>
       _$AppointmentRecordEntityFromJson(json);
-
   Map<String, dynamic> toJson() => _$AppointmentRecordEntityToJson(this);
 }

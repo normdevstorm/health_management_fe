@@ -1,8 +1,8 @@
-import '../repositories/doctor_repository.dart';
+// import '../repositories/doctor_repository.dart';
 
-class DoctorUseCase {
-  final DoctorRepository _repository;
+// class DoctorUseCase {
+//   final DoctorRepository _repository;
 
-  DoctorUseCase(this._repository);
-}
+//   DoctorUseCase(this._repository);
+// }
 
