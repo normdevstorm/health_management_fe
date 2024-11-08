@@ -4,6 +4,7 @@ import 'package:health_management/domain/health_provider/entities/health_provide
 import 'package:health_management/domain/prescription/entities/prescription_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import '../../../app/app.dart';
+part 'appointment_record_entity.g.dart';
 
 @JsonSerializable()
 class AppointmentRecordEntity {
@@ -29,7 +30,6 @@ class AppointmentRecordEntity {
     this.status,
   });
 
-
   const AppointmentRecordEntity({
     this.id,
     this.note,
@@ -45,14 +45,21 @@ class AppointmentRecordEntity {
   //todo: REMOVE IN CASE OF REDUNDANCY
 
   factory AppointmentRecordEntity.update(
-    final String? note,
-    final int userId,
-    final int? doctorId,
-    final int healthProviderId,
-    final AppointmentType? appointmentType,
-    final String? scheduledAt,
-    final AppointmentStatus? status) {
-    return AppointmentRecordEntity._(note: note, appointmentType: appointmentType, scheduledAt: DateTime.parse(scheduledAt!), status: status, user: UserEntity(id: userId), doctor:UserEntity(doctorProfile: DoctorEntity(id: doctorId) ), healthProvider: HealthProviderEntity(id: healthProviderId));
+      final String? note,
+      final int userId,
+      final int? doctorId,
+      final int healthProviderId,
+      final AppointmentType? appointmentType,
+      final String? scheduledAt,
+      final AppointmentStatus? status) {
+    return AppointmentRecordEntity._(
+        note: note,
+        appointmentType: appointmentType,
+        scheduledAt: DateTime.parse(scheduledAt!),
+        status: status,
+        user: UserEntity(id: userId),
+        doctor: UserEntity(doctorProfile: DoctorEntity(id: doctorId)),
+        healthProvider: HealthProviderEntity(id: healthProviderId));
   }
 
   AppointmentRecordEntity copyWith({
@@ -78,4 +85,9 @@ class AppointmentRecordEntity {
       status: status ?? this.status,
     );
   }
+
+  factory AppointmentRecordEntity.fromJson(Map<String, dynamic> json) =>
+      _$AppointmentRecordEntityFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AppointmentRecordEntityToJson(this);
 }

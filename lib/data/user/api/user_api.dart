@@ -33,4 +33,7 @@ abstract class UserApi {
 
   @GET('/users/top-rated')
   Future<ApiResponse<List<DoctorResponse>>> getTopRatedDoctors();
+
+  @GET('/users/get-by-id')
+  Future<ApiResponse<UserResponse>> getUserById(@Query("id") int id);
 }

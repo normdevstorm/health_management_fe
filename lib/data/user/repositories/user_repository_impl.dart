@@ -1,4 +1,3 @@
-
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/data/common/api_response_model.dart';
 import 'package:health_management/data/doctor/models/response/doctor_response.dart';
@@ -18,7 +17,7 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl(this.api, this.logger);
 
   @override
-  Future<String> deleteUser(int userId) async  {
+  Future<String> deleteUser(int userId) async {
     try {
       return await api.deleteUser(userId);
     } catch (e) {
@@ -92,6 +91,17 @@ class UserRepositoryImpl implements UserRepository {
       UpdateUserRequest updateUserRequest, int userId) async {
     try {
       ApiResponse apiResponse = await api.updateUser(updateUserRequest, userId);
+      UserEntity user = (apiResponse.data as UserResponse).toEntity();
+      return user;
+    } catch (e) {
+      throw ApiException.getDioException(e);
+    }
+  }
+
+  @override
+  Future<UserEntity> getUserById(int id) async {
+    try {
+      ApiResponse apiResponse = await api.getUserById(id);
       UserEntity user = (apiResponse.data as UserResponse).toEntity();
       return user;
     } catch (e) {

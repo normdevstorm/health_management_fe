@@ -37,7 +37,8 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<LoginResponse?> login(LoginRequest request) async {
     try {
       LoginResponse apiResponse = await api.login(request);
-      // SharedPreferenceManager.setUserId(apiResponse.userId);
+      // SharedPreferenceManager.setUser(apiResponse.userResponse.toEntity());
+      logger.i(SharedPreferenceManager.getUser());
       SessionManager().setSession(
           LoginEntity(
               accessToken: apiResponse.accessToken,

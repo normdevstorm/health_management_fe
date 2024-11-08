@@ -36,4 +36,8 @@ class UserUseCase {
   Future<List<DoctorEntity>> getTopRatedDoctors() async {
     return await _repository.getTopRatedDoctors();
   }
+
+  Future<UserEntity> getUserById(int id) async {
+    return await _repository.getUserById(id);
+  }
 }

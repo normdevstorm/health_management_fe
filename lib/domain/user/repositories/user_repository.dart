@@ -11,4 +11,5 @@ abstract class UserRepository {
       UpdateUserRequest updateUserRequest, int userId);
   Future<UserEntity> getUserByEmail(String email);
   Future<List<DoctorEntity>> getTopRatedDoctors();
+  Future<UserEntity> getUserById(int id);
 }

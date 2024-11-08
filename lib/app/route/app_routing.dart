@@ -59,7 +59,9 @@ class AppRouting {
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) => MyHomePage(title: 'Home',)
+                        builder: (context, state) => MyHomePage(
+                              title: 'Home',
+                            )
                         // DoctorProfileDetailsScreen(
                         //     doctor: UserEntity(
                         //         id: 1,

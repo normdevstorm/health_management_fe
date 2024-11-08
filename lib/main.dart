@@ -17,6 +17,8 @@ import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/domain/user/usecases/user_usecase.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_event.dart';
 import 'package:logger/logger.dart';
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
@@ -46,6 +48,17 @@ void main() async {
                   authenticationUsecase: getIt<AuthenticationUsecase>(),
                   verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
             ),
+            // BlocProvider(
+            //   create: (context) => EditProfileBloc(
+            //     userUseCase: getIt<UserUseCase>(),
+            //   ),
+            // )
+            BlocProvider(
+                create: (context) => EditProfileBloc(
+                      userUseCase: getIt<
+                          UserUseCase>(), // Đảm bảo rằng UserUseCase đã được đăng ký trong getIt
+                    ) // Thêm sự kiện để tải thông tin user
+                ),
           ],
           child: BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: (context, state) {
