@@ -43,11 +43,8 @@ class AppointmentRecordRequest {
       prescription: UpdatePrescriptionRequest.fromEntity(entity.prescription),
       healthProviderId: entity.healthProvider?.id,
       appointmentType: entity.appointmentType,
-      scheduledAt: entity.scheduledAt == null
-          ? null
-          : DateFormat('yyyy-MM-dd').format(entity.scheduledAt!),
+      scheduledAt: entity.scheduledAt?.toIso8601String().split('.').first,
       status: entity.status,
     );
   }
-
 }

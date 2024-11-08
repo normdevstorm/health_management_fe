@@ -69,9 +69,9 @@ final class UpdateAppointmentRecordEvent extends AppointmentEvent {
 }
 
 final class DeleteAppointmentRecordEvent extends AppointmentEvent {
-  final String appointmentId;
+  final int appointmentId;
 
-  const DeleteAppointmentRecordEvent(this.appointmentId);
+  const DeleteAppointmentRecordEvent({required this.appointmentId});
 
   @override
   List<Object> get props => [appointmentId];

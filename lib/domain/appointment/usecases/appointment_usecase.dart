@@ -18,7 +18,7 @@ class AppointmentUseCase {
     return _repository.updateAppointmentRecord(appointment);
   }
 
-  Future<String> deleteAppointmentRecord(String appointmentId) async {
+  Future<String> deleteAppointmentRecord(int appointmentId) async {
     return _repository.deleteAppointmentRecord(appointmentId);
   }
 }

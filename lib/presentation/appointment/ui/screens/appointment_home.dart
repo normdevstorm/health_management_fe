@@ -77,13 +77,14 @@ class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
                     message: state.errorMessage ?? 'An error occurred');
                 return;
               }
-              if (state.runtimeType == CreateAppointmentRecordState && state.status == BlocStatus.success) {
+              if ([CreateAppointmentRecordState, CancelAppointmentRecordState].contains(state.runtimeType) && state.status == BlocStatus.success) {
                     context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
               }
+
             },
             buildWhen: (previous, current) =>
                 previous.status != current.status &&
-                current.runtimeType != CreateAppointmentRecordState,
+                ![CreateAppointmentRecordState, CancelAppointmentRecordState].contains(current.runtimeType),
             builder: (context, state) {
               List<AppointmentRecordEntity> appointmentRecords = [];
               bool isLoading = true;
@@ -160,8 +161,15 @@ class ListAppointmentRecordWidget extends StatelessWidget {
         (index) => Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: AppointmentCard(
+            onCancel: () {
+              if(appointmentRecords[index].id != null) {
+                context.read<AppointmentBloc>().add(
+                  DeleteAppointmentRecordEvent(
+                    appointmentId:appointmentRecords[index].id!));
+              }
+            },
             doctorType:
-                appointmentRecords[index].doctor?.doctorProfile?.specialization,
+                appointmentRecords[index].doctor?.doctorProfile?.specialization?.name.toUpperCase(),
             doctorName: appointmentRecords[index].doctor?.firstName,
             time: appointmentRecords[index].scheduledAt != null
                 ? DateConverter.convertToYMD(
@@ -267,25 +275,22 @@ class AddButtonWidget extends StatelessWidget {
   }
 }
 
-class AppointmentCard extends StatefulWidget {
+class AppointmentCard extends StatelessWidget {
   final String? doctorType;
   final String? doctorName;
   final String? time;
   final bool isCompleted;
+  final VoidCallback? onCancel;
 
   const AppointmentCard({
     super.key,
+     this.onCancel,
     this.doctorType,
     this.doctorName,
     this.time,
     this.isCompleted = false,
   });
 
-  @override
-  State<AppointmentCard> createState() => _AppointmentCardState();
-}
-
-class _AppointmentCardState extends State<AppointmentCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -313,11 +318,11 @@ class _AppointmentCardState extends State<AppointmentCard> {
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(
                   //todo: to localize this text later on
-                  widget.doctorName ?? "Loading...",
+                  doctorName ?? "Loading...",
                   style: StyleManager.buttonText,
                 ),
                 const SizedBox(height: 8),
-                Text(widget.doctorType ?? "Loading...",
+                Text(doctorType ?? "Loading...",
                     style: StyleManager.buttonText),
                 Row(
                   children: List.generate(5, (index) {
@@ -329,7 +334,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  widget.time ?? "Loading...",
+                  time ?? "Loading...",
                   style: StyleManager.buttonText,
                 ),
                 Row(
@@ -351,7 +356,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                         Icon(Icons.access_time, color: Color(0xFFEFE8E9)),
                         const SizedBox(width: 8),
                         Text(
-                          widget.time ?? "Loading...",
+                          time ?? "Loading...",
                           style: const TextStyle(
                               fontSize: 16, color: Color(0xFFEFE8E9)),
                         ),
@@ -373,13 +378,13 @@ class _AppointmentCardState extends State<AppointmentCard> {
               ),
             ],
           ),
-          if (!widget.isCompleted) ...[
+          if (!isCompleted) ...[
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed:  onCancel,
                     child: const Text('Cancel'),
                   ),
                 ),

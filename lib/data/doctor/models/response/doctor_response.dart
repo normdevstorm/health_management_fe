@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../../../../app/app.dart';
 import '../../../../domain/doctor/entities/doctor_entity.dart';
 part 'doctor_response.g.dart';
 
@@ -7,7 +8,7 @@ class DoctorResponse {
   final int? id;
   //todo: create user entitya
   // final UserEntity user;
-  final String? specialization;
+  final HospitalSpecialty? specialization;
   final double? experience;
   final String? qualification;
   final double? rating;

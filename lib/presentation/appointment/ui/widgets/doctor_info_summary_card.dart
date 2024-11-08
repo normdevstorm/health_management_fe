@@ -23,7 +23,7 @@ class DoctorInfoSummaryCard extends StatelessWidget {
       child: ListTile(
         minVerticalPadding: 30.h,
         title: Text("Specialization"),
-        subtitle: Text(doctor.doctorProfile?.specialization ?? ""),
+        subtitle: Text(doctor.doctorProfile?.specialization?.name.toUpperCase() ?? ""),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Image.asset(

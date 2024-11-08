@@ -50,7 +50,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
   }
 
   @override
-  Future<String> deleteAppointmentRecord(String appointmentId) async {
+  Future<String> deleteAppointmentRecord(int appointmentId) async {
     try {
       final response = await api.deleteAppointmentRecord(appointmentId);
       return response.data!;

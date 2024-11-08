@@ -69,13 +69,13 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
 
   _onDeleteAppointmentRecordEvent(DeleteAppointmentRecordEvent event,
       Emitter<AppointmentState> emit) async {
-    emit(AppointmentState.loading());
+    emit(CancelAppointmentRecordState.loading());
     try {
-      final appointmentId =
+      final String message =
           await appointmentUseCase.deleteAppointmentRecord(event.appointmentId);
-      emit(AppointmentState.success(appointmentId));
+      emit(CancelAppointmentRecordState.success(message));
     } catch (e) {
-      emit(AppointmentState.error(e.toString()));
+      emit(CancelAppointmentRecordState.error(e.toString()));
     }
   }
 
@@ -90,7 +90,7 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       emit(CreateAppointmentRecordState.success(
           createdAppointmentRecordEntity: appointmentRecord));
     } catch (e) {
-      emit(CreateAppointmentRecordState.error(e.toString()));
+      emit(CreateAppointmentRecordState.error(e.toString(),createdAppointmentRecordEntity: filledAppointmentRecordEntity));
     }
   }
 

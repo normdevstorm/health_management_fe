@@ -32,7 +32,7 @@ class ChooseDoctorScreen extends StatelessWidget {
               }
             },
             doctorName: '${doctor.firstName} ${doctor.lastName}',
-            doctorSpecialization: doctor.doctorProfile?.specialization ?? "",
+            doctorSpecialization: doctor.doctorProfile?.specialization?.name.toUpperCase() ?? "",
             experience: doctor.doctorProfile?.experience.toString() ?? "",
             reviews: doctor.doctorProfile?.rating.toString() ?? "",
             image: 'assets/images/placeholder.png',

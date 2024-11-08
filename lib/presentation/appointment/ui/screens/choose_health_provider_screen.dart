@@ -7,6 +7,7 @@ import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/appointment/appointment_bloc.dart';
 import 'package:health_management/presentation/appointment/ui/widgets/health_provider_item.dart';
 import 'package:health_management/presentation/appointment/ui/widgets/medical_department_item.dart';
@@ -71,10 +72,18 @@ class ChooseHealthProviderScreen extends StatelessWidget {
                         isLoading: isLoading,
                         child: SizedBox(
                           height: 250.h,
-                          child: MedicalDepartmentListView(
-                            selectedHealthSpecialty:
-                                selectedHealthSpecialtyNotifier,
-                            hospitalSpecialties: HospitalSpecialty.values,
+                          child: ValueListenableBuilder(
+                            valueListenable: selectedHealthProviderNotifier,
+                            builder: (context, value, child) =>
+                                MedicalDepartmentListView(
+                              selectedHealthSpecialty:
+                                  selectedHealthSpecialtyNotifier,
+                              hospitalSpecialties: HospitalSpecialty.values,
+                              doctorsCount: _getDoctorsCount(value == null
+                                  ? []
+                                  : healthProviders.elementAt(value).doctors ??
+                                      []),
+                            ),
                           ),
                         ),
                       )
@@ -105,7 +114,8 @@ class ChooseHealthProviderScreen extends StatelessWidget {
                   )));
               context.pushNamed(RouteDefine.createAppointmentChooseDoctor,
                   extra: healthProviders[selectedHealthProviderNotifier.value!]
-                          .doctors ??
+                          .doctors
+                          ?.where((e) => e.doctorProfile?.specialization == HospitalSpecialty.values[selectedHealthSpecialtyNotifier.value!] ,).toList() ??
                       []);
             },
             child: Icon(
@@ -116,6 +126,24 @@ class ChooseHealthProviderScreen extends StatelessWidget {
         )
       ],
     );
+  }
+
+  Map<HospitalSpecialty, int> _getDoctorsCount(
+    List<UserEntity> doctors,
+  ) {
+    Map<HospitalSpecialty, int> specialtyCount = {
+      for (var specialty in HospitalSpecialty.values) specialty: 0
+    };
+    for (var doctor in doctors) {
+      for (var specialty in HospitalSpecialty.values) {
+        if (doctor.doctorProfile?.specialization == specialty) {
+          specialtyCount[specialty] = specialtyCount[specialty]! + 1;
+        } else {
+          continue;
+        }
+      }
+    }
+    return specialtyCount;
   }
 }
 
@@ -162,8 +190,10 @@ class HealthProviderListWidget extends StatelessWidget {
 class MedicalDepartmentListView extends StatelessWidget {
   final List<HospitalSpecialty> hospitalSpecialties;
   final ValueNotifier<int?> selectedHealthSpecialty;
+  final Map<HospitalSpecialty, int> doctorsCount;
   const MedicalDepartmentListView(
       {required this.selectedHealthSpecialty,
+      required this.doctorsCount,
       this.hospitalSpecialties = HospitalSpecialty.values,
       super.key});
 
@@ -181,8 +211,8 @@ class MedicalDepartmentListView extends StatelessWidget {
                   (selectedIndex == index) ? null : index;
             },
             isSelected: selectedIndex == index,
-            departmentName: hospitalSpecialties[index].name,
-            doctorsCount: 10,
+            departmentName: hospitalSpecialties[index].name.toUpperCase(),
+            doctorsCount: doctorsCount[hospitalSpecialties[index]] ?? 0,
           ),
         );
       },

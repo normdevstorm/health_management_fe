@@ -41,6 +41,40 @@ class AppointmentState<T> extends Equatable {
   List<Object?> get props => [status, data, errorMessage];
 }
 
+
+class CancelAppointmentRecordState extends AppointmentState {
+  const CancelAppointmentRecordState._({
+     super.data,
+    required super.status,
+    super.errorMessage,
+  }) : super._();
+  factory CancelAppointmentRecordState.initial() {
+    return CancelAppointmentRecordState._(
+      status: BlocStatus.initial,
+    );
+  }
+
+  factory CancelAppointmentRecordState.loading() {
+    return CancelAppointmentRecordState._(
+      status: BlocStatus.loading,
+    );
+  }
+
+  factory CancelAppointmentRecordState.success(String  message) {
+    return CancelAppointmentRecordState._(
+      status: BlocStatus.success,
+      data: message,
+    );
+  }
+
+  factory CancelAppointmentRecordState.error(String errorMessage) {
+    return CancelAppointmentRecordState._(
+      status: BlocStatus.error,
+      errorMessage: errorMessage,
+    );
+  }
+}
+
 class CreateAppointmentRecordState extends AppointmentState {
   // final AppointmentRecordEntity? data;
   const CreateAppointmentRecordState._({
@@ -76,10 +110,10 @@ class CreateAppointmentRecordState extends AppointmentState {
     );
   }
 
-  factory CreateAppointmentRecordState.error(String errorMessage) {
+  factory CreateAppointmentRecordState.error(String errorMessage, {required AppointmentRecordEntity createdAppointmentRecordEntity}) {
     return CreateAppointmentRecordState._(
       status: BlocStatus.error,
-      data: null,
+      data: createdAppointmentRecordEntity,
       errorMessage: errorMessage,
     );
   }

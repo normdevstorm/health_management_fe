@@ -25,7 +25,6 @@ enum AppointmentStatus {
   cancelled,
   @JsonValue('COMPLETED')
   completed,
-
 }
 
 enum MedicalConditionStatus {
@@ -84,63 +83,12 @@ enum BlocStatus {
 }
 
 enum HospitalSpecialty {
-  @JsonValue('EMERGENCY_MEDICINE')
-  emergencyMedicine,
-
-  @JsonValue('INTERNAL_MEDICINE')
-  internalMedicine,
-
-  @JsonValue('PEDIATRICS')
-  pediatrics,
-
-  @JsonValue('SURGERY')
-  surgery,
-
-  @JsonValue('OBSTETRICS_AND_GYNECOLOGY')
-  obstetricsAndGynecology,
-
-  @JsonValue('CARDIOLOGY')
-  cardiology,
-
-  @JsonValue('NEUROLOGY')
-  neurology,
-
-  @JsonValue('ORTHOPEDICS')
-  orthopedics,
-
-  @JsonValue('ONCOLOGY')
-  oncology,
-
-  @JsonValue('RADIOLOGY')
-  radiology,
-
-  @JsonValue('ANESTHESIOLOGY')
-  anesthesiology,
-
-  @JsonValue('GASTROENTEROLOGY')
-  gastroenterology,
-
-  @JsonValue('ENDOCRINOLOGY')
-  endocrinology,
-
-  @JsonValue('PSYCHIATRY')
-  psychiatry,
-
-  @JsonValue('PULMONOLOGY')
-  pulmonology,
-
-  @JsonValue('NEPHROLOGY')
-  nephrology,
-
-  @JsonValue('DERMATOLOGY')
-  dermatology,
-
-  @JsonValue('UROLOGY')
-  urology,
-
-  @JsonValue('RHEUMATOLOGY')
-  rheumatology,
-
-  @JsonValue('INFECTIOUS_DISEASE')
-  infectiousDisease,
+  @JsonValue("NEUROLOGIST")
+  neurologist,
+  @JsonValue("PEDIATRICIAN")
+  pediatrician,
+  @JsonValue("DIETICIAN")
+  dietician,
+  @JsonValue("PSYCHOLOGIST")
+  psychologist,
 }

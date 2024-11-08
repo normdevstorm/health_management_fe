@@ -1,10 +1,11 @@
+import 'package:health_management/app/app.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'doctor_entity.g.dart';
 
 @JsonSerializable()
 class DoctorEntity {
   final int? id;
-  final String? specialization;
+  final HospitalSpecialty? specialization;
   final double? experience;
   final String? qualification;
   final double? rating;
@@ -21,7 +22,7 @@ class DoctorEntity {
 
   DoctorEntity copyWith({
     int? id,
-    String? specialization,
+    HospitalSpecialty? specialization,
     double? experience,
     String? qualification,
     double? rating,

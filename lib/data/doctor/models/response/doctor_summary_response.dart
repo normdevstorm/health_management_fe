@@ -8,7 +8,7 @@ part 'doctor_summary_response.g.dart';
 
 @JsonSerializable()
 class DoctorSummaryResponse extends UserSummaryResponse {
-  final String? specialization;
+  final HospitalSpecialty? specialization;
   final double? experience;
   final String? qualification;
   final double? rating;

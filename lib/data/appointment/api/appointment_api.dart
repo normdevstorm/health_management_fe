@@ -21,5 +21,5 @@ abstract class AppointmentApi {
       @Body() UpdateAppointmentRecordRequest appointment);
   @DELETE('/appointment-record/delete/{id}')
   Future<ApiResponse<String>> deleteAppointmentRecord(
-      @Path('id') String appointmentId);
+      @Path('id') int appointmentId);
 }

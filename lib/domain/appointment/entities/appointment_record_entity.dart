@@ -45,8 +45,7 @@ class AppointmentRecordEntity {
   //todo: REMOVE IN CASE OF REDUNDANCY
 
   factory AppointmentRecordEntity.update(
-      {
-      required final int id,
+      {required final int id,
       final String? note,
       required final int userId,
       final int? doctorId,
@@ -73,7 +72,7 @@ class AppointmentRecordEntity {
       final int? doctorId,
       required final int healthProviderId,
       final AppointmentType? appointmentType,
-      required final  String scheduledAt,
+      required final String scheduledAt,
       final AppointmentStatus? status}) {
     return AppointmentRecordEntity._(
         note: note,
