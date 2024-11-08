@@ -46,55 +46,30 @@ class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
     context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
   }
 
-  final shimmerGradient = LinearGradient(
-    colors: [
-      Color(0xFFEBEBF4),
-      Color(0xFFF4F4F4),
-      Color(0xFFEBEBF4),
-    ],
-    stops: [
-      0.1,
-      0.3,
-      0.4,
-    ],
-    begin: Alignment(-1.0, -0.3),
-    end: Alignment(1.0, 0.3),
-    tileMode: TileMode.clamp,
-  );
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(15),
-          child: BlocConsumer<AppointmentBloc, AppointmentState>(
-            listenWhen: (previous, current) => previous != current,
-            listener: (context, state) {
-              if (state.status == BlocStatus.error) {
-                ToastManager.showToast(
-                    context: context,
-                    message: state.errorMessage ?? 'An error occurred');
-                return;
-              }
-              if ([CreateAppointmentRecordState, CancelAppointmentRecordState].contains(state.runtimeType) && state.status == BlocStatus.success) {
-                    context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
-              }
-
-            },
-            buildWhen: (previous, current) =>
-                previous.status != current.status &&
-                ![CreateAppointmentRecordState, CancelAppointmentRecordState].contains(current.runtimeType),
-            builder: (context, state) {
-              List<AppointmentRecordEntity> appointmentRecords = [];
-              bool isLoading = true;
-              if (state.status == BlocStatus.success) {
-                isLoading = false;
-                appointmentRecords =
-                    state.data as List<AppointmentRecordEntity>;
-              }
-              return Shimmer(
-                linearGradient: shimmerGradient,
+          child: BlocListener<AppointmentBloc, AppointmentState>(
+              listenWhen: (previous, current) => previous != current,
+              listener: (context, state) {
+                if (state.status == BlocStatus.error) {
+                  ToastManager.showToast(
+                      context: context,
+                      message: state.errorMessage ?? 'An error occurred');
+                  return;
+                }
+                if ([CreateAppointmentRecordState, CancelAppointmentRecordState]
+                        .contains(state.runtimeType) &&
+                    state.status == BlocStatus.success) {
+                  context
+                      .read<AppointmentBloc>()
+                      .add(GetAllAppointmentRecordEvent());
+                }
+              },
+              child: Shimmer(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -119,26 +94,59 @@ class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
                     const SizedBox(height: 16),
                     WeekDaysRowWidget(),
                     ShadowEdgeWidget(),
-                    ShimmerLoading(
-                        isLoading: isLoading,
-                        child:
-                            SizedBox(height: 200.r, child: TimelineSchedule())),
+                    BlocBuilder<AppointmentBloc, AppointmentState>(
+                      buildWhen: (previous, current) =>
+                          previous.status != current.status &&
+                          ![
+                            CreateAppointmentRecordState,
+                            CancelAppointmentRecordState
+                          ].contains(current.runtimeType),
+                      builder: (context, state) {
+                        //todo: handle data for dis widget later on
+                        // List<AppointmentRecordEntity> appointmentRecords = [];
+                        bool isLoading = true;
+                        if (state.status == BlocStatus.success) {
+                          isLoading = false;
+                          // appointmentRecords =
+                          //     state.data as List<AppointmentRecordEntity>;
+                        }
+                        return ShimmerLoading(
+                            isLoading: isLoading,
+                            child: SizedBox(
+                                height: 200.r, child: TimelineSchedule()));
+                      },
+                    ),
                     ShadowEdgeWidget(),
-                    ShimmerLoading(
-                      isLoading: isLoading,
-                      child: ListAppointmentRecordWidget(
-                          appointmentRecords: isLoading
-                              ? List.generate(
-                                  3,
-                                  (index) => AppointmentRecordEntity(),
-                                )
-                              : appointmentRecords),
+                    BlocBuilder<AppointmentBloc, AppointmentState>(
+                      buildWhen: (previous, current) =>
+                          previous.status != current.status &&
+                          ![
+                            CreateAppointmentRecordState,
+                            CancelAppointmentRecordState
+                          ].contains(current.runtimeType),
+                      builder: (context, state) {
+                        List<AppointmentRecordEntity> appointmentRecords = [];
+                        bool isLoading = true;
+                        if (state.status == BlocStatus.success) {
+                          isLoading = false;
+                          appointmentRecords =
+                              state.data as List<AppointmentRecordEntity>;
+                        }
+                        return ShimmerLoading(
+                          isLoading: isLoading,
+                          child: ListAppointmentRecordWidget(
+                              appointmentRecords: isLoading
+                                  ? List.generate(
+                                      3,
+                                      (index) => AppointmentRecordEntity(),
+                                    )
+                                  : appointmentRecords),
+                        );
+                      },
                     )
                   ],
                 ),
-              );
-            },
-          ),
+              )),
         ),
       ),
     );
@@ -162,14 +170,18 @@ class ListAppointmentRecordWidget extends StatelessWidget {
           padding: const EdgeInsets.only(top: 10.0),
           child: AppointmentCard(
             onCancel: () {
-              if(appointmentRecords[index].id != null) {
+              if (appointmentRecords[index].id != null) {
                 context.read<AppointmentBloc>().add(
-                  DeleteAppointmentRecordEvent(
-                    appointmentId:appointmentRecords[index].id!));
+                    DeleteAppointmentRecordEvent(
+                        appointmentId: appointmentRecords[index].id!));
               }
             },
-            doctorType:
-                appointmentRecords[index].doctor?.doctorProfile?.specialization?.name.toUpperCase(),
+            doctorType: appointmentRecords[index]
+                .doctor
+                ?.doctorProfile
+                ?.specialization
+                ?.name
+                .toUpperCase(),
             doctorName: appointmentRecords[index].doctor?.firstName,
             time: appointmentRecords[index].scheduledAt != null
                 ? DateConverter.convertToYMD(
@@ -284,7 +296,7 @@ class AppointmentCard extends StatelessWidget {
 
   const AppointmentCard({
     super.key,
-     this.onCancel,
+    this.onCancel,
     this.doctorType,
     this.doctorName,
     this.time,
@@ -384,7 +396,7 @@ class AppointmentCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed:  onCancel,
+                    onPressed: onCancel,
                     child: const Text('Cancel'),
                   ),
                 ),

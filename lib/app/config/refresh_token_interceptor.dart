@@ -58,7 +58,6 @@ class RefreshTokenInterceptor extends Interceptor {
               .add(const CheckLoginStatusEvent());
           throw ApiException.getDioException(e);
         }
-        // Adding errored request to the queue
       }
     } else {
       return handler.next(err);
