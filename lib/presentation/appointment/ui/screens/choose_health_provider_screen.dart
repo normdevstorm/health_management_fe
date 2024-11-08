@@ -106,9 +106,9 @@ class ChooseHealthProviderScreen extends StatelessWidget {
                 return;
               }
 
-              context.read<AppointmentBloc>().add(
-                      CreateAppointmentRecordChooseHealthProviderEvent(
-                          AppointmentRecordEntity(
+              context
+                  .read<AppointmentBloc>()
+                  .add(CollectDataHealthProviderEvent(AppointmentRecordEntity(
                     healthProvider:
                         healthProviders[selectedHealthProviderNotifier.value!],
                   )));

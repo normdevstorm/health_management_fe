@@ -26,8 +26,7 @@ class ChooseDoctorScreen extends StatelessWidget {
             onTap: () {
               if (doctor.doctorProfile?.id != null) {
                 context.read<AppointmentBloc>().add(
-                    CreateAppointmentRecordChooseDoctorEvent(
-                        doctorId: doctor.doctorProfile!.id!));
+                    ColectDataDoctorEvent(doctorId: doctor.doctorProfile!.id!));
                 context.pushNamed(RouteDefine.createAppointmentChooseTime);
               }
             },
@@ -42,8 +41,6 @@ class ChooseDoctorScreen extends StatelessWidget {
     );
   }
 }
-
-  
 
 class DoctorCard extends StatelessWidget {
   final String doctorName;

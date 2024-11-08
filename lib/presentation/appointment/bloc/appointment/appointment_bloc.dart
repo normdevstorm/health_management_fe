@@ -20,12 +20,12 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
         (event, emit) => _onGetAppointmentDetailEvent(event, emit));
     on<CreateAppointmentRecordEvent>(
         (event, emit) => _onCreateAppointmentRecordEvent(event, emit));
-    on<CreateAppointmentRecordChooseHealthProviderEvent>((event, emit) =>
-        _onCreateAppointmentRecordChooseHealthProviderEvent(event, emit));
-    on<CreateAppointmentRecordChooseDoctorEvent>((event, emit) =>
-        _onCreateAppointmentRecordChooseDoctorEvent(event, emit));
-    on<CreateAppointmentRecordChooseDatetimeEvent>((event, emit) =>
-        _onCreateAppointmentRecordChooseDatetimeEvent(event, emit));
+    on<CollectDataHealthProviderEvent>(
+        (event, emit) => _onCollectDataHealthProviderEvent(event, emit));
+    on<ColectDataDoctorEvent>(
+        (event, emit) => _onColectDataDoctorEvent(event, emit));
+    on<CollectDataDatetimeEvent>((event, emit) =>
+        _onCollectDataDatetimeEvent(event, emit));
     on<UpdateAppointmentRecordEvent>(
         (event, emit) => _onUpdateAppointmentRecordEvent(event, emit));
     on<DeleteAppointmentRecordEvent>(
@@ -83,20 +83,19 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       Emitter<AppointmentState> emit) async {
     AppointmentRecordEntity filledAppointmentRecordEntity =
         state.data as AppointmentRecordEntity;
-    emit(CreateAppointmentRecordState.loading());
+    emit(CreateAppointmentRecordState.loading(createAppointmentRecordEntity: filledAppointmentRecordEntity));
     try {
       final appointmentRecord = await appointmentUseCase
           .createAppointmentRecord(filledAppointmentRecordEntity);
       emit(CreateAppointmentRecordState.success(
           createdAppointmentRecordEntity: appointmentRecord));
     } catch (e) {
-      emit(CreateAppointmentRecordState.error(e.toString(),createdAppointmentRecordEntity: filledAppointmentRecordEntity));
+      emit(CreateAppointmentRecordState.error(e.toString(), createdAppointmentRecordEntity: filledAppointmentRecordEntity));
     }
   }
 
-  _onCreateAppointmentRecordChooseHealthProviderEvent(
-      CreateAppointmentRecordChooseHealthProviderEvent event,
-      Emitter<AppointmentState> emit) {
+  _onCollectDataHealthProviderEvent(
+      CollectDataHealthProviderEvent event, Emitter<AppointmentState> emit) {
     emit(CreateAppointmentRecordState.initial());
     final int? providerId = event.appointmentRecordEntity.healthProvider?.id;
     emit(CreateAppointmentRecordState.inProgress(
@@ -107,9 +106,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
                 appointmentType: AppointmentType.inPerson)));
   }
 
-  _onCreateAppointmentRecordChooseDoctorEvent(
-      CreateAppointmentRecordChooseDoctorEvent event,
-      Emitter<AppointmentState> emit) {
+  _onColectDataDoctorEvent(
+      ColectDataDoctorEvent event, Emitter<AppointmentState> emit) {
     final int doctorId = event.doctorId;
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
@@ -118,9 +116,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
                     UserEntity(doctorProfile: DoctorEntity(id: doctorId)))));
   }
 
-  _onCreateAppointmentRecordChooseDatetimeEvent(
-      CreateAppointmentRecordChooseDatetimeEvent event,
-      Emitter<AppointmentState> emit) {
+  _onCollectDataDatetimeEvent(
+      CollectDataDatetimeEvent event, Emitter<AppointmentState> emit) {
     final DateTime scheduledAt = event.scheduledAt;
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)

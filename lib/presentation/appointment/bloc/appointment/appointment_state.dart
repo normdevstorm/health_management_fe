@@ -95,10 +95,10 @@ class CreateAppointmentRecordState extends AppointmentState {
       data: createAppointmentRecordEntity,
     );
   } 
-   factory CreateAppointmentRecordState.loading() {
+   factory CreateAppointmentRecordState.loading({required AppointmentRecordEntity createAppointmentRecordEntity}) {
     return CreateAppointmentRecordState._(
       status: BlocStatus.loading,
-      data: null,
+      data: createAppointmentRecordEntity,
     );
   }
 

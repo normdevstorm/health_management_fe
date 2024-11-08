@@ -36,6 +36,7 @@ class RefreshTokenInterceptor extends Interceptor {
             for (var request in failedRequests) {
               request['handler'].resolve(request['err']);
             }
+            failedRequests.clear();
           } else {
             err.copyWith(message: 'Failed to refresh token');
             BlocProvider.of<AuthenticationBloc>(

@@ -32,28 +32,28 @@ final class CreateAppointmentRecordEvent extends AppointmentEvent {
   List<Object> get props => [];
 }
 
-final class CreateAppointmentRecordChooseHealthProviderEvent extends AppointmentEvent {
+final class CollectDataHealthProviderEvent extends AppointmentEvent {
   final AppointmentRecordEntity appointmentRecordEntity;
 
-  const CreateAppointmentRecordChooseHealthProviderEvent(this.appointmentRecordEntity);
+  const CollectDataHealthProviderEvent(this.appointmentRecordEntity);
 
   @override
   List<Object> get props => [appointmentRecordEntity];
 }
 
-final class CreateAppointmentRecordChooseDoctorEvent extends AppointmentEvent {
+final class ColectDataDoctorEvent extends AppointmentEvent {
   final int doctorId;
 
-  const CreateAppointmentRecordChooseDoctorEvent({required this.doctorId});
+  const ColectDataDoctorEvent({required this.doctorId});
 
   @override
   List<Object> get props => [doctorId];
 }
 
-final class CreateAppointmentRecordChooseDatetimeEvent extends AppointmentEvent {
+final class CollectDataDatetimeEvent extends AppointmentEvent {
   final DateTime scheduledAt;
 
-  const CreateAppointmentRecordChooseDatetimeEvent({required this.scheduledAt});
+  const CollectDataDatetimeEvent({required this.scheduledAt});
 
   @override
   List<Object> get props => [scheduledAt];
