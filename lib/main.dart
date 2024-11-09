@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
@@ -11,6 +12,7 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
+import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/domain/user/usecases/user_usecase.dart';
@@ -95,7 +97,7 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
 }
 
 class MyApp extends StatelessWidget {
-   const MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -148,17 +150,17 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
     );
     return ScreenUtilInit(
-        designSize: const Size(375, 812),
-        useInheritedMediaQuery: true,
-        builder: (context, child) => Directionality(
-              textDirection: ui.TextDirection.ltr,
-              child: Stack(children: [
-                mainApp,
-                Positioned(bottom: 5.sp, right: 5.sp, child: ChuckerLogButton())
-              ]),
-            ),
-        child: mainApp,
-        );
+      designSize: const Size(375, 812),
+      useInheritedMediaQuery: true,
+      builder: (context, child) => Directionality(
+        textDirection: ui.TextDirection.ltr,
+        child: Stack(children: [
+          mainApp,
+          Positioned(bottom: 5.sp, right: 5.sp, child: ChuckerLogButton())
+        ]),
+      ),
+      child: mainApp,
+    );
   }
 }
 
@@ -241,19 +243,19 @@ class _SkeletonPageState extends State<SkeletonPage> {
     super.initState();
     _scrollController = ScrollController();
     _navBarVisibleNotifier = ValueNotifier<bool>(true);
-    // _scrollController.addListener(() {
-    //   if (_scrollController.position.userScrollDirection ==
-    //       ScrollDirection.reverse) {
-    //     if (_navBarVisibleNotifier.value) {
-    //       _navBarVisibleNotifier.value = false;
-    //     }
-    //   } else if (_scrollController.position.userScrollDirection ==
-    //       ScrollDirection.forward) {
-    //     if (!_navBarVisibleNotifier.value) {
-    //       _navBarVisibleNotifier.value = true;
-    //     }
-    //   }
-    // });
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (_navBarVisibleNotifier.value) {
+          _navBarVisibleNotifier.value = false;
+        }
+      } else if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (!_navBarVisibleNotifier.value) {
+          _navBarVisibleNotifier.value = true;
+        }
+      }
+    });
   }
 
   @override
@@ -296,33 +298,42 @@ class _SkeletonPageState extends State<SkeletonPage> {
           ),
         ));
       },
-      child: ValueListenableBuilder(
-        valueListenable: _navBarVisibleNotifier,
-        builder: (context, navbarVisible, child) => AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          height: navbarVisible ? kBottomNavigationBarHeight * 1.2 : 0.0,
-          child: ClipRRect(
-            borderRadius: const BorderRadius.all(Radius.circular(50)),
-            child: BottomNavigationBar(
-                enableFeedback: false,
-                currentIndex: widget.child.currentIndex,
-                selectedItemColor: Colors.blueAccent,
-                unselectedItemColor: Colors.grey,
-                onTap: (value) => widget.child.goBranch(value),
-                items: const [
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.home_rounded), label: "Home"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.inbox_rounded), label: "Chat"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.calendar_month_rounded),
-                      label: "Appointment"),
-                  BottomNavigationBarItem(
-                      icon: Icon(Icons.person_rounded), label: "Profile"),
-                ]),
-          ),
-        ),
-      ),
+      child: _hideBottomNavBar(context)
+          ? const SizedBox()
+          : ValueListenableBuilder(
+              valueListenable: _navBarVisibleNotifier,
+              builder: (context, navbarVisible, child) => AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                height: navbarVisible ? kBottomNavigationBarHeight * 1.2 : 0.0,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.all(Radius.circular(50)),
+                  child: BottomNavigationBar(
+                      enableFeedback: false,
+                      currentIndex: widget.child.currentIndex,
+                      selectedItemColor: Colors.blueAccent,
+                      unselectedItemColor: Colors.grey,
+                      onTap: (value) => widget.child.goBranch(value),
+                      items: const [
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.home_rounded), label: "Home"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.inbox_rounded), label: "Chat"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.calendar_month_rounded),
+                            label: "Appointment"),
+                        BottomNavigationBarItem(
+                            icon: Icon(Icons.person_rounded), label: "Profile"),
+                      ]),
+                ),
+              ),
+            ),
     );
   }
+
+  bool _hideBottomNavBar(BuildContext context) => GoRouter.of(context)
+      .routeInformationProvider
+      .value
+      .uri
+      .path
+      .startsWith(RegexManager.hideBottomNavBarPaths);
 }

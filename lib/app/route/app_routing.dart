@@ -13,10 +13,8 @@ import 'route_define.dart';
 
 ///TODO: group naviagtor keys into one separate file
 
-final GlobalKey<NavigatorState> rootNavigatorHome =
-    GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> rootNavigatorChat =
-    GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> rootNavigatorHome = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> rootNavigatorChat = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> rootNavigatorAppointment =
     GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> rootNavigatorProfile =
@@ -27,10 +25,11 @@ final GlobalKey<NavigatorState> globalRootNavigatorKey =
     GlobalKey<NavigatorState>();
 
 class AppRouting {
-  static final RouteObserver<ModalRoute<void>> _routeObserver = RouteObserver<ModalRoute<void>>();
-  static  GoRouter get shellRouteConfig => _shellRoute;
+  static final RouteObserver<ModalRoute<void>> _routeObserver =
+      RouteObserver<ModalRoute<void>>();
+  static GoRouter get shellRouteConfig => _shellRoute;
   static final GoRouter _shellRoute = GoRouter(
-      observers: [ChuckerFlutter.navigatorObserver,_routeObserver],
+      observers: [ChuckerFlutter.navigatorObserver, _routeObserver],
       navigatorKey: globalRootNavigatorKey,
       initialLocation: '/',
       debugLogDiagnostics: true,
@@ -51,6 +50,7 @@ class AppRouting {
           builder: (context, state, navigationShell) => navigationShell,
         ),
         StatefulShellRoute.indexedStack(
+            parentNavigatorKey: globalRootNavigatorKey,
             builder: (context, state, navigationShell) =>
                 SkeletonPage(title: "Skeleton page", child: navigationShell),
             branches: <StatefulShellBranch>[
@@ -62,8 +62,7 @@ class AppRouting {
                         path: '/home',
                         builder: (context, state) => MyHomePage(
                               title: 'Home',
-                            )
-                        )
+                            ))
                   ]),
               StatefulShellBranch(
                   navigatorKey: rootNavigatorChat,

@@ -25,106 +25,108 @@ class ChooseHealthProviderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
-          child: BlocConsumer<HealthProviderBloc, HealthProviderState>(
-            listener: (context, state) {
-              if (state.status == BlocStatus.error) {
-                ToastManager.showToast(
-                    context: context, message: state.errorMessage!);
-              }
-            },
-            builder: (context, state) {
-              final bool isLoading = (state.status == BlocStatus.loading);
-              if (state.status == BlocStatus.success) {
-                healthProviders = state.data as List<HealthProviderEntity>;
-              }
-              return Shimmer(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      30.verticalSpace,
-                      Text(
-                        "Health Provider",
-                        style: StyleManager.title.copyWith(fontSize: 20.sp),
-                      ),
-                      10.verticalSpace,
-                      ShimmerLoading(
-                        isLoading: isLoading,
-                        child: SizedBox(
-                          height: 200.h,
-                          child: HealthProviderListWidget(
-                              isLoading: isLoading,
-                              healthProviders: healthProviders,
-                              selectedHealthProviderNotifier:
-                                  selectedHealthProviderNotifier),
+    return Scaffold(
+      body: Stack(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10.w, right: 10.w, top: 10.h),
+            child: BlocConsumer<HealthProviderBloc, HealthProviderState>(
+              listener: (context, state) {
+                if (state.status == BlocStatus.error) {
+                  ToastManager.showToast(
+                      context: context, message: state.errorMessage!);
+                }
+              },
+              builder: (context, state) {
+                final bool isLoading = (state.status == BlocStatus.loading);
+                if (state.status == BlocStatus.success) {
+                  healthProviders = state.data as List<HealthProviderEntity>;
+                }
+                return Shimmer(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        30.verticalSpace,
+                        Text(
+                          "Health Provider",
+                          style: StyleManager.title.copyWith(fontSize: 20.sp),
                         ),
-                      ),
-                      20.verticalSpace,
-                      Text(
-                        "Health Specialties",
-                        style: StyleManager.title.copyWith(fontSize: 20.sp),
-                      ),
-                      10.verticalSpace,
-                      ShimmerLoading(
-                        isLoading: isLoading,
-                        child: SizedBox(
-                          height: 250.h,
-                          child: ValueListenableBuilder(
-                            valueListenable: selectedHealthProviderNotifier,
-                            builder: (context, value, child) =>
-                                MedicalDepartmentListView(
-                              selectedHealthSpecialty:
-                                  selectedHealthSpecialtyNotifier,
-                              hospitalSpecialties: HospitalSpecialty.values,
-                              doctorsCount: _getDoctorsCount(value == null
-                                  ? []
-                                  : healthProviders.elementAt(value).doctors ??
-                                      []),
-                            ),
+                        10.verticalSpace,
+                        ShimmerLoading(
+                          isLoading: isLoading,
+                          child: SizedBox(
+                            height: 200.h,
+                            child: HealthProviderListWidget(
+                                isLoading: isLoading,
+                                healthProviders: healthProviders,
+                                selectedHealthProviderNotifier:
+                                    selectedHealthProviderNotifier),
                           ),
                         ),
-                      )
-                    ]),
-              );
-            },
-          ),
-        ),
-        Positioned(
-          bottom: 100.h,
-          left: 14.w,
-          right: 14.w,
-          child: InkWell(
-            splashColor: ColorManager.buttonEnabledColorLight,
-            onTap: () {
-              if (selectedHealthProviderNotifier.value == null) {
-                ToastManager.showToast(
-                    context: context,
-                    message: "Please select a health provider");
-                return;
-              }
-
-              context
-                  .read<AppointmentBloc>()
-                  .add(CollectDataHealthProviderEvent(AppointmentRecordEntity(
-                    healthProvider:
-                        healthProviders[selectedHealthProviderNotifier.value!],
-                  )));
-              context.pushNamed(RouteDefine.createAppointmentChooseDoctor,
-                  extra: healthProviders[selectedHealthProviderNotifier.value!]
-                          .doctors
-                          ?.where((e) => e.doctorProfile?.specialization == HospitalSpecialty.values[selectedHealthSpecialtyNotifier.value!] ,).toList() ??
-                      []);
-            },
-            child: Icon(
-              Icons.arrow_forward_outlined,
-              size: 30.r,
+                        20.verticalSpace,
+                        Text(
+                          "Health Specialties",
+                          style: StyleManager.title.copyWith(fontSize: 20.sp),
+                        ),
+                        10.verticalSpace,
+                        ShimmerLoading(
+                          isLoading: isLoading,
+                          child: SizedBox(
+                            height: 250.h,
+                            child: ValueListenableBuilder(
+                              valueListenable: selectedHealthProviderNotifier,
+                              builder: (context, value, child) =>
+                                  MedicalDepartmentListView(
+                                selectedHealthSpecialty:
+                                    selectedHealthSpecialtyNotifier,
+                                hospitalSpecialties: HospitalSpecialty.values,
+                                doctorsCount: _getDoctorsCount(value == null
+                                    ? []
+                                    : healthProviders.elementAt(value).doctors ??
+                                        []),
+                              ),
+                            ),
+                          ),
+                        )
+                      ]),
+                );
+              },
             ),
           ),
-        )
-      ],
+          Positioned(
+            bottom: 100.h,
+            left: 14.w,
+            right: 14.w,
+            child: InkWell(
+              splashColor: ColorManager.buttonEnabledColorLight,
+              onTap: () {
+                if (selectedHealthProviderNotifier.value == null) {
+                  ToastManager.showToast(
+                      context: context,
+                      message: "Please select a health provider");
+                  return;
+                }
+      
+                context
+                    .read<AppointmentBloc>()
+                    .add(CollectDataHealthProviderEvent(AppointmentRecordEntity(
+                      healthProvider:
+                          healthProviders[selectedHealthProviderNotifier.value!],
+                    )));
+                context.pushNamed(RouteDefine.createAppointmentChooseDoctor,
+                    extra: healthProviders[selectedHealthProviderNotifier.value!]
+                            .doctors
+                            ?.where((e) => e.doctorProfile?.specialization == HospitalSpecialty.values[selectedHealthSpecialtyNotifier.value!] ,).toList() ??
+                        []);
+              },
+              child: Icon(
+                Icons.arrow_forward_outlined,
+                size: 30.r,
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
