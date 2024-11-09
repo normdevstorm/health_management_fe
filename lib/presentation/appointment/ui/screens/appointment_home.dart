@@ -29,7 +29,7 @@ class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
+    // No additional dependencies to handle for now
     super.didChangeDependencies();
     RouteObserver<ModalRoute>().subscribe(this, ModalRoute.of(context)!);
   }
@@ -182,9 +182,15 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                 ?.specialization
                 ?.name
                 .toUpperCase(),
+            doctorRating: appointmentRecords[index].doctor?.doctorProfile?.rating?.toInt(),
             doctorName: appointmentRecords[index].doctor?.firstName,
             time: appointmentRecords[index].scheduledAt != null
-                ? DateConverter.convertToYMD(
+                ? DateConverter.convertToYearMonthDay(
+                    appointmentRecords[index].scheduledAt!,
+                  )
+                : null,
+            date: appointmentRecords[index].scheduledAt != null
+                ? DateConverter.convertToHourMinuteSecond(
                     appointmentRecords[index].scheduledAt!,
                   )
                 : null,
@@ -289,8 +295,10 @@ class AddButtonWidget extends StatelessWidget {
 
 class AppointmentCard extends StatelessWidget {
   final String? doctorType;
+  final int? doctorRating;
   final String? doctorName;
   final String? time;
+  final String? date;
   final bool isCompleted;
   final VoidCallback? onCancel;
 
@@ -298,8 +306,10 @@ class AppointmentCard extends StatelessWidget {
     super.key,
     this.onCancel,
     this.doctorType,
+    this.doctorRating,
     this.doctorName,
     this.time,
+    this.date,
     this.isCompleted = false,
   });
 
@@ -339,7 +349,7 @@ class AppointmentCard extends StatelessWidget {
                 Row(
                   children: List.generate(5, (index) {
                     return Icon(
-                      index < 4 ? Icons.star : Icons.star_border,
+                      index <= (doctorRating ?? 0) ? Icons.star : Icons.star_border,
                       color: Colors.amber,
                     );
                   }),
@@ -357,7 +367,7 @@ class AppointmentCard extends StatelessWidget {
                         Icon(Icons.calendar_today, color: Color(0xFFEFE8E9)),
                         const SizedBox(width: 8),
                         Text(
-                          'Apr 08,2022',
+                          date ?? "Loading...",
                           style: const TextStyle(
                               fontSize: 16, color: Color(0xFFEFE8E9)),
                         ),

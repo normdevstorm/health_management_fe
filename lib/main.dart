@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
@@ -49,15 +48,9 @@ void main() async {
                   authenticationUsecase: getIt<AuthenticationUsecase>(),
                   verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
             ),
-            // BlocProvider(
-            //   create: (context) =>AppointmentBloc(appointmentUseCase: getIt()),
-            // ),
           ],
           child: BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: (context, state) {
-              // TODO: implement listener in a separate mehthod/function
-              _authenticationListener(context, state);
-            },
+            listener: _authenticationListener,
             child: const MyApp(),
           ),
         ),
@@ -149,9 +142,9 @@ class MyApp extends StatelessWidget {
           ),
           pageTransitionsTheme: const PageTransitionsTheme(builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.windows: CupertinoPageTransitionsBuilder()
+            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
           })),
-      routerConfig: AppRouting.shellRouteConfig(),
+      routerConfig: AppRouting.shellRouteConfig,
       debugShowCheckedModeBanner: false,
     );
     return ScreenUtilInit(
@@ -164,7 +157,8 @@ class MyApp extends StatelessWidget {
                 Positioned(bottom: 5.sp, right: 5.sp, child: ChuckerLogButton())
               ]),
             ),
-        child: mainApp);
+        child: mainApp,
+        );
   }
 }
 

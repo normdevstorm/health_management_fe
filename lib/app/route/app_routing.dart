@@ -28,7 +28,7 @@ final GlobalKey<NavigatorState> globalRootNavigatorKey =
 
 class AppRouting {
   static final RouteObserver<ModalRoute<void>> _routeObserver = RouteObserver<ModalRoute<void>>();
-  static GoRouter shellRouteConfig() => _shellRoute;
+  static  GoRouter get shellRouteConfig => _shellRoute;
   static final GoRouter _shellRoute = GoRouter(
       observers: [ChuckerFlutter.navigatorObserver,_routeObserver],
       navigatorKey: globalRootNavigatorKey,
