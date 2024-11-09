@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:health_management/app/app.dart';
-import 'package:health_management/domain/user/usecases/user_usecase.dart';
+import 'package:health_management/app/managers/local_storage.dart';
+import 'package:health_management/domain/user/entities/account_entity.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_event.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_state.dart';
@@ -15,22 +18,20 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController firstNameController = TextEditingController();
-
   final TextEditingController lastNameController = TextEditingController();
-
   final TextEditingController dateOfBirthController = TextEditingController();
-
-  final TextEditingController usernameController = TextEditingController();
-
   final TextEditingController emailController = TextEditingController();
-
   final TextEditingController phoneController = TextEditingController();
+
+  String? selectedGender;
+  String avatarUrl =
+      'https://www.nylabone.com/-/media/project/oneweb/nylabone/images/dog101/10-intelligent-dog-breeds/golden-retriever-tongue-out.jpg';
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    context.read<EditProfileBloc>().add(GetUserByIdEvent(3));
+    // Lấy thông tin người dùng khi vào màn hình
+    context.read<EditProfileBloc>().add(GetInformationUser());
   }
 
   @override
@@ -43,30 +44,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: BlocListener<EditProfileBloc, EditProfileState>(
         listener: (context, state) {
           if (state.status == BlocStatus.success) {
-            // Chỉ cập nhật TextEditingController khi load thành công
-            firstNameController.text = state.data.firstName;
-            lastNameController.text = state.data.lastName;
-            dateOfBirthController.text = state.data.dateOfBirth;
-            usernameController.text = state.data.username;
-            emailController.text = state.data.email;
-            phoneController.text = state.data.phone;
+            UserEntity data = state.data as UserEntity;
+            // Cập nhật giá trị cho TextEditingController sau khi tải dữ liệu thành công
+            firstNameController.text = data.firstName ?? '';
+            lastNameController.text = data.lastName ?? '';
+            dateOfBirthController.text = data.dateOfBirth.toString() ?? '';
+            emailController.text = data.account?.email ?? '';
+            phoneController.text = data.account?.phone ?? '';
+            selectedGender = data.gender;
+          } else if (state.status == BlocStatus.error) {
+            // Hiển thị thông báo lỗi nếu có lỗi
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Đã xảy ra lỗi: ${state.errorMessage}')),
+            );
           }
         },
         child: BlocBuilder<EditProfileBloc, EditProfileState>(
           builder: (context, state) {
             if (state.status == BlocStatus.loading) {
               return Center(child: CircularProgressIndicator());
-            } else if (state.status == BlocStatus.success) {
+            } else {
               return Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ListView(
                   children: [
-                    Text("Thông tin cá nhân"),
                     const SizedBox(height: 16),
                     CircleAvatar(
                       radius: 40,
-                      backgroundImage:
-                          AssetImage('assets/avatar_placeholder.png'),
+                      backgroundImage: NetworkImage(
+                        avatarUrl,
+                      ),
                     ),
                     TextButton(
                         onPressed: () {}, child: Text("Chỉnh sửa avatar")),
@@ -86,6 +93,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
+                    10.verticalSpace,
                     TextFormField(
                       controller: lastNameController,
                       decoration: InputDecoration(
@@ -101,11 +109,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
+                    10.verticalSpace,
+                    DropdownButtonFormField<String>(
+                      value: selectedGender,
+                      items: [
+                        DropdownMenuItem(
+                          value: 'MALE',
+                          child: Container(
+                            width: 60,
+                            alignment: Alignment.centerLeft,
+                            child:
+                                Text('Male', overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'FEMALE',
+                          child: Container(
+                            width: 80.w,
+                            alignment: Alignment.centerLeft,
+                            child:
+                                Text('Female', overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedGender = value;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: selectedGender == null ? 'Giới Tính' : '',
+                      ),
+                    ),
+                    10.verticalSpace,
                     TextFormField(
                       controller: dateOfBirthController,
                       decoration: InputDecoration(
                         labelText: 'Ngày sinh',
-                        hintText: 'DD/MM/YYYY',
+                        hintText: 'YYYY/MM/DD',
                         suffixIcon: IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
@@ -117,24 +158,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    24.verticalSpace,
                     Text("Thông tin tài khoản"),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: usernameController,
-                      decoration: InputDecoration(
-                        labelText: 'Tên tài khoản',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            usernameController.selection = TextSelection(
-                              baseOffset: 0,
-                              extentOffset: usernameController.text.length,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
+                    16.verticalSpace,
                     TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(
@@ -150,6 +176,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ),
                     ),
+                    10.verticalSpace,
                     TextFormField(
                       controller: phoneController,
                       decoration: InputDecoration(
@@ -167,8 +194,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {
-                        // Lưu thay đổi hồ sơ
+                      onPressed: () async {
+                        final user = await SharedPreferenceManager.getUser();
+                        final userId = user?.id ?? 0;
+
+                        final userEntity = UserEntity(
+                          firstName: firstNameController.text,
+                          lastName: lastNameController.text,
+                          gender: selectedGender,
+                        );
+
+                        final accountEntity = AccountEntity(
+                          id: userId,
+                          email: emailController.text,
+                          phone: phoneController.text,
+                        );
+
+                        context.read<EditProfileBloc>().add(
+                              ProfileUpdateSubmittedEvent(
+                                userEntity,
+                                accountEntity,
+                              ),
+                            );
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(vertical: 16),
@@ -179,10 +226,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ],
                 ),
               );
-            } else if (state.status == BlocStatus.error) {
-              return Center(child: Text("Đã xảy ra lỗi: ${state.status}"));
             }
-            return Container();
           },
         ),
       ),

@@ -25,7 +25,7 @@ class UserUseCase {
   }
 
   Future<UserEntity> updateUser(
-      UpdateUserRequest updateUserRequest, int userId) async {
+      UpdateUserRequest updateUserRequest, int? userId) async {
     return await _repository.updateUser(updateUserRequest, userId);
   }
 
@@ -37,7 +37,7 @@ class UserUseCase {
     return await _repository.getTopRatedDoctors();
   }
 
-  Future<UserEntity> getUserById(int id) async {
-    return await _repository.getUserById(id);
-  }
+  // Future<UserEntity> getUserById() async {
+  //   return await _repository.getUserById();
+  // }
 }

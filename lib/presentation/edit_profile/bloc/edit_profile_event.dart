@@ -10,32 +10,20 @@ sealed class EditProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Sự kiện gửi yêu cầu lấy thông tin người dùng theo ID
-final class GetUserByIdEvent extends EditProfileEvent {
-  final int userId;
-
-  const GetUserByIdEvent(this.userId);
+final class GetInformationUser extends EditProfileEvent {
+  const GetInformationUser();
 
   @override
-  List<Object?> get props => [userId];
+  List<Object?> get props => [];
 }
 
 // Sự kiện gửi yêu cầu cập nhật hồ sơ
 final class ProfileUpdateSubmittedEvent extends EditProfileEvent {
   final UserEntity userEntity;
-  const ProfileUpdateSubmittedEvent(this.userEntity);
+  final AccountEntity accountEntity;
+  const ProfileUpdateSubmittedEvent(this.userEntity, this.accountEntity);
 
   @override
   // TODO: implement props
-  List<Object?> get props => [userEntity];
-}
-
-// Dữ liệu yêu cầu cập nhật tài khoản
-final class UpdateAccountRequestEvent extends EditProfileEvent {
-  final AccountEntity accountEntity;
-
-  const UpdateAccountRequestEvent(this.accountEntity);
-
-  @override
-  List<Object?> get props => [accountEntity];
+  List<Object?> get props => [userEntity, accountEntity];
 }

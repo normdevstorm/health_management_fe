@@ -8,8 +8,8 @@ abstract class UserRepository {
   Future<String> deleteUser(int userId);
   Future<UserEntity> getUserSummary(int id);
   Future<UserEntity> updateUser(
-      UpdateUserRequest updateUserRequest, int userId);
+      UpdateUserRequest updateUserRequest, int? userId);
   Future<UserEntity> getUserByEmail(String email);
   Future<List<DoctorEntity>> getTopRatedDoctors();
-  Future<UserEntity> getUserById(int id);
+  // Future<UserEntity> getUserById();
 }

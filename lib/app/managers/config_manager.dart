@@ -3,7 +3,6 @@ part of '../app.dart';
 enum FlavorManager { dev, staging, production }
 
 class ConfigManager {
-
   final String apiBaseUrl;
   final FlavorManager appFlavor;
 
@@ -15,12 +14,12 @@ class ConfigManager {
   static ConfigManager? _instance;
 
   static ConfigManager devConfig = ConfigManager._(
-    apiBaseUrl: 'http://localhost:8081/api/v1/core',
+    apiBaseUrl: 'http://localhost:8080/api/v1/core',
     appFlavor: FlavorManager.dev,
   );
 
   static ConfigManager stagingConfig = ConfigManager._(
-    apiBaseUrl: 'http://localhost:8081/api/v1/core',
+    apiBaseUrl: 'http://localhost:8080/api/v1/core',
     appFlavor: FlavorManager.staging,
   );
 
@@ -29,7 +28,7 @@ class ConfigManager {
     appFlavor: FlavorManager.production,
   );
 
-    static ConfigManager getInstance({String? flavorName}) {
+  static ConfigManager getInstance({String? flavorName}) {
     if (_instance == null) {
       switch (flavorName) {
         case 'dev':

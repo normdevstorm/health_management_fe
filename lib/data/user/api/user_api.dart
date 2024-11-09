@@ -25,7 +25,8 @@ abstract class UserApi {
 
   @POST('/users/update-user')
   Future<ApiResponse<UserResponse>> updateUser(
-      @Body() UpdateUserRequest updateUserRequest, @Query("userId") int userId);
+      @Body() UpdateUserRequest updateUserRequest,
+      @Query("userId") int? userId);
 
   @GET('/users/email')
   Future<ApiResponse<UserSummaryResponse>> getUserByEmail(
@@ -34,6 +35,6 @@ abstract class UserApi {
   @GET('/users/top-rated')
   Future<ApiResponse<List<DoctorResponse>>> getTopRatedDoctors();
 
-  @GET('/users/get-by-id')
-  Future<ApiResponse<UserResponse>> getUserById(@Query("id") int id);
+  // @GET('/users/get-by-id')
+  // Future<ApiResponse<UserResponse>> getUserById();
 }

@@ -37,8 +37,9 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<LoginResponse?> login(LoginRequest request) async {
     try {
       LoginResponse apiResponse = await api.login(request);
-      // SharedPreferenceManager.setUser(apiResponse.userResponse.toEntity());
-      logger.i(SharedPreferenceManager.getUser());
+      SharedPreferenceManager.setUser(apiResponse.userResponse.toEntity());
+      final getUserEntity = await SharedPreferenceManager.getUser();
+      logger.i(getUserEntity?.id);
       SessionManager().setSession(
           LoginEntity(
               accessToken: apiResponse.accessToken,
@@ -53,8 +54,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   @override
   Future<LoginResponse?> refreshToken(String refreshToken) async {
     try {
-      final  response =
-          await api.refreshToken({"refresh_token": refreshToken});
+      final response = await api.refreshToken({"refresh_token": refreshToken});
       LoginResponse? loginResponse = response.data;
       return loginResponse;
     } catch (e) {

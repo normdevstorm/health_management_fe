@@ -88,7 +88,7 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<UserEntity> updateUser(
-      UpdateUserRequest updateUserRequest, int userId) async {
+      UpdateUserRequest updateUserRequest, int? userId) async {
     try {
       ApiResponse apiResponse = await api.updateUser(updateUserRequest, userId);
       UserEntity user = (apiResponse.data as UserResponse).toEntity();
@@ -98,14 +98,14 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
 
-  @override
-  Future<UserEntity> getUserById(int id) async {
-    try {
-      ApiResponse apiResponse = await api.getUserById(id);
-      UserEntity user = (apiResponse.data as UserResponse).toEntity();
-      return user;
-    } catch (e) {
-      throw ApiException.getDioException(e);
-    }
-  }
+  // @override
+  // Future<UserEntity> getUserById() async {
+  //   try {
+  //     ApiResponse apiResponse = await api.getUserById();
+  //     UserEntity user = (apiResponse.data as UserResponse).toEntity();
+  //     return user;
+  //   } catch (e) {
+  //     throw ApiException.getDioException(e);
+  //   }
+  // }
 }

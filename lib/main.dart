@@ -191,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() async {
-    // context.read<AuthenticationBloc>().add(LogOutEvent());
+    context.read<AuthenticationBloc>().add(LogOutEvent());
     // AppointmentRecordEntity response = await appointmentUseCase
     //     .createAppointmentRecord(AppointmentRecordEntity(
     //         note: "note",
