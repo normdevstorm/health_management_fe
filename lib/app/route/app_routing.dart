@@ -9,6 +9,7 @@ import 'package:health_management/presentation/settings/settings_route.dart';
 import 'package:health_management/presentation/splash/ui/splash_screen.dart';
 
 import '../../presentation/auth/appointment_route.dart';
+import '../../presentation/home/ui/screens/home_page.dart';
 import 'route_define.dart';
 
 ///TODO: group naviagtor keys into one separate file

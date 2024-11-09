@@ -12,12 +12,10 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
-import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
 import 'app/managers/toast_manager.dart';
@@ -166,55 +164,6 @@ class MyApp extends StatelessWidget {
         ]),
       ),
       child: mainApp,
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() async {
-    // context.read<AuthenticationBloc>().add(LogOutEvent());
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              LocaleKeys.counterDescription.tr(),
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            Text(
-              'null',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
