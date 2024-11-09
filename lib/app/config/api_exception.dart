@@ -1,99 +1,116 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:logger/logger.dart';
-
 part 'api_exception.freezed.dart';
 part 'api_exception.g.dart';
 
 @freezed
 abstract class ApiException with _$ApiException {
-  const factory ApiException.requestCancelled() = RequestCancelled;
+  factory ApiException._(String reason) => ApiException._(reason);
+  const factory ApiException.requestCancelled(String reason) = RequestCancelled;
+  const factory ApiException.unauthorisedRequest(String reason) =
+      UnauthorisedRequest;
 
-  const factory ApiException.unauthorisedRequest() = UnauthorisedRequest;
-
-  const factory ApiException.badRequest() = BadRequest;
+  const factory ApiException.badRequest(String reason) = BadRequest;
 
   const factory ApiException.notFound(String reason) = NotFound;
 
-  const factory ApiException.methodNotAllowed() = MethodNotAllowed;
+  const factory ApiException.methodNotAllowed(String reason) = MethodNotAllowed;
 
-  const factory ApiException.notAcceptable() = NotAcceptable;
+  const factory ApiException.notAcceptable(String reason) = NotAcceptable;
 
-  const factory ApiException.requestTimeout() = RequestTimeout;
+  const factory ApiException.requestTimeout(String reason) = RequestTimeout;
 
-  const factory ApiException.sendTimeout() = SendTimeout;
+  const factory ApiException.sendTimeout(String reason) = SendTimeout;
 
-  const factory ApiException.conflict() = Conflict;
+  const factory ApiException.conflict(String reason) = Conflict;
 
-  const factory ApiException.internalServerError() = InternalServerError;
+  const factory ApiException.internalServerError(String reason) =
+      InternalServerError;
 
-  const factory ApiException.notImplemented() = NotImplemented;
+  const factory ApiException.notImplemented(String reason) = NotImplemented;
 
-  const factory ApiException.serviceUnavailable() = ServiceUnavailable;
+  const factory ApiException.serviceUnavailable(String reason) =
+      ServiceUnavailable;
 
-  const factory ApiException.noInternetConnection() = NoInternetConnection;
+  const factory ApiException.noInternetConnection(String reason) =
+      NoInternetConnection;
 
-  const factory ApiException.formatException() = FormatException;
+  const factory ApiException.formatException(String reason) = FormatException;
 
-  const factory ApiException.unableToProcess() = UnableToProcess;
+  const factory ApiException.unableToProcess(String reason) = UnableToProcess;
 
   const factory ApiException.defaultError(String error) = DefaultError;
 
-  const factory ApiException.unexpectedError() = UnexpectedError;
-  const factory ApiException.badCertificate() = BadCertificate;
+  const factory ApiException.unexpectedError(String reason) = UnexpectedError;
+  const factory ApiException.badCertificate(String reason) = BadCertificate;
 
   static ApiException getDioException(error) {
     if (error is Exception) {
       try {
         ApiException apiException;
         if (error is DioException) {
+          String? message = error.response?.data['message'] ?? "";
           switch (error.type) {
             case DioExceptionType.cancel:
-              apiException = const ApiException.requestCancelled();
+              apiException =
+                  ApiException.requestCancelled(message ?? "Not Implemented");
               break;
             case DioExceptionType.connectionTimeout:
-              apiException = const ApiException.requestTimeout();
+              apiException =
+                  ApiException.requestTimeout(message ?? "Request Timeout");
               break;
             case DioExceptionType.unknown:
-              apiException = const ApiException.unexpectedError();
+              apiException =
+                  ApiException.unexpectedError(message ?? "Unexpected Error");
               break;
             case DioExceptionType.connectionError:
-              apiException = const ApiException.noInternetConnection();
+              apiException = ApiException.noInternetConnection(
+                  message ?? "No Internet Connection");
               break;
             case DioExceptionType.receiveTimeout:
-              apiException = const ApiException.sendTimeout();
+              apiException =
+                  ApiException.sendTimeout(message ?? "Send Timeout");
               break;
             case DioExceptionType.badCertificate:
-              apiException = const ApiException.badCertificate();
+              apiException =
+                  ApiException.badCertificate(message ?? "Bad Certificate");
               break;
             case DioExceptionType.badResponse:
               switch (error.response?.statusCode) {
                 case 400:
-                  apiException = const ApiException.unauthorisedRequest();
+                  apiException = ApiException.unauthorisedRequest(
+                      message ?? "Unauthorised Request");
                   break;
                 case 401:
-                  apiException = const ApiException.unauthorisedRequest();
+                  apiException = ApiException.unauthorisedRequest(
+                      message ?? "Unauthorised Request");
                   break;
                 case 403:
-                  apiException = const ApiException.unauthorisedRequest();
+                  apiException = ApiException.unauthorisedRequest(
+                      message ?? "Unauthorised Request");
                   break;
                 case 404:
-                  apiException = const ApiException.notFound("Not found");
+                  apiException = ApiException.notFound("Not found");
                   break;
                 case 409:
-                  apiException = const ApiException.conflict();
+                  apiException = ApiException.conflict(
+                      message ?? "Error due to a conflict");
                   break;
                 case 408:
-                  apiException = const ApiException.requestTimeout();
+                  apiException =
+                      ApiException.requestTimeout(message ?? "Request Timeout");
                   break;
                 case 500:
-                  apiException = const ApiException.internalServerError();
+                  apiException = ApiException.internalServerError(
+                      message ?? "Internal Server Error");
                   break;
                 case 503:
-                  apiException = const ApiException.serviceUnavailable();
+                  apiException = ApiException.serviceUnavailable(
+                      message ?? "Service Unavailable");
                   break;
                 default:
                   var responseCode = error.response?.statusCode;
@@ -103,88 +120,74 @@ abstract class ApiException with _$ApiException {
               }
               break;
             case DioExceptionType.sendTimeout:
-              apiException = const ApiException.sendTimeout();
+              apiException =
+                  ApiException.sendTimeout(message ?? "Send Timeout");
               break;
           }
         } else if (error is SocketException) {
-          apiException = const ApiException.noInternetConnection();
+          apiException =
+              ApiException.noInternetConnection("No Internet Connection");
         } else {
-          apiException = const ApiException.unexpectedError();
+          apiException = ApiException.unexpectedError("Unexpected Error");
         }
         return apiException;
       } on FormatException catch (e) {
         getIt<Logger>().e(e);
-        return const ApiException.formatException();
+        return ApiException.formatException("Format Exception");
       } catch (_) {
-        return const ApiException.unexpectedError();
+        return ApiException.unexpectedError("Unexpected Error");
       }
     } else {
       if (error.toString().contains("is not a subtype of")) {
-        return const ApiException.unableToProcess();
+        return ApiException.unableToProcess("Unable to Process");
       } else {
-        return const ApiException.unexpectedError();
+        return ApiException.unexpectedError("Unexpected Error");
       }
     }
   }
 
   static String getErrorMessage(ApiException apiException) {
-    var errorMessage = "";
-    apiException.when(
-        notImplemented: () {
-          errorMessage = "Not Implemented";
-        },
-        requestCancelled: () {
-          errorMessage = "Request Cancelled";
-        },
-        internalServerError: () {
-          errorMessage = "Internal Server Error";
-        },
-        notFound: (String reason) {
-          errorMessage = reason;
-        },
-        serviceUnavailable: () {
-          errorMessage = "Service unavailable";
-        },
-        methodNotAllowed: () {
-          errorMessage = "Method Allowed";
-        },
-        badRequest: () {
-          errorMessage = "Bad request";
-        },
-        unauthorisedRequest: () {
-          errorMessage = "Unauthorised request";
-        },
-        unexpectedError: () {
-          errorMessage = "Unexpected error occurred";
-        },
-        requestTimeout: () {
-          errorMessage = "Connection request timeout";
-        },
-        noInternetConnection: () {
-          errorMessage = "No internet connection";
-        },
-        conflict: () {
-          errorMessage = "Error due to a conflict";
-        },
-        sendTimeout: () {
-          errorMessage = "Send timeout in connection with API server";
-        },
-        unableToProcess: () {
-          errorMessage = "Unable to process the data";
-        },
-        defaultError: (String error) {
-          errorMessage = error;
-        },
-        formatException: () {
-          errorMessage = "Unexpected error occurred";
-        },
-        notAcceptable: () {
-          errorMessage = "Not acceptable";
-        },
-        badCertificate: () => errorMessage = "Bad Certificate");
+    String errorMessage = "";
+    apiException.when(notImplemented: (String reason) {
+      errorMessage = reason;
+    }, requestCancelled: (String reason) {
+      errorMessage = reason;
+    }, internalServerError: (String reason) {
+      errorMessage = reason;
+    }, notFound: (String reason) {
+      errorMessage = reason;
+    }, serviceUnavailable: (String reason) {
+      errorMessage = reason;
+    }, methodNotAllowed: (String reason) {
+      errorMessage = reason;
+    }, badRequest: (String reason) {
+      errorMessage = reason;
+    }, unauthorisedRequest: (String reason) {
+      errorMessage = reason;
+    }, unexpectedError: (String reason) {
+      errorMessage = reason;
+    }, requestTimeout: (String reason) {
+      errorMessage = reason;
+    }, noInternetConnection: (String reason) {
+      errorMessage = reason;
+    }, conflict: (String reason) {
+      errorMessage = reason;
+    }, sendTimeout: (String reason) {
+      errorMessage = reason;
+    }, unableToProcess: (String reason) {
+      errorMessage = reason;
+    }, defaultError: (String error) {
+      errorMessage = error;
+    }, formatException: (String reason) {
+      errorMessage = reason;
+    }, notAcceptable: (String reason) {
+      errorMessage = reason;
+    }, badCertificate: (String reason) {
+      errorMessage = reason;
+    });
     return errorMessage;
   }
 
-  factory ApiException.fromJson(Map<String, dynamic> json) => _$ApiExceptionFromJson(json);
-
+  factory ApiException.fromJson(Map<String, dynamic> json) =>
+      _$ApiExceptionFromJson(json);
 }

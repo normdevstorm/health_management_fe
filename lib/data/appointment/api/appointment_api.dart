@@ -22,4 +22,7 @@ abstract class AppointmentApi {
   @DELETE('/appointment-record/delete/{id}')
   Future<ApiResponse<String>> deleteAppointmentRecord(
       @Path('id') int appointmentId);
+  @GET('/appointment-record/user/{id}')
+  Future<ApiResponse<List<AppointmentRecordResponse>>>
+      getAppointmentRecordByUserId(@Path('id') int userId);
 }

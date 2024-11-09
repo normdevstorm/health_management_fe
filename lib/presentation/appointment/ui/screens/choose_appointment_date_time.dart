@@ -172,7 +172,7 @@ class DayButton extends StatelessWidget {
     return InkWell(
       onTap: () {
         context.read<AppointmentBloc>()
-          ..add(CollectDataDatetimeEvent(scheduledAt: DateTime.now()))
+          ..add(CollectDataDatetimeEvent(scheduledAt: DateTime.now().copyWith(minute: 0, millisecond: 0, microsecond: 0,second: 0)))
           ..add(CreateAppointmentRecordEvent());
       },
       child: Container(

@@ -6,5 +6,6 @@ abstract class AppointmentRepository {
     Future<AppointmentRecordEntity> createAppointmentRecord(AppointmentRecordEntity appointment);
     Future<AppointmentRecordEntity> updateAppointmentRecord(AppointmentRecordEntity appointment);
     Future<String> deleteAppointmentRecord(int appointmentId);
+    Future<List<AppointmentRecordEntity>> getAppointmentRecordByUserId(int userId);
 }
 

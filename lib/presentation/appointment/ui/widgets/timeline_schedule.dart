@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TimelineSchedule extends StatefulWidget {
-  const TimelineSchedule({super.key});
+    final ScrollController scrollController;
+
+  const TimelineSchedule({super.key, required this.scrollController});
 
   @override
   State<TimelineSchedule> createState() => _TimelineScheduleState();
 }
 
 class _TimelineScheduleState extends State<TimelineSchedule> {
-  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     // TODO: implement initState
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scrollController.animateTo(
+      widget.scrollController.animateTo(
         DateTime.now().hour * 100.h,
         duration: Duration(seconds: 1),
         curve: Curves.easeIn,
@@ -32,7 +33,7 @@ class _TimelineScheduleState extends State<TimelineSchedule> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      controller: scrollController,
+      controller: widget.scrollController,
       itemCount: 24,
       itemBuilder: (context, index) {
         return TimelineItem(hour: index, isNow: index == DateTime.now().hour);

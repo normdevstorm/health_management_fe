@@ -21,5 +21,9 @@ class AppointmentUseCase {
   Future<String> deleteAppointmentRecord(int appointmentId) async {
     return _repository.deleteAppointmentRecord(appointmentId);
   }
+
+  Future<List<AppointmentRecordEntity>> getAppointmentRecordByUserId({required int userId}) async {
+    return _repository.getAppointmentRecordByUserId(userId);
+  }
 }
 

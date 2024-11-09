@@ -59,4 +59,16 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
       throw ApiException.getDioException(e);
     }
   }
+
+  @override
+  Future<List<AppointmentRecordEntity>> getAppointmentRecordByUserId(
+      int userId) async {
+    try {
+      final response = await api.getAppointmentRecordByUserId(userId);
+      return (response.data ?? []).map((e) => e.toEntity()).toList();
+    } catch (e) {
+      logger.e(e);
+      throw ApiException.getDioException(e);
+    }
+  }
 }

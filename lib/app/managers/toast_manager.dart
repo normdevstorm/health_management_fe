@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:health_management/app/app.dart';
 
 class ToastManager {
   ToastManager();
 
-  static showToast({required BuildContext context, required String message}) {
+  static showToast( {required BuildContext context, required String message}) {
     FToast fToast = FToast();
     fToast.init(context);
     Widget toast = Container(
@@ -16,11 +17,21 @@ class ToastManager {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check),
+          Icon(
+            Icons.clear_outlined,
+            color: ColorManager.errorColorLight,
+          ),
           SizedBox(
             width: 12.0,
           ),
-          Text(message),
+          Expanded(
+            child: Text(
+              message,
+              maxLines: 3,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );

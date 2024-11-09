@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
@@ -37,10 +38,10 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     emit(AppointmentState.loading());
     try {
       final appointmentRecords =
-          await appointmentUseCase.getAllAppointmentRecords();
+          await appointmentUseCase.getAppointmentRecordByUserId(userId: 1);
       emit(AppointmentState.success(appointmentRecords));
-    } catch (e) {
-      emit(AppointmentState.error(e.toString()));
+    } on ApiException catch (e) {
+      emit(AppointmentState.error(ApiException.getErrorMessage(e)));
     }
   }
 
@@ -62,8 +63,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       final appointmentRecord = await appointmentUseCase
           .updateAppointmentRecord(event.updateAppointmentRecordEntity);
       emit(AppointmentState.success(appointmentRecord));
-    } catch (e) {
-      emit(AppointmentState.error(e.toString()));
+    } on ApiException catch (e) {
+      emit(AppointmentState.error(ApiException.getErrorMessage(e)));
     }
   }
 
@@ -74,8 +75,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       final String message =
           await appointmentUseCase.deleteAppointmentRecord(event.appointmentId);
       emit(CancelAppointmentRecordState.success(message));
-    } catch (e) {
-      emit(CancelAppointmentRecordState.error(e.toString()));
+    } on ApiException catch (e) {
+      emit(CancelAppointmentRecordState.error(ApiException.getErrorMessage(e)));
     }
   }
 
@@ -89,8 +90,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
           .createAppointmentRecord(filledAppointmentRecordEntity);
       emit(CreateAppointmentRecordState.success(
           createdAppointmentRecordEntity: appointmentRecord));
-    } catch (e) {
-      emit(CreateAppointmentRecordState.error(e.toString(), createdAppointmentRecordEntity: filledAppointmentRecordEntity));
+    } on ApiException catch  (e) {
+      emit(CreateAppointmentRecordState.error(ApiException.getErrorMessage(e), createdAppointmentRecordEntity: filledAppointmentRecordEntity));
     }
   }
 
@@ -101,7 +102,7 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
             .copyWith(
-                user: UserEntity(id: 3),
+                user: UserEntity(id: 1),
                 healthProvider: HealthProviderEntity(id: providerId),
                 appointmentType: AppointmentType.inPerson)));
   }

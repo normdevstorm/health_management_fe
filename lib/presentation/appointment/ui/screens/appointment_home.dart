@@ -20,7 +20,10 @@ class AppointmentHome extends StatefulWidget {
   State<AppointmentHome> createState() => _AppointmentHomeState();
 }
 
-class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
+class _AppointmentHomeState extends State<AppointmentHome>  {
+  final ScrollController _timeLineScrollController = ScrollController();
+  final ScrollController _appointmentListScrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -31,19 +34,13 @@ class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
   void didChangeDependencies() {
     // No additional dependencies to handle for now
     super.didChangeDependencies();
-    RouteObserver<ModalRoute>().subscribe(this, ModalRoute.of(context)!);
   }
 
   @override
   void dispose() {
-    RouteObserver<ModalRoute>().unsubscribe(this);
+    _timeLineScrollController.dispose();
+    _appointmentListScrollController.dispose();
     super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    // This is called when the route is popped and this screen becomes visible again
-    context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
   }
 
   @override
@@ -94,27 +91,36 @@ class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
                     const SizedBox(height: 16),
                     WeekDaysRowWidget(),
                     ShadowEdgeWidget(),
-                    BlocBuilder<AppointmentBloc, AppointmentState>(
-                      buildWhen: (previous, current) =>
-                          previous.status != current.status &&
-                          ![
-                            CreateAppointmentRecordState,
-                            CancelAppointmentRecordState
-                          ].contains(current.runtimeType),
-                      builder: (context, state) {
-                        //todo: handle data for dis widget later on
-                        // List<AppointmentRecordEntity> appointmentRecords = [];
-                        bool isLoading = true;
-                        if (state.status == BlocStatus.success) {
-                          isLoading = false;
-                          // appointmentRecords =
-                          //     state.data as List<AppointmentRecordEntity>;
-                        }
-                        return ShimmerLoading(
-                            isLoading: isLoading,
-                            child: SizedBox(
-                                height: 200.r, child: TimelineSchedule()));
+                    NotificationListener<ScrollNotification>(
+                      //TODO: Hanle later, wrap in notification of scroll controller for now in order to avoid affect the appearance of bottom nav bar
+                      onNotification: (notification) {
+                        return true;
                       },
+                      child: BlocBuilder<AppointmentBloc, AppointmentState>(
+                        buildWhen: (previous, current) =>
+                            previous.status != current.status &&
+                            ![
+                              CreateAppointmentRecordState,
+                              CancelAppointmentRecordState
+                            ].contains(current.runtimeType),
+                        builder: (context, state) {
+                          //todo: handle data for dis widget later on
+                          // List<AppointmentRecordEntity> appointmentRecords = [];
+                          bool isLoading = true;
+                          if (state.status == BlocStatus.success) {
+                            isLoading = false;
+                            // appointmentRecords =
+                            //     state.data as List<AppointmentRecordEntity>;
+                          }
+                          return ShimmerLoading(
+                              isLoading: isLoading,
+                              child: SizedBox(
+                                  height: 200.r,
+                                  child: TimelineSchedule(
+                                    scrollController: _timeLineScrollController,
+                                  )));
+                        },
+                      ),
                     ),
                     ShadowEdgeWidget(),
                     BlocBuilder<AppointmentBloc, AppointmentState>(
@@ -134,13 +140,20 @@ class _AppointmentHomeState extends State<AppointmentHome> with RouteAware {
                         }
                         return ShimmerLoading(
                           isLoading: isLoading,
-                          child: ListAppointmentRecordWidget(
-                              appointmentRecords: isLoading
-                                  ? List.generate(
-                                      3,
-                                      (index) => AppointmentRecordEntity(),
-                                    )
-                                  : appointmentRecords),
+                          child: ListView(
+                            controller: _appointmentListScrollController,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              ListAppointmentRecordWidget(
+                                  appointmentRecords: isLoading
+                                      ? List.generate(
+                                          3,
+                                          (index) => AppointmentRecordEntity(),
+                                        )
+                                      : appointmentRecords),
+                            ],
+                          ),
                         );
                       },
                     )
@@ -182,7 +195,11 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                 ?.specialization
                 ?.name
                 .toUpperCase(),
-            doctorRating: appointmentRecords[index].doctor?.doctorProfile?.rating?.toInt(),
+            doctorRating: appointmentRecords[index]
+                .doctor
+                ?.doctorProfile
+                ?.rating
+                ?.toInt(),
             doctorName: appointmentRecords[index].doctor?.firstName,
             time: appointmentRecords[index].scheduledAt != null
                 ? DateConverter.convertToYearMonthDay(
@@ -349,7 +366,9 @@ class AppointmentCard extends StatelessWidget {
                 Row(
                   children: List.generate(5, (index) {
                     return Icon(
-                      index <= (doctorRating ?? 0) ? Icons.star : Icons.star_border,
+                      index <= (doctorRating ?? 0)
+                          ? Icons.star
+                          : Icons.star_border,
                       color: Colors.amber,
                     );
                   }),

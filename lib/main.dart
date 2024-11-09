@@ -3,6 +3,7 @@ import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,13 +15,12 @@ import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
-import 'package:health_management/domain/user/entities/user_entity.dart';
-import 'package:health_management/domain/user/usecases/user_usecase.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
-import 'package:logger/logger.dart';
+import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
+import 'app/managers/toast_manager.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
 
 void main() async {
@@ -36,8 +36,14 @@ void main() async {
   // }
 
   runApp(
-    Material(
-      child: EasyLocalization(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: (context, child) =>  EasyLocalization(
         supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
         path: 'assets/resources/langs/langs.csv',
         assetLoader: CsvAssetLoader(),
@@ -88,10 +94,10 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   if (state is AuthenticationError) {
     String errorMessage = state.message;
     //todo: localize this message
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Text(errorMessage),
-    );
+    ToastManager.showToast(context: currentContext, message: errorMessage);
+    if (state.runtimeType == CheckLoginStatusErrorState) {
+      GoRouter.of(currentContext).goNamed(RouteDefine.login);
+    }
     return;
   }
 }
@@ -110,42 +116,42 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       darkTheme: ThemeManager.darkTheme,
       theme: ThemeManager.lightTheme.copyWith(
-          textTheme: ThemeManager.lightTheme.textTheme.copyWith(
-            bodyLarge: ThemeManager.lightTheme.textTheme.bodyLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            bodyMedium: ThemeManager.lightTheme.textTheme.bodyMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            bodySmall: ThemeManager.lightTheme.textTheme.bodySmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineLarge: ThemeManager.lightTheme.textTheme.displayLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineMedium: ThemeManager.lightTheme.textTheme.headlineMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            displayLarge: ThemeManager.lightTheme.textTheme.displayLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            displayMedium: ThemeManager.lightTheme.textTheme.bodyMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            displaySmall: ThemeManager.lightTheme.textTheme.displaySmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineSmall: ThemeManager.lightTheme.textTheme.headlineSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelLarge: ThemeManager.lightTheme.textTheme.labelLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelMedium: ThemeManager.lightTheme.textTheme.labelMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelSmall: ThemeManager.lightTheme.textTheme.labelSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleLarge: ThemeManager.lightTheme.textTheme.titleLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleMedium: ThemeManager.lightTheme.textTheme.titleMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleSmall: ThemeManager.lightTheme.textTheme.titleSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-          ),
+          // textTheme: ThemeManager.lightTheme.textTheme.copyWith(
+          //   bodyLarge: ThemeManager.lightTheme.textTheme.bodyLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   bodyMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   bodySmall: ThemeManager.lightTheme.textTheme.bodySmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineLarge: ThemeManager.lightTheme.textTheme.displayLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineMedium: ThemeManager.lightTheme.textTheme.headlineMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displayLarge: ThemeManager.lightTheme.textTheme.displayLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displayMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displaySmall: ThemeManager.lightTheme.textTheme.displaySmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineSmall: ThemeManager.lightTheme.textTheme.headlineSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelLarge: ThemeManager.lightTheme.textTheme.labelLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelMedium: ThemeManager.lightTheme.textTheme.labelMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelSmall: ThemeManager.lightTheme.textTheme.labelSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleLarge: ThemeManager.lightTheme.textTheme.titleLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleMedium: ThemeManager.lightTheme.textTheme.titleMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleSmall: ThemeManager.lightTheme.textTheme.titleSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          // ),
           pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-          })),
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+      })),
       routerConfig: AppRouting.shellRouteConfig,
       debugShowCheckedModeBanner: false,
     );
@@ -178,17 +184,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() async {
     // context.read<AuthenticationBloc>().add(LogOutEvent());
-    // AppointmentRecordEntity response = await appointmentUseCase
-    //     .createAppointmentRecord(AppointmentRecordEntity(
-    //         note: "note",
-    //         status: AppointmentStatus.pending,
-    //         scheduledAt: DateTime.now(),
-    //         appointmentType: AppointmentType.inPerson,
-    //         doctor: const DoctorEntity(id: 3),
-    //         healthProvider: HealthProviderEntity(id: 1),
-    //         user: const UserEntity(id: 6)));
-    UserEntity doctors = await getIt<UserUseCase>().getUserSummary(2);
-    getIt<Logger>().i(doctors);
     setState(() {
       _counter++;
     });

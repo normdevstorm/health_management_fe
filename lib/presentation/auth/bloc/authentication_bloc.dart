@@ -71,13 +71,13 @@ class AuthenticationBloc
         bool hasExpired = JwtDecoder.isExpired(loginEntity.accessToken ?? "");
         if (hasExpired) {
           SessionManager().clearSession();
-          emit(const LoginError("Token Expired !!!!"));
+          emit(const CheckLoginStatusErrorState("Token Expired !!!!"));
         } else {
           emit(LoginSuccess(loginEntity));
         }
       }
-    } catch (e) {
-      emit(LoginError(e.toString()));
+    } on ApiException catch (e) {
+      emit(CheckLoginStatusErrorState(ApiException.getErrorMessage(e)));
     }
   }
 
@@ -86,9 +86,9 @@ class AuthenticationBloc
     try {
       await authenticationUsecase.logout();
       emit(AuthenticationInitial());
-    } on Exception catch (e) {
+    } on ApiException catch (e) {
       getIt<Logger>().e(e);
-      emit(LoginError(e.toString()));
+      emit(LoginError(ApiException.getErrorMessage(e)));
     }
   }
 
