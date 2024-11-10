@@ -58,6 +58,11 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
         throw ApiException.defaultError("Failed to refresh token");
       }
       RefreshResponse refreshResponse = response.data! ;
+       SessionManager().setSession(
+          LoginEntity(
+              accessToken: refreshResponse.accessToken,
+              refreshToken: refreshResponse.refreshToken),
+          true);
       return LoginEntity(
           accessToken: refreshResponse.accessToken,
           refreshToken: refreshResponse.refreshToken,);

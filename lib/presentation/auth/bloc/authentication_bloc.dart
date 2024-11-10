@@ -25,8 +25,7 @@ class AuthenticationBloc
   AuthenticationBloc(
       {required this.authenticationUsecase, required this.verifyCodeUseCase})
       : super(AuthenticationInitial()) {
-    on<AuthenticationEvent>((event, emit) {
-    });
+    on<AuthenticationEvent>((event, emit) {});
     on<LoginSubmitEvent>((event, emit) => onLoginSubmit(event, emit));
     on<CheckLoginStatusEvent>(
         (event, emit) => onCheckLoginStatusEvent(event, emit));
@@ -55,7 +54,7 @@ class AuthenticationBloc
   }
 
   onCheckLoginStatusEvent(
-      CheckLoginStatusEvent event, Emitter<AuthenticationState> emit) {
+      CheckLoginStatusEvent event, Emitter<AuthenticationState> emit) async {
     emit(AuthenticationLoading());
     try {
       final loginEntity = SessionManager().getSession();
@@ -65,17 +64,16 @@ class AuthenticationBloc
           SessionManager().clearSession();
         }
         emit(AuthenticationInitial());
-        return;
       } else {
         bool hasExpired = JwtDecoder.isExpired(loginEntity.accessToken ?? "");
         if (hasExpired) {
-          SessionManager().clearSession();
-          emit(const CheckLoginStatusErrorState("Token Expired !!!!"));
-        } else {
-          emit(LoginSuccess(loginEntity));
+          await authenticationUsecase
+              .refreshToken(loginEntity.refreshToken ?? "");
         }
+        emit(LoginSuccess(loginEntity));
       }
     } on ApiException catch (e) {
+      SessionManager().clearSession();
       emit(CheckLoginStatusErrorState(ApiException.getErrorMessage(e)));
     }
   }
