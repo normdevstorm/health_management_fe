@@ -4,14 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 
-class VerifyCodeScreen extends StatefulWidget {
-  const VerifyCodeScreen({super.key});
+class VerifyCodeScreen extends StatelessWidget {
+   VerifyCodeScreen({super.key});
 
-  @override
-  _VerifyCodeScreenState createState() => _VerifyCodeScreenState();
-}
-
-class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
   final TextEditingController _codeController = TextEditingController();
 
   @override

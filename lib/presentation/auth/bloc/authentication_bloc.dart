@@ -26,7 +26,6 @@ class AuthenticationBloc
       {required this.authenticationUsecase, required this.verifyCodeUseCase})
       : super(AuthenticationInitial()) {
     on<AuthenticationEvent>((event, emit) {
-      // TODO: implement event handler
     });
     on<LoginSubmitEvent>((event, emit) => onLoginSubmit(event, emit));
     on<CheckLoginStatusEvent>(

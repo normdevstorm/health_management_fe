@@ -38,12 +38,15 @@ class UpdateUserRequest {
       dateOfBirth: entity.dateOfBirth,
       gender: entity.gender,
       avatarUrl: entity.avatarUrl,
-      account: UpdateAccountRequest.fromEntity(entity.account, entity.account?.password),
-      addresses: entity.addresses?.map((e) => AddressRequest.fromEntity(e)).toList(),
+      account: UpdateAccountRequest.fromEntity(
+          entity.account, entity.account?.password),
+      addresses:
+          entity.addresses?.map((e) => AddressRequest.fromEntity(e)).toList(),
       // doctorProfile: DoctorResponse.fromEntity(entity.doctorProfile),
     );
   }
 
-  factory UpdateUserRequest.fromJson(Map<String, dynamic> json) => _$UpdateUserRequestFromJson(json);
+  factory UpdateUserRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateUserRequestFromJson(json);
   Map<String, dynamic> toJson() => _$UpdateUserRequestToJson(this);
 }

@@ -1,7 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../app/utils/multi-languages/locale_keys.dart';
+import '../../../auth/bloc/authentication_bloc.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -16,7 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   void _incrementCounter() async {
-    // context.read<AuthenticationBloc>().add(LogOutEvent());
+    context.read<AuthenticationBloc>().add(LogOutEvent());
     setState(() {
       _counter++;
     });

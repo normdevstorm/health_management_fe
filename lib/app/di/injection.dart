@@ -87,9 +87,10 @@ void setUpAppComponent() {
       () => VerifyCodeRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton<AppointmentRepository>(
       () => AppointmentRepositoryImpl(getIt(), getIt()));
-  getIt.registerLazySingleton<UserRepository>(()=>UserRepositoryImpl(getIt(), getIt()));
-  getIt.registerLazySingleton<HealthProviderRepository>(()=>HealthProviderRepositoryImpl(getIt(), getIt()));
-
+  getIt.registerLazySingleton<UserRepository>(
+      () => UserRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton<HealthProviderRepository>(
+      () => HealthProviderRepositoryImpl(getIt(), getIt()));
 
   //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));

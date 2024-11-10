@@ -15,6 +15,7 @@ import 'package:health_management/presentation/common/shimmer_loading.dart';
 
 import '../../bloc/health_provider/health_provider_bloc.dart';
 
+// ignore: must_be_immutable
 class ChooseHealthProviderScreen extends StatelessWidget {
   final ValueNotifier<int?> selectedHealthProviderNotifier =
       ValueNotifier(null);

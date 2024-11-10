@@ -14,7 +14,6 @@ class _TimelineScheduleState extends State<TimelineSchedule> {
 
   @override
   void initState() {
-    // TODO: implement initState
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.scrollController.animateTo(
         DateTime.now().hour * 100.h,
@@ -22,11 +21,6 @@ class _TimelineScheduleState extends State<TimelineSchedule> {
         curve: Curves.easeIn,
       );
     });
-    // scrollController.animateTo(
-    //   DateTime.now().hour * 100.h,
-    //   duration: Duration(seconds: 1),
-    //   curve: Curves.easeIn,
-    // );
     super.initState();
   }
 

@@ -40,7 +40,6 @@ class PersonDetailsRoute extends GoRouteData {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    // TODO: implement buildPage
     return CustomTransitionPage(
       child: PersonDetailScreen(
         person: {
