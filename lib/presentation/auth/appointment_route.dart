@@ -50,7 +50,7 @@ class AppointmentRoute extends ShellRouteData {
 class AppointmentHomeRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return AppointmentHome();
+    return const AppointmentHome();
   }
 }
 
@@ -70,7 +70,7 @@ class AppointmentCreateChooseProvider extends AppointmentCreateRoute {
 class AppointmentCreateChooseTime extends AppointmentCreateRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return ChooseAppointmentDateTimeScreen();
+    return const ChooseAppointmentDateTimeScreen();
   }
 }
 

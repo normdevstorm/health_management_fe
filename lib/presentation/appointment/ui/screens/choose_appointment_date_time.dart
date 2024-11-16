@@ -45,7 +45,7 @@ class ChooseAppointmentDateTimeScreen extends StatelessWidget {
                   color: ColorManager.highlightColorLight, fontSize: 13.sp),
             ),
             30.verticalSpace,
-            Text(
+            const Text(
               'Select Schedule',
               style: TextStyle(
                 fontSize: 16,
@@ -58,7 +58,7 @@ class ChooseAppointmentDateTimeScreen extends StatelessWidget {
               child: ListView(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
-                children: [
+                children: const [
                   DayButton(day: 'Mon', time: '7'),
                   DayButton(day: 'Tue', time: '8'),
                   DayButton(day: 'Wed', time: '10'),
@@ -68,22 +68,22 @@ class ChooseAppointmentDateTimeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            Divider(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Morning',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Wrap(
                   direction: Axis.horizontal,
                   spacing: 10.w,
                   runSpacing: 10.w,
-                  children: [
+                  children: const [
                     TagChip(
                       text: '7:00 AM',
                     ),
@@ -103,17 +103,17 @@ class ChooseAppointmentDateTimeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Afternoon',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Wrap(
                   direction: Axis.horizontal,
                   spacing: 10.w,
                   runSpacing: 10.w,
-                  children: [
+                  children: const [
                     TagChip(
                       text: '7:00 AM',
                     ),
@@ -133,10 +133,10 @@ class ChooseAppointmentDateTimeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
-            Divider(),
+            const Divider(),
           ],
         ),
       ),
@@ -173,7 +173,7 @@ class DayButton extends StatelessWidget {
       onTap: () {
         context.read<AppointmentBloc>()
           ..add(CollectDataDatetimeEvent(scheduledAt: DateTime.now().copyWith(minute: 0, millisecond: 0, microsecond: 0,second: 0)))
-          ..add(CreateAppointmentRecordEvent());
+          ..add(const CreateAppointmentRecordEvent());
       },
       child: Container(
           margin: EdgeInsets.only(left: 10.w),

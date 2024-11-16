@@ -22,7 +22,7 @@ class TagChip extends StatelessWidget {
         labelStyle: TextStyle(
           color: isSelected ? Colors.white : Colors.black,
         ),
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
     );
   }

@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -49,21 +40,55 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyAtON2PhaTtLSLDuawH7fNYDg7CPIyz2xo',
+    appId: '1:155656307072:web:44151850d5793818044165',
+    messagingSenderId: '155656307072',
+    projectId: 'chat-app-5d601',
+    authDomain: 'chat-app-5d601.firebaseapp.com',
+    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'chat-app-5d601.appspot.com',
+    measurementId: 'G-CSK1PJWHLQ',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ',
-    appId: '1:810131365389:android:c68ba9159afb083ae77f44',
-    messagingSenderId: '810131365389',
-    projectId: 'cloud-message-test-1d41b',
-    storageBucket: 'cloud-message-test-1d41b.appspot.com',
+    apiKey: 'AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU',
+    appId: '1:155656307072:android:a0eefb7abc3bb3eb044165',
+    messagingSenderId: '155656307072',
+    projectId: 'chat-app-5d601',
+    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'chat-app-5d601.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDiQbNt3HAIWA6e9hZb4DHDjpZqHix4YIA',
-    appId: '1:810131365389:ios:3ed5ad2032fa5829e77f44',
-    messagingSenderId: '810131365389',
-    projectId: 'cloud-message-test-1d41b',
-    storageBucket: 'cloud-message-test-1d41b.appspot.com',
+    apiKey: 'AIzaSyCtlw4NN5Yv88V_CJtIp-GeWSBtTaMEURM',
+    appId: '1:155656307072:ios:0341b1f2c827fd3b044165',
+    messagingSenderId: '155656307072',
+    projectId: 'chat-app-5d601',
+    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'chat-app-5d601.appspot.com',
     iosBundleId: 'com.example.healthManagement',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCtlw4NN5Yv88V_CJtIp-GeWSBtTaMEURM',
+    appId: '1:155656307072:ios:0341b1f2c827fd3b044165',
+    messagingSenderId: '155656307072',
+    projectId: 'chat-app-5d601',
+    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'chat-app-5d601.appspot.com',
+    iosBundleId: 'com.example.healthManagement',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDWdvvnEhW9O_6SpITtqZ7a4j_i4CtzOno',
+    appId: '1:155656307072:web:6fd2179a46ddec7f044165',
+    messagingSenderId: '155656307072',
+    projectId: 'chat-app-5d601',
+    authDomain: 'chat-app-5d601.firebaseapp.com',
+    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'chat-app-5d601.appspot.com',
+    measurementId: 'G-QLVHZ4RT1M',
   );
 
 }

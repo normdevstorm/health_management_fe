@@ -42,7 +42,7 @@ class TagChip extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
             decoration: ShapeDecoration(
               color: (isSelected ? selectedColor : unselectedColor),
-              shape: RoundedRectangleBorder(
+              shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.horizontal(
                     left: Radius.circular(20), right: Radius.circular(20)),
               ),

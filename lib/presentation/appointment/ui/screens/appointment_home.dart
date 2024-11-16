@@ -20,14 +20,14 @@ class AppointmentHome extends StatefulWidget {
   State<AppointmentHome> createState() => _AppointmentHomeState();
 }
 
-class _AppointmentHomeState extends State<AppointmentHome>  {
+class _AppointmentHomeState extends State<AppointmentHome> {
   final ScrollController _timeLineScrollController = ScrollController();
   final ScrollController _appointmentListScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    context.read<AppointmentBloc>().add(GetAllAppointmentRecordEvent());
+    context.read<AppointmentBloc>().add(const GetAllAppointmentRecordEvent());
   }
 
   @override
@@ -63,17 +63,17 @@ class _AppointmentHomeState extends State<AppointmentHome>  {
                     state.status == BlocStatus.success) {
                   context
                       .read<AppointmentBloc>()
-                      .add(GetAllAppointmentRecordEvent());
+                      .add(const GetAllAppointmentRecordEvent());
                 }
               },
-              child: Shimmer(
+              child: ShimmerWidget(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                         DateFormat(DateFormat.YEAR_MONTH_DAY)
                             .format(DateTime.now()),
-                        style: TextStyle(fontSize: 16, color: Colors.grey)),
+                        style: const TextStyle(fontSize: 16, color: Colors.grey)),
                     const SizedBox(height: 8),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -90,7 +90,7 @@ class _AppointmentHomeState extends State<AppointmentHome>  {
                         ]),
                     const SizedBox(height: 16),
                     WeekDaysRowWidget(),
-                    ShadowEdgeWidget(),
+                    const ShadowEdgeWidget(),
                     NotificationListener<ScrollNotification>(
                       //TODO: Hanle later, wrap in notification of scroll controller for now in order to avoid affect the appearance of bottom nav bar
                       onNotification: (notification) {
@@ -122,7 +122,7 @@ class _AppointmentHomeState extends State<AppointmentHome>  {
                         },
                       ),
                     ),
-                    ShadowEdgeWidget(),
+                    const ShadowEdgeWidget(),
                     BlocBuilder<AppointmentBloc, AppointmentState>(
                       buildWhen: (previous, current) =>
                           previous.status != current.status &&
@@ -143,13 +143,13 @@ class _AppointmentHomeState extends State<AppointmentHome>  {
                           child: ListView(
                             controller: _appointmentListScrollController,
                             shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
+                            physics: const NeverScrollableScrollPhysics(),
                             children: [
                               ListAppointmentRecordWidget(
                                   appointmentRecords: isLoading
                                       ? List.generate(
                                           3,
-                                          (index) => AppointmentRecordEntity(),
+                                          (index) => const AppointmentRecordEntity(),
                                         )
                                       : appointmentRecords),
                             ],
@@ -249,7 +249,7 @@ class WeekDaysRowWidget extends StatelessWidget {
                 color: ColorManager.buttonShadowColorLight,
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -296,7 +296,7 @@ class AddButtonWidget extends StatelessWidget {
             backgroundColor:
                 WidgetStateProperty.all(ColorManager.buttonEnabledColorLight),
             padding: WidgetStateProperty.all(
-                EdgeInsets.symmetric(horizontal: 16, vertical: 8))),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8))),
         icon: Icon(
           Icons.add,
           size: 30.r,
@@ -343,7 +343,7 @@ class AppointmentCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 3,
             blurRadius: 5,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -383,7 +383,7 @@ class AppointmentCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.calendar_today, color: Color(0xFFEFE8E9)),
+                        const Icon(Icons.calendar_today, color: Color(0xFFEFE8E9)),
                         const SizedBox(width: 8),
                         Text(
                           date ?? "Loading...",
@@ -394,7 +394,7 @@ class AppointmentCard extends StatelessWidget {
                     ),
                     Row(
                       children: [
-                        Icon(Icons.access_time, color: Color(0xFFEFE8E9)),
+                        const Icon(Icons.access_time, color: Color(0xFFEFE8E9)),
                         const SizedBox(width: 8),
                         Text(
                           time ?? "Loading...",
@@ -491,7 +491,7 @@ class _ScheduleTimelineState extends State<ScheduleTimeline> {
                             color: Colors.blue,
                           ),
                         ),
-                        TimelineItem(
+                        const TimelineItem(
                           time: '10:00',
                           content: AppointmentCard(
                             doctorType: 'Cardiologist',

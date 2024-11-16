@@ -17,27 +17,27 @@ class VerifyCodeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             Center(
               child: Image.asset(
                 'assets/images/placeholder.png',
                 height: 100,
               ),
             ),
-            SizedBox(height: 32),
-            Text(
+            const SizedBox(height: 32),
+            const Text(
               'Enter the code sent to your email',
               style: TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextField(
               controller: _codeController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Enter OTP',
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
                 final RegisterSubmitEvent registerSubmitEvent =
@@ -48,7 +48,7 @@ class VerifyCodeScreen extends StatelessWidget {
                     email: registerSubmitEvent.email,
                     registerSubmitEvent: registerSubmitEvent));
               },
-              child: Text('Verify OTP'),
+              child: const Text('Verify OTP'),
             ),
           ],
         ),

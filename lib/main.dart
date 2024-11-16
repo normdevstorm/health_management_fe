@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
@@ -13,10 +15,14 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
+import 'package:health_management/data/chat/datasources/firebase_service.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
+import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
+import 'package:health_management/firebase_options_dev.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
+import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/local_storage.dart';
 import 'app/managers/toast_manager.dart';
@@ -31,14 +37,17 @@ void main() async {
       (element) => element.name == flavor,
       orElse: () => FlavorManager.dev));
   await SharedPreferenceManager.init();
-  // if (!kIsWeb) {
-  //   await FirebaseApi().initNotificaiton();
-  // }
+  if (!kIsWeb) {
+    // await FirebaseApi().initNotificaiton();
+      await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  }
 
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -53,6 +62,7 @@ void main() async {
           providers: [
             BlocProvider(
               create: (context) => AuthenticationBloc(
+                appChatUseCases: getIt<AppChatUseCases>(),
                   authenticationUsecase: getIt<AuthenticationUsecase>(),
                   verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
             ),
@@ -63,9 +73,9 @@ void main() async {
                     ) // Thêm sự kiện để tải thông tin user
                 ),
           ],
-          child: BlocListener<AuthenticationBloc, AuthenticationState>(
+          child: const BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: _authenticationListener,
-            child: const MyApp(),
+            child: MyApp(),
           ),
         ),
       ),
@@ -168,7 +178,7 @@ class MyApp extends StatelessWidget {
         textDirection: ui.TextDirection.ltr,
         child: Stack(children: [
           mainApp,
-          Positioned(bottom: 5.sp, right: 5.sp, child: ChuckerLogButton())
+          Positioned(bottom: 5.sp, right: 5.sp, child: const ChuckerLogButton())
         ]),
       ),
       child: mainApp,

@@ -31,14 +31,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     // Lấy thông tin người dùng khi vào màn hình
-    context.read<EditProfileBloc>().add(GetInformationUser());
+    context.read<EditProfileBloc>().add(const GetInformationUser());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chỉnh sửa hồ sơ'),
+        title: const Text('Chỉnh sửa hồ sơ'),
         centerTitle: true,
       ),
       body: BlocListener<EditProfileBloc, EditProfileState>(
@@ -62,7 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: BlocBuilder<EditProfileBloc, EditProfileState>(
           builder: (context, state) {
             if (state.status == BlocStatus.loading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else {
               return Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -76,14 +76,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     TextButton(
-                        onPressed: () {}, child: Text("Chỉnh sửa avatar")),
+                        onPressed: () {}, child: const Text("Chỉnh sửa avatar")),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: firstNameController,
                       decoration: InputDecoration(
                         labelText: 'Họ',
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () {
                             firstNameController.selection = TextSelection(
                               baseOffset: 0,
@@ -99,7 +99,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: InputDecoration(
                         labelText: 'Tên',
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () {
                             lastNameController.selection = TextSelection(
                               baseOffset: 0,
@@ -119,7 +119,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             width: 60,
                             alignment: Alignment.centerLeft,
                             child:
-                                Text('Male', overflow: TextOverflow.ellipsis),
+                                const Text('Male', overflow: TextOverflow.ellipsis),
                           ),
                         ),
                         DropdownMenuItem(
@@ -128,7 +128,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             width: 80.w,
                             alignment: Alignment.centerLeft,
                             child:
-                                Text('Female', overflow: TextOverflow.ellipsis),
+                                const Text('Female', overflow: TextOverflow.ellipsis),
                           ),
                         ),
                       ],
@@ -148,7 +148,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         labelText: 'Ngày sinh',
                         hintText: 'YYYY/MM/DD',
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () {
                             dateOfBirthController.selection = TextSelection(
                               baseOffset: 0,
@@ -159,14 +159,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     24.verticalSpace,
-                    Text("Thông tin tài khoản"),
+                    const Text("Thông tin tài khoản"),
                     16.verticalSpace,
                     TextFormField(
                       controller: emailController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () {
                             emailController.selection = TextSelection(
                               baseOffset: 0,
@@ -182,7 +182,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       decoration: InputDecoration(
                         labelText: 'Số điện thoại',
                         suffixIcon: IconButton(
-                          icon: Icon(Icons.edit),
+                          icon: const Icon(Icons.edit),
                           onPressed: () {
                             phoneController.selection = TextSelection(
                               baseOffset: 0,
@@ -218,10 +218,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             );
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        textStyle: TextStyle(fontSize: 18),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        textStyle: const TextStyle(fontSize: 18),
                       ),
-                      child: Text("Lưu"),
+                      child: const Text("Lưu"),
                     ),
                   ],
                 ),

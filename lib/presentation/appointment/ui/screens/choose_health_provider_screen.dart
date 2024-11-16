@@ -43,7 +43,7 @@ class ChooseHealthProviderScreen extends StatelessWidget {
                 if (state.status == BlocStatus.success) {
                   healthProviders = state.data as List<HealthProviderEntity>;
                 }
-                return Shimmer(
+                return ShimmerWidget(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

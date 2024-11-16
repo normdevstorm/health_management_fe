@@ -17,11 +17,11 @@ class ToastManager {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          const Icon(
             Icons.clear_outlined,
             color: ColorManager.errorColorLight,
           ),
-          SizedBox(
+          const SizedBox(
             width: 12.0,
           ),
           Expanded(
@@ -39,7 +39,7 @@ class ToastManager {
     fToast.showToast(
       child: toast,
       gravity: ToastGravity.TOP,
-      toastDuration: Duration(seconds: 2),
+      toastDuration: const Duration(seconds: 2),
     );
 
     // Custom Toast Position

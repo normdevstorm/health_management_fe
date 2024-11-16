@@ -5,6 +5,7 @@ part 'register_entity.g.dart';
 class RegisterEntity {
   final String accessToken;
   final String refreshToken;
+  
 
   RegisterEntity({
     required this.accessToken,

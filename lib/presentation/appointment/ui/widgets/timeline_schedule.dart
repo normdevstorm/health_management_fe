@@ -17,7 +17,7 @@ class _TimelineScheduleState extends State<TimelineSchedule> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       widget.scrollController.animateTo(
         DateTime.now().hour * 100.h,
-        duration: Duration(seconds: 1),
+        duration: const Duration(seconds: 1),
         curve: Curves.easeIn,
       );
     });
@@ -56,7 +56,7 @@ class TimelineItem extends StatelessWidget {
                 padding: EdgeInsets.only(right: 10.w),
                 child: Text(
                   '${hour.toString().padLeft(2, '0')}:00',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),
               if (isNow) ...[
@@ -79,7 +79,7 @@ class TimelineItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(width: 60.w),
-                Expanded(
+                const Expanded(
                   child: Card(
                     color: Color(0xFFf2e7eb),
                     child: ListTile(

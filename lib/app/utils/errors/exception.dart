@@ -4,8 +4,8 @@ class ServerException implements Exception {
   ServerException(this.message);
 }
 
-class DatabaseException implements Exception {
+class FirebaseDatabaseException implements Exception {
   final String message;
 
-  DatabaseException(this.message);
+  FirebaseDatabaseException(this.message);
 }

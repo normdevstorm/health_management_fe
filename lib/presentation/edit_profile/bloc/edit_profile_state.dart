@@ -10,15 +10,15 @@ class EditProfileState<T> extends Equatable {
       {required this.status, this.data, this.errorMessage});
 
   factory EditProfileState.initial() {
-    return EditProfileState._(status: BlocStatus.initial);
+    return const EditProfileState._(status: BlocStatus.initial);
   }
 
   factory EditProfileState.loaded() {
-    return EditProfileState._(status: BlocStatus.loaded);
+    return const EditProfileState._(status: BlocStatus.loaded);
   }
 
   factory EditProfileState.loading() {
-    return EditProfileState._(status: BlocStatus.loading);
+    return const EditProfileState._(status: BlocStatus.loading);
   }
 
   factory EditProfileState.success(T data) {

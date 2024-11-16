@@ -26,7 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _navigateToEditProfile() {
     Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => EditProfileScreen(),
+      builder: (context) => const EditProfileScreen(),
     ));
   }
 
@@ -38,18 +38,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         TagList(tags: [
           TagChip(
               text: 'Profile', isSelected: true, onTap: _navigateToEditProfile),
-          TagChip(text: 'Security', isSelected: true),
-          TagChip(text: 'Account', isSelected: false),
-          TagChip(text: 'Notifications', isSelected: true),
-          TagChip(text: 'Help & Support', isSelected: false),
-          TagChip(text: 'Appearance', isSelected: true),
-          TagChip(text: 'Language', isSelected: false),
-          TagChip(text: 'Data Usage', isSelected: true),
-          TagChip(text: 'Accessibility', isSelected: false),
-          TagChip(text: 'Blocked Contacts', isSelected: true),
-          TagChip(text: 'Linked Devices', isSelected: false),
-          TagChip(text: 'Storage', isSelected: true),
-          TagChip(text: "Logout", isSelected: false)
+          const TagChip(text: 'Security', isSelected: true),
+          const TagChip(text: 'Account', isSelected: false),
+          const TagChip(text: 'Notifications', isSelected: true),
+          const TagChip(text: 'Help & Support', isSelected: false),
+          const TagChip(text: 'Appearance', isSelected: true),
+          const TagChip(text: 'Language', isSelected: false),
+          const TagChip(text: 'Data Usage', isSelected: true),
+          const TagChip(text: 'Accessibility', isSelected: false),
+          const TagChip(text: 'Blocked Contacts', isSelected: true),
+          const TagChip(text: 'Linked Devices', isSelected: false),
+          const TagChip(text: 'Storage', isSelected: true),
+          const TagChip(text: "Logout", isSelected: false)
         ]),
       ],
     );

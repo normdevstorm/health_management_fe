@@ -94,7 +94,7 @@ abstract class ApiException with _$ApiException {
                       message ?? "Unauthorised Request");
                   break;
                 case 404:
-                  apiException = ApiException.notFound("Not found");
+                  apiException = const ApiException.notFound("Not found");
                   break;
                 case 409:
                   apiException = ApiException.conflict(
@@ -126,22 +126,22 @@ abstract class ApiException with _$ApiException {
           }
         } else if (error is SocketException) {
           apiException =
-              ApiException.noInternetConnection("No Internet Connection");
+              const ApiException.noInternetConnection("No Internet Connection");
         } else {
-          apiException = ApiException.unexpectedError("Unexpected Error");
+          apiException = const ApiException.unexpectedError("Unexpected Error");
         }
         return apiException;
       } on FormatException catch (e) {
         getIt<Logger>().e(e);
-        return ApiException.formatException("Format Exception");
+        return const ApiException.formatException("Format Exception");
       } catch (_) {
-        return ApiException.unexpectedError("Unexpected Error");
+        return const ApiException.unexpectedError("Unexpected Error");
       }
     } else {
       if (error.toString().contains("is not a subtype of")) {
-        return ApiException.unableToProcess("Unable to Process");
+        return const ApiException.unableToProcess("Unable to Process");
       } else {
-        return ApiException.unexpectedError("Unexpected Error");
+        return const ApiException.unexpectedError("Unexpected Error");
       }
     }
   }

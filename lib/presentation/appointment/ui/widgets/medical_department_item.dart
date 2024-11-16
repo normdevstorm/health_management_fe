@@ -61,15 +61,15 @@ class MedicalDepartmentItem extends StatelessWidget {
                   children: [
                     Text(
                       departmentName,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       '$doctorsCount doctors',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                       ),
                     ),
@@ -87,7 +87,7 @@ class MedicalDepartmentItem extends StatelessWidget {
                       height: 50.h,
                     ),
                     // Doctor avatars
-                    Positioned(
+                    const Positioned(
                       left: 0,
                       child: CircleAvatar(
                         radius: 15,
@@ -96,7 +96,7 @@ class MedicalDepartmentItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
+                    const Positioned(
                       left: 15,
                       child: CircleAvatar(
                         radius: 15,
@@ -105,7 +105,7 @@ class MedicalDepartmentItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
+                    const Positioned(
                       left: 35,
                       child: CircleAvatar(
                         radius: 15,
@@ -114,7 +114,7 @@ class MedicalDepartmentItem extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
+                    const Positioned(
                       left: 50,
                       child: CircleAvatar(
                         radius: 15,

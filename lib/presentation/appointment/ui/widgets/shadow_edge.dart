@@ -31,7 +31,7 @@ class ShadowEdgeWidget extends StatelessWidget {
                   color: ColorManager.buttonShadowColorLight.withOpacity(0.1),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3),
+                  offset: const Offset(0, 3),
                 ),
               ]),
         ),

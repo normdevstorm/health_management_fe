@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class Shimmer extends StatefulWidget {
-  static ShimmerState? of(BuildContext context) {
-    return context.findAncestorStateOfType<ShimmerState>();
+class ShimmerWidget extends StatefulWidget {
+  static ShimmerWidgetState? of(BuildContext context) {
+    return context.findAncestorStateOfType<ShimmerWidgetState>();
   }
 
   static const defautShimmerGradient = LinearGradient(
@@ -21,7 +21,7 @@ class Shimmer extends StatefulWidget {
     tileMode: TileMode.clamp,
   );
 
-  const Shimmer({
+  const ShimmerWidget({
     super.key,
     this.linearGradient = defautShimmerGradient,
     this.child,
@@ -31,10 +31,11 @@ class Shimmer extends StatefulWidget {
   final Widget? child;
 
   @override
-  ShimmerState createState() => ShimmerState();
+  ShimmerWidgetState createState() => ShimmerWidgetState();
 }
 
-class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
+class ShimmerWidgetState extends State<ShimmerWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _shimmerController;
 
   @override
@@ -117,7 +118,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading> {
     if (_shimmerChanges != null) {
       _shimmerChanges!.removeListener(_onShimmerChange);
     }
-    _shimmerChanges = Shimmer.of(context)?.shimmerChanges;
+    _shimmerChanges = ShimmerWidget.of(context)?.shimmerChanges;
     if (_shimmerChanges != null) {
       _shimmerChanges!.addListener(_onShimmerChange);
     }
@@ -144,7 +145,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading> {
     }
 
     // Collect ancestor shimmer info.
-    final shimmer = Shimmer.of(context)!;
+    final shimmer = ShimmerWidget.of(context)!;
     if (!shimmer.isSized) {
       // The ancestor Shimmer widget has not laid
       // itself out yet. Return an empty box.
