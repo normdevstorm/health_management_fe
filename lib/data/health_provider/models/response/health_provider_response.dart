@@ -17,7 +17,11 @@ class HealthProviderResponse {
       {this.id, this.name, this.address, this.description, this.doctors});
 
   HealthProviderEntity toEntity() => HealthProviderEntity(
-      id: id, name: name, description: description, address: address?.toEntity(), doctors: doctors?.map((e) => e.toEntity()).toList());
+      id: id,
+      name: name,
+      description: description,
+      address: address?.toEntity(),
+      doctors: doctors?.map((e) => e.toEntity()).toList());
 
   factory HealthProviderResponse.fromJson(Map<String, dynamic> json) =>
       _$HealthProviderResponseFromJson(json);

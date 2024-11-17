@@ -13,9 +13,15 @@ import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
+import 'package:health_management/domain/articles/entities/article_entity.dart';
+import 'package:health_management/domain/articles/usecases/article_usecase.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/domain/user/usecases/user_usecase.dart';
+import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
+import 'package:health_management/presentation/articles/bloc/article_event.dart';
+import 'package:health_management/presentation/articles/bloc/article_state.dart';
+import 'package:health_management/presentation/articles/ui/article_screen.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'package:logger/logger.dart';
@@ -49,6 +55,11 @@ void main() async {
               create: (context) => AuthenticationBloc(
                   authenticationUsecase: getIt<AuthenticationUsecase>(),
                   verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
+            ),
+            BlocProvider(
+              create: (context) => ArticleBloc(
+                articleUsecase: getIt<ArticleUsecase>(),
+              ),
             ),
           ],
           child: BlocListener<AuthenticationBloc, AuthenticationState>(
@@ -164,61 +175,51 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class ArticleHome extends StatefulWidget {
+  const ArticleHome({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ArticleHome> createState() => _ArticleHomeSate();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() async {
-    // context.read<AuthenticationBloc>().add(LogOutEvent());
-    // AppointmentRecordEntity response = await appointmentUseCase
-    //     .createAppointmentRecord(AppointmentRecordEntity(
-    //         note: "note",
-    //         status: AppointmentStatus.pending,
-    //         scheduledAt: DateTime.now(),
-    //         appointmentType: AppointmentType.inPerson,
-    //         doctor: const DoctorEntity(id: 3),
-    //         healthProvider: HealthProviderEntity(id: 1),
-    //         user: const UserEntity(id: 6)));
-    UserEntity doctors = await getIt<UserUseCase>().getUserSummary(2);
-    getIt<Logger>().i(doctors);
-    setState(() {
-      _counter++;
-    });
+class _ArticleHomeSate extends State<ArticleHome> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ArticleBloc>().add(GetAllArticleEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              LocaleKeys.counterDescription.tr(),
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            Text(
-              'null',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: const Text("Home"),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      body: BlocBuilder<ArticleBloc, ArticleState>(
+        builder: (context, state) {
+          if (state.status == BlocStatus.loading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state.status == BlocStatus.error) {
+            return Center(child: Text(state.errorMessage.toString()));
+          }
+
+          if (state.status == BlocStatus.success) {
+            final articles = state.data as List<ArticleEntity>;
+
+            return ListView.builder(
+              itemCount: articles.length,
+              itemBuilder: (context, index) {
+                return ArticleItem(article: articles[index]);
+              },
+            );
+          }
+
+          return const Center(child: Text('No articles found'));
+        },
       ),
     );
   }

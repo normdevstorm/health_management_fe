@@ -92,3 +92,37 @@ enum HospitalSpecialty {
   @JsonValue("PSYCHOLOGIST")
   psychologist,
 }
+
+enum ArticleStatus {
+  @JsonValue("DRAFT")
+  draft,
+  @JsonValue("PUBLISHED")
+  published,
+}
+
+enum ArticleCategory {
+  @JsonValue("FITNESS")
+  fitness,
+  @JsonValue("NUTRITION")
+  nutrition,
+  @JsonValue("MENTAL_HEALTH")
+  mentalHealth,
+  @JsonValue("LIFESTYLE")
+  lifestyle
+}
+
+enum VoteType {
+  @JsonValue("UPVOTE")
+  upvote,
+  @JsonValue("DOWNVOTE")
+  downvote,
+}
+
+enum MediaType {
+  @JsonValue("IMAGE")
+  image,
+  @JsonValue("VIDEO")
+  video,
+  @JsonValue("AUDIO")
+  audio
+}

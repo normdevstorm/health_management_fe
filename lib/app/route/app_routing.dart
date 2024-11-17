@@ -23,6 +23,8 @@ final GlobalKey<NavigatorState> rootNavigatorAuthentication =
     GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> globalRootNavigatorKey =
     GlobalKey<NavigatorState>();
+// final GlobalKey<NavigatorState> rootNavigatorArticles =
+//     GlobalKey<NavigatorState>();
 
 class AppRouting {
   static final RouteObserver<ModalRoute<void>> _routeObserver =
@@ -60,7 +62,7 @@ class AppRouting {
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) => MyHomePage(
+                        builder: (context, state) => ArticleHome(
                               title: 'Home',
                             ))
                   ]),
@@ -71,8 +73,8 @@ class AppRouting {
                   navigatorKey: rootNavigatorAppointment,
                   routes: <RouteBase>[$appointmentRoute]),
               StatefulShellBranch(
-                  routes: <RouteBase>[$settingsRoute],
-                  navigatorKey: rootNavigatorProfile)
+                  navigatorKey: rootNavigatorProfile,
+                  routes: <RouteBase>[$settingRoute])
             ])
       ]);
 }

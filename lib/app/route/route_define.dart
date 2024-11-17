@@ -14,4 +14,8 @@ class RouteDefine {
   static const String register = 'register';
   static const String verifyCode = 'verify-code';
   static const String auth = 'auth';
+  static const String article = 'articles';
+  static const String homeArticles = 'home-articles';
+
+  static const String profile = 'profile';
 }
