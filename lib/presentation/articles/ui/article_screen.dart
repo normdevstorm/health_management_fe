@@ -8,6 +8,7 @@ import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/article_create_screen.dart';
+import 'package:health_management/presentation/articles/ui/article_detail_screen.dart';
 
 class ArticleScreen extends StatefulWidget {
   const ArticleScreen({super.key});
@@ -95,56 +96,72 @@ class ArticleItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title and Category
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  article.title.toString(),
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Chip(label: Text(article.category.toString().split('.').last)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Author and Avatar
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundImage: NetworkImage(article.userAvatar.toString()),
-                ),
-                const SizedBox(width: 8),
-                Text(article.userName.toString()),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Content preview
-            Text(
-              article.content.toString(),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 14),
-            ),
-            const SizedBox(height: 8),
-            // Vote, Comment, View Counts
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Upvotes: ${article.upVoteCount}"),
-                Text("Comments: ${article.commentCount}"),
-                Text("Views: ${article.viewCount}"),
-              ],
-            ),
-          ],
+    return GestureDetector(
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title and Category
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    article.title.toString(),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Chip(
+                      label: Text(article.category.toString().split('.').last)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // Author and Avatar
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(article.userAvatar.toString()),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(article.userName.toString()),
+                ],
+              ),
+              const SizedBox(height: 8),
+              // Content preview
+              Text(
+                article.content.toString(),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              // Vote, Comment, View Counts
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Upvotes: ${article.upVoteCount}"),
+                  Text("Comments: ${article.commentCount}"),
+                  Text("Views: ${article.viewCount}"),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+      onTap: () => _navigateToArticleDetail(context, article),
+    );
+  }
+
+  _navigateToArticleDetail(context, article) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BlocProvider.value(
+            value: context.read<ArticleBloc>(),
+            child: ArticleDetailScreen(article: article)),
       ),
     );
   }

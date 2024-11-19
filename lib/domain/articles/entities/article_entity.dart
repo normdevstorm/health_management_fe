@@ -18,7 +18,7 @@ class ArticleEntity {
   final ArticleCategory? category;
   final ArticleStatus? status;
   final List<ArticleVoteEntity>? votes;
-  final List<ArticleCommentEntity>? comment;
+  final List<ArticleCommentEntity>? comments;
   final List<ArticleMediaEntity>? media;
 
   const ArticleEntity({
@@ -35,7 +35,7 @@ class ArticleEntity {
     this.category,
     this.status,
     this.votes,
-    this.comment,
+    this.comments,
     this.media,
   });
 
@@ -53,7 +53,7 @@ class ArticleEntity {
     ArticleCategory? category,
     ArticleStatus? status,
     List<ArticleVoteEntity>? votes,
-    List<ArticleCommentEntity>? comment,
+    List<ArticleCommentEntity>? comments,
     List<ArticleMediaEntity>? media,
   }) {
     return ArticleEntity(
@@ -70,7 +70,7 @@ class ArticleEntity {
       category: category ?? this.category,
       status: status ?? this.status,
       votes: votes ?? this.votes,
-      comment: comment ?? this.comment,
+      comments: comments ?? this.comments,
       media: media ?? this.media,
     );
   }

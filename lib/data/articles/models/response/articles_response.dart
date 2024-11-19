@@ -21,8 +21,9 @@ class ArticlesResponse {
   final ArticleCategory? category;
   final ArticleStatus? status;
   final List<ArticlesVoteResponse>? votes;
-  final List<ArticlesCommentResponse>? comment;
+  final List<ArticlesCommentResponse>? comments;
   final List<ArticlesMediaResponse>? media;
+
   const ArticlesResponse(
       {this.id,
       this.title,
@@ -37,7 +38,7 @@ class ArticlesResponse {
       this.category,
       this.status,
       this.votes,
-      this.comment,
+      this.comments,
       this.media});
 
   // chuyen tu Json sang doi tuong ArticleResponse
@@ -61,7 +62,7 @@ class ArticlesResponse {
         category: category,
         status: status,
         votes: votes?.map((e) => e.toEntity()).toList(),
-        comment: comment?.map((e) => e.toEntity()).toList(),
+        comments: comments?.map((e) => e.toEntity()).toList(),
         media: media?.map((e) => e.toEntity()).toList(),
       );
 }

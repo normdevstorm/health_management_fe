@@ -42,6 +42,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
   Future<List<ArticleEntity>> getAllArticleByUserId(int userId) async {
     try {
       final response = await api.getAllArticlesByUserId(userId);
+      logger.d(response.data); // Kiểm tra dữ liệu JSON gốc
+      logger.d(response.data.runtimeType);
       return (response.data ?? []).map((e) => e.toEntity()).toList();
     } catch (e) {
       logger.e(e);
