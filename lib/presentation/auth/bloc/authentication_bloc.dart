@@ -85,7 +85,6 @@ class AuthenticationBloc
         .hasExistedUser(event.email)
         .then((hasRegistered) async {
       if (!hasRegistered) {
-        //check if it is doctor then register
         SharedPreferenceManager.getUser().then((value) {
           if (value != null) {
             if (value.account?.role == Role.doctor) {
@@ -98,7 +97,6 @@ class AuthenticationBloc
           }
         });
       } else {
-        //signin
         appChatUseCases.auth.signIn(event.email, event.password);
       }
     });
@@ -106,11 +104,10 @@ class AuthenticationBloc
   }
 
   Future<LoginEntity?> loginMainService(LoginSubmitEvent event) async {
+    final String fcmToken = SharedPreferenceManager.readFcmToken() ??
+        "cAdhk0s-QIacSG-bsRbLsC:APA91bEOrduaBH8NRaQCvchuX1MYNMtpFyTQe1yu5aLadWblHN7v8Ik6pCBbn26VoMP5kHfvGGoJpGTIXPZumNTXflRwBcnO6e0Qo2PIlyESq_s1oAnYcvt7BXEn33JxJUm-tkq8130Q";
     LoginRequest loginRequest = LoginRequest(
-        email: event.email,
-        password: event.password,
-        fcmToken:
-            "cAdhk0s-QIacSG-bsRbLsC:APA91bEOrduaBH8NRaQCvchuX1MYNMtpFyTQe1yu5aLadWblHN7v8Ik6pCBbn26VoMP5kHfvGGoJpGTIXPZumNTXflRwBcnO6e0Qo2PIlyESq_s1oAnYcvt7BXEn33JxJUm-tkq8130Q");
+        email: event.email, password: event.password, fcmToken: fcmToken);
     final loginEntity = await authenticationUsecase.login(loginRequest);
     return loginEntity;
   }
@@ -127,9 +124,11 @@ class AuthenticationBloc
       User? user = await appChatUseCases.auth.getCurrentUser();
 
       if (loginEntity == null ||
-          isLogin == false ||
-          user == null ||
-          !isSignIn) {
+          isLogin == false
+          //  ||
+          // user == null ||
+          // !isSignIn
+          ) {
         if (loginEntity != null) {
           SessionManager().clearSession();
         }
@@ -148,6 +147,9 @@ class AuthenticationBloc
     } on FirebaseAuthException catch (e) {
       SessionManager().clearSession();
       emit(CheckLoginStatusErrorState(e.message ?? ""));
+    } catch (e) {
+      SessionManager().clearSession();
+      emit(CheckLoginStatusErrorState(e.toString()));
     }
   }
 

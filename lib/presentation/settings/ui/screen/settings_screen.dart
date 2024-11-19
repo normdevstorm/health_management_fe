@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/common/tag_chip.dart';
 import 'package:health_management/presentation/common/tag_list.dart';
-import 'package:health_management/presentation/edit_profile/ui/edit_profile_screen.dart';
 
-import '../../../auth/bloc/authentication_bloc.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -25,9 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _navigateToEditProfile() {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => const EditProfileScreen(),
-    ));
+    context.pushNamed(RouteDefine.editProfile);
   }
 
   @override

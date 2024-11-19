@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart'
 ///
 /// Example:
 /// ```dart
-/// import 'firebase_options_dev.dart';
+/// import 'firebase_options_chat.dart';
 /// // ...
 /// await Firebase.initializeApp(
 ///   options: DefaultFirebaseOptions.currentPlatform,
@@ -53,7 +53,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU',
-    appId: '1:155656307072:android:f2ea46f210f4876d044165',
+    appId: '1:155656307072:android:858feb2136fb5912044165',
     messagingSenderId: '155656307072',
     projectId: 'chat-app-5d601',
     databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',

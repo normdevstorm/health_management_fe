@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:health_management/presentation/chat/bloc/auth/auth_cubit.dart';
 import 'package:health_management/presentation/chat/bloc/auth/auth_state.dart';
-import 'package:health_management/presentation/chat/ui/login/login.dart';
 import 'package:health_management/presentation/chat/widgets/button.dart';
 import 'package:health_management/presentation/chat/widgets/snackbar.dart';
 

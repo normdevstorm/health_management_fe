@@ -21,18 +21,20 @@ part 'chat_route.g.dart';
 
 @TypedShellRoute<ChatRoute>(routes: [
   TypedGoRoute<ChatHomeRoute>(
-      name: RouteDefine.chatHomeRoute, path: '/chat', routes: [  TypedGoRoute<ChatPersonDetailsRoute>(
-    name: RouteDefine.chatDetails,
-    path: '/:userId',
-  )]),
-    
+      name: RouteDefine.chatHomeRoute,
+      path: '/chat',
+      routes: [
+        TypedGoRoute<ChatPersonDetailsRoute>(
+          name: RouteDefine.chatDetails,
+          path: '/:userId',
+        )
+      ]),
 ])
 class ChatRoute extends ShellRouteData {
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => ChatCubit()),
         BlocProvider(create: (context) => UserCubit()),
         BlocProvider(create: (context) => StatusCubit()),
@@ -55,7 +57,7 @@ class ChatHomeRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const HomePages();
+    return const ChatHomePage();
   }
 }
 

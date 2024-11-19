@@ -46,6 +46,25 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:155656307072:android:858feb2136fb5912044165",
+        "android_client_info": {
+          "package_name": "com.example.health_management.chat_app_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:155656307072:android:f2ea46f210f4876d044165",
         "android_client_info": {
           "package_name": "com.example.health_management.dev"

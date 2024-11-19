@@ -63,6 +63,7 @@ import '../../domain/health_provider/usecases/health_provider_usecase.dart';
 import '../../domain/user/usecases/user_usecase.dart';
 import '../../domain/verify_code/repositories/verify_code_repository.dart';
 import '../app.dart';
+import '../managers/local_storage.dart';
 import 'injection.config.dart';
 
 final getIt = GetIt.instance;
@@ -109,7 +110,10 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => HealthProviderApi(dio));
 }
 
-void setUpAppComponent() {
+void setUpAppComponent() async {
+  //SharedPreference
+  await SharedPreferenceManager.init();
+
   //Logger
   getIt.registerSingleton<Logger>(Logger(
     printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log

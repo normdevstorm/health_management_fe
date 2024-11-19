@@ -10,6 +10,7 @@ class RouteDefine {
   static const String createAppointmentChooseTime = 'choose-time';
 
   static const String settings = 'settings';
+  static const String editProfile = 'edit-profile';
   static const String login = 'login';
   static const String register = 'register';
   static const String verifyCode = 'verify-code';

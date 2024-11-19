@@ -66,4 +66,16 @@ class SharedPreferenceManager {
     }
     return null;
   }
+
+  static Future<void> saveFcmToken(String fcmToken) async {
+    await _instance.setString("fcmToken", fcmToken);
+  }
+
+  static String? readFcmToken() {
+    return _instance.getString("fcmToken");
+  }
+
+  static Future<bool> deleteFcmToken() {
+    return _instance.remove("fcmToken");
+  }
 }

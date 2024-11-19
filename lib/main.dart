@@ -18,7 +18,8 @@ import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/data/chat/datasources/firebase_service.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
-import 'package:health_management/firebase_options_dev.dart';
+import 'package:health_management/firebase_options_chat.dart'
+    as firebase_options_chat;
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
@@ -36,12 +37,17 @@ void main() async {
   configureDependencies(FlavorManager.values.firstWhere(
       (element) => element.name == flavor,
       orElse: () => FlavorManager.dev));
-  await SharedPreferenceManager.init();
   if (!kIsWeb) {
-    // await FirebaseApi().initNotificaiton();
-      await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+    //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
+      // Initialize the cloud message Firebase project
+    // await FirebaseMessageService().initNotificaiton();
+        // Initialize the chat Firebase project
+    await Firebase.initializeApp(
+      options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
+    //TODO: UNCOMMENT THIS LINE TO RUN ON MOBILE DEVICES
+      // name: 'chatApp',
+    );
+
   }
 
   runApp(
@@ -62,16 +68,10 @@ void main() async {
           providers: [
             BlocProvider(
               create: (context) => AuthenticationBloc(
-                appChatUseCases: getIt<AppChatUseCases>(),
+                  appChatUseCases: getIt<AppChatUseCases>(),
                   authenticationUsecase: getIt<AuthenticationUsecase>(),
                   verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
             ),
-            BlocProvider(
-                create: (context) => EditProfileBloc(
-                      userUseCase: getIt<
-                          UserUseCase>(), // Đảm bảo rằng UserUseCase đã được đăng ký trong getIt
-                    ) // Thêm sự kiện để tải thông tin user
-                ),
           ],
           child: const BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: _authenticationListener,

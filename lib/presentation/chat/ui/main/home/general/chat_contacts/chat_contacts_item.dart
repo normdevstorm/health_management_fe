@@ -1,4 +1,6 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/extensions/time_extension.dart';
 import 'package:health_management/domain/chat/models/chat_model.dart';
@@ -18,7 +20,6 @@ class ChatContactsCard extends StatelessWidget {
       stream:
           context.read<ChatCubit>().getNumberOfUnreadMessages(chat.contactId),
       builder: (context, snapshot) {
-        print('profileUrl: ${chat.profileUrl}');
         return CustomListTile(
           onTap: () {
             context.pushNamed(RouteDefine.chatDetails,
@@ -32,6 +33,7 @@ class ChatContactsCard extends StatelessWidget {
             //update unread message to 0
             // context.push();
           },
+          roleTag: chat.role == Role.doctor ? "Doctor" : "Patient",
           leading: Hero(
             tag: chat.name,
             child: InkWell(

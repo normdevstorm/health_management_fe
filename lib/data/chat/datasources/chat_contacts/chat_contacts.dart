@@ -46,7 +46,9 @@ class MessageContactsRemoteDataSourceImpl
             profileUrl: profile.avatar,
             lastMessage: chatContact.lastMessage,
             lastMessageTime: chatContact.lastMessageTime,
-            contactId: chatContact.contactId));
+            contactId: chatContact.contactId,
+            role: chatContact.role,
+            ));
       }
       print('messages ${messages[0].name}');
       return messages;

@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +69,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   Widget buildContent(int currentIndex) {
     switch (currentIndex) {
       case 0:
-        return const HomePages();
+        return const ChatHomePage();
       case 1:
         return const CallListPage();
       case 2:
@@ -95,7 +94,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
           },
         );
       default:
-        return const HomePages();
+        return const ChatHomePage();
     }
   }
 
