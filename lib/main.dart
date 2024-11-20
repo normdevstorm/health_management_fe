@@ -15,19 +15,14 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
-import 'package:health_management/data/chat/datasources/firebase_service.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
 import 'package:health_management/firebase_options_chat.dart'
     as firebase_options_chat;
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
-import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
-import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
-import 'app/managers/local_storage.dart';
 import 'app/managers/toast_manager.dart';
-import 'domain/user/usecases/user_usecase.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
 
 void main() async {
@@ -37,50 +32,45 @@ void main() async {
   configureDependencies(FlavorManager.values.firstWhere(
       (element) => element.name == flavor,
       orElse: () => FlavorManager.dev));
-  if (!kIsWeb) {
-    //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
-      // Initialize the cloud message Firebase project
-    // await FirebaseMessageService().initNotificaiton();
-        // Initialize the chat Firebase project
-    await Firebase.initializeApp(
-      options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
+  //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
+  // Initialize the cloud message Firebase project
+  // await FirebaseMessageService().initNotificaiton();
+  // Initialize the chat Firebase project
+  await Firebase.initializeApp(
+    options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
     //TODO: UNCOMMENT THIS LINE TO RUN ON MOBILE DEVICES
-      // name: 'chatApp',
-    );
+    name: 'chatApp',
+  );
 
-  }
-
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      builder: (context, child) => EasyLocalization(
-        supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-        path: 'assets/resources/langs/langs.csv',
-        assetLoader: CsvAssetLoader(),
-        startLocale: const Locale('vi', 'VN'),
-        useFallbackTranslations: true,
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => AuthenticationBloc(
-                  appChatUseCases: getIt<AppChatUseCases>(),
-                  authenticationUsecase: getIt<AuthenticationUsecase>(),
-                  verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
-            ),
-          ],
-          child: const BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: _authenticationListener,
-            child: MyApp(),
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    builder: (context, child) => EasyLocalization(
+      supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+      path: 'assets/resources/langs/langs.csv',
+      assetLoader: CsvAssetLoader(),
+      startLocale: const Locale('vi', 'VN'),
+      useFallbackTranslations: true,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => AuthenticationBloc(
+                appChatUseCases: getIt<AppChatUseCases>(),
+                authenticationUsecase: getIt<AuthenticationUsecase>(),
+                verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
           ),
+        ],
+        child: const BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: _authenticationListener,
+          child: MyApp(),
         ),
       ),
     ),
-  );
+  ));
 }
 
 void _authenticationListener(BuildContext context, AuthenticationState state) {

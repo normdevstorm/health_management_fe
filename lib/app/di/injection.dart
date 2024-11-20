@@ -16,6 +16,7 @@ import 'package:health_management/data/chat/repositories/status_repository.dart'
 import 'package:health_management/data/chat/repositories/user_repository.dart';
 import 'package:health_management/data/health_provider/api/health_provider_api.dart';
 import 'package:health_management/data/health_provider/repositories/health_provider_repository_impl.dart';
+import 'package:health_management/data/prescription/repositories/prescription_repository_impl.dart';
 import 'package:health_management/data/verify_code/api/verify_code_api.dart';
 import 'package:health_management/domain/appointment/repositories/appointment_repository.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
@@ -55,11 +56,14 @@ import '../../data/chat/datasources/user/user_data_source.dart';
 import '../../data/chat/repositories/auth_repository.dart';
 import '../../data/chat/repositories/chat_contact_repository.dart';
 import '../../data/chat/repositories/chat_repository.dart';
+import '../../data/prescription/api/prescription_api.dart';
 import '../../data/user/api/user_api.dart';
 import '../../data/user/repositories/user_repository_impl.dart';
 import '../../data/verify_code/repositories/verify_code_repository_impl.dart';
 import '../../domain/auth/repositories/authentication_repository.dart';
 import '../../domain/health_provider/usecases/health_provider_usecase.dart';
+import '../../domain/prescription/repositories/prescription_repository.dart';
+import '../../domain/prescription/usecases/prescription_usecase.dart';
 import '../../domain/user/usecases/user_usecase.dart';
 import '../../domain/verify_code/repositories/verify_code_repository.dart';
 import '../app.dart';
@@ -105,6 +109,7 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => AuthenticationApi(dio));
   getIt.registerLazySingleton(() => AppointmentApi(dio));
   getIt.registerLazySingleton(() => UserApi(dio));
+  getIt.registerLazySingleton(() => PrescriptionApi(dio,  baseUrl: 'http://127.0.0.1:8000/api/chat/'));
   getIt.registerLazySingleton(
       () => VerifyCodeApi(dio, baseUrl: 'https://api.duynguyendev.xyz/api/v1'));
   getIt.registerLazySingleton(() => HealthProviderApi(dio));
@@ -129,6 +134,8 @@ void setUpAppComponent() async {
       () => UserRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton<HealthProviderRepository>(
       () => HealthProviderRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton<PrescriptionRepository>(
+      () => PrescriptionRepositoryImpl(getIt(), getIt()));
 
   //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));
@@ -137,6 +144,7 @@ void setUpAppComponent() async {
       () => VerifyCodeUseCase(getIt()));
   getIt.registerLazySingleton(() => UserUseCase(getIt()));
   getIt.registerLazySingleton(() => HealthProviderUseCase(getIt()));
+  getIt.registerLazySingleton(() => PrescriptionUseCase(getIt()));
 
   // Inject chat dpendencies
   //DataSources

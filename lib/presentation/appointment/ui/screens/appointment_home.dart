@@ -9,6 +9,7 @@ import 'package:health_management/domain/appointment/entities/appointment_record
 import 'package:health_management/presentation/appointment/ui/widgets/timeline_schedule.dart';
 import '../../../../app/managers/toast_manager.dart';
 import '../../../../app/route/route_define.dart';
+import '../../../../domain/prescription/entities/prescription_entity.dart';
 import '../../../common/shimmer_loading.dart';
 import '../../bloc/appointment/appointment_bloc.dart';
 import '../widgets/shadow_edge.dart';
@@ -73,7 +74,8 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                     Text(
                         DateFormat(DateFormat.YEAR_MONTH_DAY)
                             .format(DateTime.now()),
-                        style: const TextStyle(fontSize: 16, color: Colors.grey)),
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.grey)),
                     const SizedBox(height: 8),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -89,7 +91,9 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                           )
                         ]),
                     const SizedBox(height: 16),
-                    WeekDaysRowWidget(),
+                    WeekDaysRowWidget(
+                      enableSelection: false,
+                    ),
                     const ShadowEdgeWidget(),
                     NotificationListener<ScrollNotification>(
                       //TODO: Hanle later, wrap in notification of scroll controller for now in order to avoid affect the appearance of bottom nav bar
@@ -149,7 +153,8 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                                   appointmentRecords: isLoading
                                       ? List.generate(
                                           3,
-                                          (index) => const AppointmentRecordEntity(),
+                                          (index) =>
+                                              const AppointmentRecordEntity(),
                                         )
                                       : appointmentRecords),
                             ],
@@ -182,6 +187,8 @@ class ListAppointmentRecordWidget extends StatelessWidget {
         (index) => Padding(
           padding: const EdgeInsets.only(top: 10.0),
           child: AppointmentCard(
+            id: appointmentRecords[index].id,
+            prescription: appointmentRecords[index].prescription,
             onCancel: () {
               if (appointmentRecords[index].id != null) {
                 context.read<AppointmentBloc>().add(
@@ -223,7 +230,10 @@ class ListAppointmentRecordWidget extends StatelessWidget {
 class WeekDaysRowWidget extends StatelessWidget {
   final int day = DateTime.now().weekday;
   final DateTime date = DateTime.now();
+  final bool enableSelection;
+  final ValueNotifier selectedDay = ValueNotifier<int>(DateTime.now().weekday);
   WeekDaysRowWidget({
+    this.enableSelection = false,
     super.key,
   });
 
@@ -233,52 +243,102 @@ class WeekDaysRowWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: List.generate(7, (index) {
-        return Container(
-          constraints: BoxConstraints.tight(Size(45.w, 70.h)),
-          padding: EdgeInsets.only(top: 8.h),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: ColorManager.buttonBorderColorLight,
-            ),
-            color: index == (day - 1)
-                ? ColorManager.buttonEnabledColorLight
-                : ColorManager.buttonDisbledColorLight,
-            boxShadow: [
-              BoxShadow(
-                color: ColorManager.buttonShadowColorLight,
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              Text(
-                ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index],
-                style: StyleManager.buttonText.copyWith(
-                  color: index == (day - 1)
-                      ? null
-                      : StyleManager.buttonDisabledTextColor,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '${date.subtract(Duration(days: day - 1 - index)).day}',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: index == (day - 1) ? Colors.white : Colors.black,
-                ),
-              ),
-            ],
-          ),
+        return ValueListenableBuilder(
+          valueListenable: selectedDay,
+          builder: (context, selectedDayValue, child) => WeekDayBox(
+              enableSelection: enableSelection,
+              day: day,
+              date: date,
+              index: index,
+              isSelected: selectedDayValue == index + 1,
+              onTap: () => _onDaySelected(index)),
         );
       }),
     );
   }
+
+  void _onDaySelected(int index) {
+    selectedDay.value = index + 1;
+  }
+}
+
+class WeekDayBox extends StatelessWidget {
+  //todo: to create 2 factories for home and choose date time screen
+  const WeekDayBox({
+    super.key,
+    required this.index,
+    required this.day,
+    required this.date,
+    this.onTap,
+    this.isSelected = false,
+    this.enableSelection = false,
+  });
+
+  final int day;
+  final DateTime date;
+  final int index;
+  final VoidCallback? onTap;
+  final bool isSelected;
+  final bool enableSelection;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: (enableSelection && index + 1 >= day) ? onTap : null,
+      child: Container(
+        foregroundDecoration: enableSelection
+            ? BoxDecoration(
+                color: index + 1 >= day ? null : Colors.white.withOpacity(0.7),
+              )
+            : null,
+        constraints: BoxConstraints.tight(Size(45.w, 70.h)),
+        padding: EdgeInsets.only(top: 8.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: ColorManager.buttonBorderColorLight,
+          ),
+          color: _enableHighlightButton
+              ? ColorManager.buttonEnabledColorLight
+              : ColorManager.buttonDisbledColorLight,
+          boxShadow: [
+            BoxShadow(
+              color: ColorManager.buttonShadowColorLight,
+              spreadRadius: 2,
+              blurRadius: 5,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Text(
+              ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index],
+              style: StyleManager.buttonText.copyWith(
+                color: _enableHighlightButton
+                    ? null
+                    : StyleManager.buttonDisabledTextColor,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${date.subtract(Duration(days: day - 1 - index)).day}',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: _enableHighlightButton ? Colors.white : Colors.black,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool get _enableHighlightButton =>
+      (index == (day - 1) && !enableSelection) ||
+      (enableSelection && isSelected);
 }
 
 class AddButtonWidget extends StatelessWidget {
@@ -311,6 +371,7 @@ class AddButtonWidget extends StatelessWidget {
 }
 
 class AppointmentCard extends StatelessWidget {
+  final int? id;
   final String? doctorType;
   final int? doctorRating;
   final String? doctorName;
@@ -318,9 +379,11 @@ class AppointmentCard extends StatelessWidget {
   final String? date;
   final bool isCompleted;
   final VoidCallback? onCancel;
+  final PrescriptionEntity? prescription;
 
   const AppointmentCard({
     super.key,
+    this.id,
     this.onCancel,
     this.doctorType,
     this.doctorRating,
@@ -328,118 +391,128 @@ class AppointmentCard extends StatelessWidget {
     this.time,
     this.date,
     this.isCompleted = false,
+    this.prescription,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: ColorManager.buttonEnabledColorLight,
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 3,
-            blurRadius: 5,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(
-                  //todo: to localize this text later on
-                  doctorName ?? "Loading...",
-                  style: StyleManager.buttonText,
-                ),
-                const SizedBox(height: 8),
-                Text(doctorType ?? "Loading...",
-                    style: StyleManager.buttonText),
-                Row(
-                  children: List.generate(5, (index) {
-                    return Icon(
-                      index <= (doctorRating ?? 0)
-                          ? Icons.star
-                          : Icons.star_border,
-                      color: Colors.amber,
-                    );
-                  }),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  time ?? "Loading...",
-                  style: StyleManager.buttonText,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today, color: Color(0xFFEFE8E9)),
-                        const SizedBox(width: 8),
-                        Text(
-                          date ?? "Loading...",
-                          style: const TextStyle(
-                              fontSize: 16, color: Color(0xFFEFE8E9)),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const Icon(Icons.access_time, color: Color(0xFFEFE8E9)),
-                        const SizedBox(width: 8),
-                        Text(
-                          time ?? "Loading...",
-                          style: const TextStyle(
-                              fontSize: 16, color: Color(0xFFEFE8E9)),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-              ]),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10.r),
-                  child: Image.asset(
-                    'assets/images/placeholder.png',
-                    width: 100.w,
-                    height: 80.h,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (!isCompleted) ...[
-            const SizedBox(height: 16),
+    return InkWell(
+      onTap: () {
+        context.pushNamed(RouteDefine.appointmentDetails,
+            extra: prescription,
+            pathParameters: {'appointmentId': id.toString()});
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: ColorManager.buttonEnabledColorLight,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 3,
+              blurRadius: 5,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onCancel,
-                    child: const Text('Cancel'),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(
+                    //todo: to localize this text later on
+                    doctorName ?? "Loading...",
+                    style: StyleManager.buttonText,
                   ),
-                ),
-                const SizedBox(width: 16),
+                  const SizedBox(height: 8),
+                  Text(doctorType ?? "Loading...",
+                      style: StyleManager.buttonText),
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        index <= (doctorRating ?? 0)
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: Colors.amber,
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    time ?? "Loading...",
+                    style: StyleManager.buttonText,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today,
+                              color: Color(0xFFEFE8E9)),
+                          const SizedBox(width: 8),
+                          Text(
+                            date ?? "Loading...",
+                            style: const TextStyle(
+                                fontSize: 16, color: Color(0xFFEFE8E9)),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.access_time,
+                              color: Color(0xFFEFE8E9)),
+                          const SizedBox(width: 8),
+                          Text(
+                            time ?? "Loading...",
+                            style: const TextStyle(
+                                fontSize: 16, color: Color(0xFFEFE8E9)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ]),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Reschedule'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.r),
+                    child: Image.asset(
+                      'assets/images/placeholder.png',
+                      width: 100.w,
+                      height: 80.h,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ],
             ),
+            if (!isCompleted) ...[
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: onCancel,
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('Reschedule'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

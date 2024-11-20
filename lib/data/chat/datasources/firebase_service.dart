@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FirebaseService {
   FirebaseService._();
   static final FirebaseApp _chatApp = Firebase.app('chatApp');
-
   static final FirebaseAuth _auth = FirebaseAuth.instanceFor(app: _chatApp);
   static FirebaseAuth get auth => _auth;
   static final FirebaseStorage _storage =

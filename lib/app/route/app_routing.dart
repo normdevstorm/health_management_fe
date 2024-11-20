@@ -10,6 +10,7 @@ import 'package:health_management/presentation/splash/ui/splash_screen.dart';
 
 import '../../presentation/auth/appointment_route.dart';
 import '../../presentation/home/ui/screens/home_page.dart';
+import '../../presentation/prescription/ui/screens/prescription_screen.dart';
 import 'route_define.dart';
 
 ///TODO: group naviagtor keys into one separate file
@@ -61,7 +62,7 @@ class AppRouting {
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) => MyHomePage(
+                        builder: (context, state) => const MyHomePage(
                               title: 'Home',
                             ))
                   ]),
