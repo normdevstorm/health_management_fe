@@ -9,6 +9,7 @@ import 'package:health_management/presentation/articles/bloc/article_event.dart'
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/article_create_screen.dart';
 import 'package:health_management/presentation/articles/ui/article_detail_screen.dart';
+import 'package:health_management/presentation/articles/ui/article_update_screen.dart';
 
 class ArticleScreen extends StatefulWidget {
   const ArticleScreen({super.key});
@@ -97,71 +98,114 @@ class ArticleItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title and Category
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    article.title.toString(),
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  Chip(
-                      label: Text(article.category.toString().split('.').last)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Author and Avatar
-              Row(
-                children: [
-                  CircleAvatar(
-                    backgroundImage:
-                        NetworkImage(article.userAvatar.toString()),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(article.userName.toString()),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // Content preview
-              Text(
-                article.content.toString(),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 8),
-              // Vote, Comment, View Counts
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Upvotes: ${article.upVoteCount}"),
-                  Text("Comments: ${article.commentCount}"),
-                  Text("Views: ${article.viewCount}"),
-                ],
-              ),
-            ],
+        child: Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title and Category with menu button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        article.title.toString(),
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        if (value == 'update') {
+                          _navigateToUpdateArticle(context, article);
+                        } else if (value == 'delete') {
+                          _deleteArticle(context, article.id!, article.userId!);
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem(
+                          value: 'update',
+                          child: Text('Update'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete'),
+                        ),
+                      ],
+                      icon: const Icon(Icons.more_vert),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Author and Avatar
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(article.userAvatar.toString()),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(article.userName.toString()),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Content preview
+                Text(
+                  article.content.toString(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                // Vote, Comment, View Counts
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Upvotes: ${article.upVoteCount}"),
+                    Text("Comments: ${article.commentCount}"),
+                    Text("Views: ${article.viewCount}"),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      onTap: () => _navigateToArticleDetail(context, article),
+        onTap: () {
+          if (article.id != null) {
+            _navigateToArticleDetail(context, article.id!);
+          }
+          return;
+        });
+  }
+
+  void _navigateToUpdateArticle(BuildContext context, ArticleEntity article) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Tạo Popup Dialog
+        return UpdateArticleDialog(article: article);
+      },
     );
   }
 
-  _navigateToArticleDetail(context, article) {
+  void _deleteArticle(BuildContext context, int articleId, int userId) {
+    context.read<ArticleBloc>().add(DeleteArticleEvent(articleId, userId));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Article deleted successfully')),
+    );
+  }
+
+  void _navigateToArticleDetail(BuildContext context, int articleId) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider.value(
-            value: context.read<ArticleBloc>(),
-            child: ArticleDetailScreen(article: article)),
+          value: context.read<ArticleBloc>(),
+          child: ArticleDetailScreen(articleId: articleId),
+        ),
       ),
     );
   }

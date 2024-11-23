@@ -1,138 +1,174 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_management/app/app.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
+import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
+import 'package:health_management/presentation/articles/bloc/article_event.dart';
+import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/widgets/comment_tree_widget.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
-  final ArticleEntity article;
+  final int articleId;
 
-  const ArticleDetailScreen({super.key, required this.article});
+  const ArticleDetailScreen({super.key, required this.articleId});
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
 }
 
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
+  bool isCommenting = false;
+  final TextEditingController _commentController = TextEditingController();
+  late final article = "";
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ArticleBloc>().add(GetArticleByIdEvent(widget.articleId));
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  void _toggleCommenting() {
+    setState(() {
+      isCommenting = !isCommenting;
+    });
+  }
+
+  void _sendComment() {
+    final commentText = _commentController.text.trim();
+    if (commentText.isNotEmpty) {
+      try {
+        final commentEntity = ArticleCommentEntity(
+          articleId: widget.articleId,
+          userId: 2,
+          content: commentText,
+        );
+
+        context
+            .read<ArticleBloc>()
+            .add(CommentArticleEvent(widget.articleId ?? 0, 2, commentEntity));
+
+        context.read<ArticleBloc>().add(GetArticleByIdEvent(widget.articleId));
+
+        _commentController.clear();
+        _toggleCommenting();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sending comment: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment cannot be empty!')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.article.title ?? "Article Detail"),
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.all(16.0),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Tiêu đề
-                Text(
-                  widget.article.title ?? "Untitled",
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 8),
-
-                // Thông tin người viết
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: widget.article.userAvatar != null &&
-                              widget.article.userAvatar!.isNotEmpty
-                          ? NetworkImage(widget.article.userAvatar!)
-                          : null,
-                      radius: 24,
-                      child: widget.article.userAvatar == null
-                          ? const Icon(Icons.person, size: 24)
-                          : null,
+    return BlocConsumer<ArticleBloc, ArticleState>(listener: (context, state) {
+      if (state.status == BlocStatus.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Comment added successfully!')),
+        );
+        _toggleCommenting();
+      } else if (state.status == BlocStatus.error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${state.errorMessage}')),
+        );
+      }
+    }, builder: (context, state) {
+      if (state.status == BlocStatus.loading) {
+        return CircularProgressIndicator(value: 8);
+      }
+      final data = state.data as ArticleEntity;
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(data.title ?? "Article Detail"),
+          ),
+          body: Stack(
+            children: [
+              CustomScrollView(
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16.0),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        // Title and content of the article
+                        Text(
+                          data.title ?? "Untitled",
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(data.content ?? "No content available."),
+                        const Divider(height: 32, thickness: 1),
+                        // Stats and comment button
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _stateWidget(Icons.thumb_up, data.upVoteCount ?? 0),
+                            _stateWidget(
+                                Icons.thumb_down, data.downVoteCount ?? 0),
+                            GestureDetector(
+                              onTap: _toggleCommenting,
+                              child: _stateWidget(
+                                  Icons.comment, data.commentCount ?? 0),
+                            ),
+                            _stateWidget(
+                                Icons.remove_red_eye, data.viewCount ?? 0),
+                          ],
+                        ),
+                        const Divider(height: 32, thickness: 1),
+                        // Comment list
+                        if (data.comments != null && data.comments!.isNotEmpty)
+                          CommentTree(
+                            comments: List<ArticleCommentEntity>.from(
+                                data.comments ?? []),
+                          )
+                        else
+                          const Center(child: Text("No comments yet")),
+                      ]),
                     ),
-                    const SizedBox(width: 12),
-                    Text(
-                      widget.article.userName ?? "Unknown",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Nội dung bài viết
-                Text(
-                  widget.article.content ?? "No content available.",
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.justify,
-                ),
-                const SizedBox(height: 24),
-
-                // Media nếu có
-                if (widget.article.media != null &&
-                    widget.article.media!.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Media",
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 8),
-                      ...List.generate(
-                        widget.article.media!.length,
-                        (index) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Image.network(
-                            widget.article.media![index].url ?? "",
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.broken_image, size: 48),
+                  ),
+                ],
+              ),
+              // Comment input field
+              if (isCommenting)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    color: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _commentController,
+                            decoration: const InputDecoration(
+                              hintText: 'Write a comment...',
+                              border: OutlineInputBorder(),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        IconButton(
+                          icon: const Icon(Icons.send),
+                          onPressed: _sendComment,
+                          color: Colors.blue,
+                        ),
+                      ],
+                    ),
                   ),
-                const SizedBox(height: 8),
-
-                // Category
-                Chip(
-                  label: Text(
-                    widget.article.category?.name ?? "Uncategorized",
-                    style: const TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w700),
-                  ),
-                  backgroundColor: const Color.fromARGB(255, 233, 238, 240),
                 ),
-                const SizedBox(height: 16),
-
-                // Thống kê bài viết
-                const Divider(height: 32, thickness: 1),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _stateWidget(
-                        Icons.thumb_up, widget.article.upVoteCount ?? 0),
-                    _stateWidget(
-                        Icons.thumb_down, widget.article.downVoteCount ?? 0),
-                    _stateWidget(
-                        Icons.comment, widget.article.commentCount ?? 0),
-                    _stateWidget(
-                        Icons.remove_red_eye, widget.article.viewCount ?? 0),
-                  ],
-                ),
-                const Divider(height: 32, thickness: 1),
-
-                // Phần hiển thị danh sách bình luận
-                if (widget.article.comments != null &&
-                    widget.article.comments!.isNotEmpty)
-                  CommentTree(
-                    comments: List<ArticleCommentEntity>.from(
-                        widget.article.comments!),
-                  )
-                else
-                  const Center(
-                    child: Text("No comments yet"),
-                  ),
-              ]),
-            ),
-          ),
-        ],
-      ),
-    );
+            ],
+          ));
+    });
   }
 
   Widget _stateWidget(IconData icon, int count) {
