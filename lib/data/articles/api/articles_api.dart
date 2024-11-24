@@ -33,6 +33,6 @@ abstract class ArticlesApi {
       @Query('userId') int userId,
       @Body() ArticleCommentRequest articleCommentRequest);
   @POST('/health-articles/vote')
-  Future<ApiResponse<String>> voteArticle(@Query('articleId') int articleId,
-      @Query('userId') int userId, @Query('voteType') VoteType voteType);
+  Future<ApiResponse<String>> voteArticle(@Query('article_id') int articleId,
+      @Query('user_id') int userId, @Query('vote_type') String voteType);
 }

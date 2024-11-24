@@ -95,7 +95,8 @@ class ArticleRepositoryImpl implements ArticleRepository {
   Future<String> voteArticle(
       int articleId, int userId, VoteType voteType) async {
     try {
-      final response = await api.voteArticle(articleId, userId, voteType);
+      final response =
+          await api.voteArticle(articleId, userId, voteType.name.toUpperCase());
       return response.data!;
     } catch (e) {
       logger.e(e);

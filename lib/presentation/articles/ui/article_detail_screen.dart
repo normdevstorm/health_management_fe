@@ -113,10 +113,48 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  _stateWidget(
-                                      Icons.thumb_up, data.upVoteCount ?? 0),
-                                  _stateWidget(Icons.thumb_down,
-                                      data.downVoteCount ?? 0),
+                                  BlocBuilder<ArticleBloc, ArticleState>(
+                                    buildWhen: (previous, current) => current
+                                        .data.runtimeType is Map<String, int?>,
+                                    builder: (context, state) {
+                                      final upVoteCount = (state.data
+                                              .runtimeType is Map<String, int?>)
+                                          ? (state.data
+                                              as Map<String, int?>)["up_vote"]
+                                          : data.upVoteCount;
+                                      final downVoteCount = (state.data
+                                              .runtimeType is Map<String, int?>)
+                                          ? (state.data
+                                              as Map<String, int?>)["down_vote"]
+                                          : data.downVoteCount;
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          _stateWidget(
+                                              Icons.thumb_up,
+                                              upVoteCount ?? 0,
+                                              context,
+                                              () => context
+                                                  .read<ArticleBloc>()
+                                                  .add(VoteArticleEvent(
+                                                      widget.articleId,
+                                                      2,
+                                                      VoteType.upvote))),
+                                          _stateWidget(
+                                              Icons.thumb_down,
+                                              downVoteCount ?? 0,
+                                              context,
+                                              () => context
+                                                  .read<ArticleBloc>()
+                                                  .add(VoteArticleEvent(
+                                                      widget.articleId,
+                                                      2,
+                                                      VoteType.downvote))),
+                                        ],
+                                      );
+                                    },
+                                  ),
                                   BlocBuilder<ArticleBloc, ArticleState>(
                                     buildWhen: (previous, current) =>
                                         current.data.runtimeType ==
@@ -131,13 +169,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                           : data.commentCount;
                                       return GestureDetector(
                                         onTap: _toggleCommenting,
-                                        child: _stateWidget(
-                                            Icons.comment, commentCount ?? 0),
+                                        child: _stateWidget(Icons.comment,
+                                            commentCount ?? 0, context, () {}),
                                       );
                                     },
                                   ),
                                   _stateWidget(Icons.remove_red_eye,
-                                      data.viewCount ?? 0),
+                                      data.viewCount ?? 0, context, () {}),
                                 ],
                               ),
                               const Divider(height: 32, thickness: 1),
@@ -204,11 +242,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   }
 }
 
-Widget _stateWidget(IconData icon, int count) {
+Widget _stateWidget(
+    IconData icon, int count, BuildContext context, VoidCallback? onTap) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(icon, size: 24, color: Colors.grey),
+      GestureDetector(
+          onTap: onTap, child: Icon(icon, size: 24, color: Colors.grey)),
       const SizedBox(height: 4),
       Text(
         count.toString(),

@@ -17,6 +17,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     on<DeleteArticleEvent>((event, emit) => _onDeleteArticleEvent(event, emit));
     on<UpdateArticleEvent>((event, emit) => _onUpdateArticleEvent(event, emit));
     on<GetArticleByIdEvent>((event, emit) => _onGetArticleById(event, emit));
+    on<VoteArticleEvent>((event, emit) => _onVoteArticleEvent(event, emit));
   }
 
   _onGetAllArticle(GetAllArticleEvent event, Emitter<ArticleState> emit) async {
@@ -108,6 +109,23 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
     try {
       final article = await articleUsecase.getArticleById(event.articleId);
       emit(ArticleState.success(article));
+    } catch (e) {
+      emit(ArticleState.error(e.toString()));
+    }
+  }
+
+  _onVoteArticleEvent(
+      VoteArticleEvent event, Emitter<ArticleState> emit) async {
+    emit(ArticleState.loading());
+    try {
+      final response = await articleUsecase.voteArticle(
+          event.articleId, event.userId, event.voteType);
+      final article = await articleUsecase.getArticleById(event.articleId);
+      final voteData = <String, int?>{
+        "up_vote": article.upVoteCount,
+        "down_vote": article.downVoteCount
+      };
+      emit(ArticleState.success(voteData));
     } catch (e) {
       emit(ArticleState.error(e.toString()));
     }
