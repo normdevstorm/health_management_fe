@@ -11,6 +11,8 @@ import 'package:health_management/presentation/articles/ui/article_create_screen
 import 'package:health_management/presentation/articles/ui/article_detail_screen.dart';
 import 'package:health_management/presentation/articles/ui/article_update_screen.dart';
 
+import '../../../app/di/injection.dart';
+
 class ArticleScreen extends StatefulWidget {
   const ArticleScreen({super.key});
 
@@ -202,8 +204,8 @@ class ArticleItem extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BlocProvider.value(
-          value: context.read<ArticleBloc>(),
+        builder: (context) => BlocProvider(
+          create: (context) => ArticleBloc(articleUsecase: getIt())..add(GetArticleByIdEvent(articleId)),
           child: ArticleDetailScreen(articleId: articleId),
         ),
       ),

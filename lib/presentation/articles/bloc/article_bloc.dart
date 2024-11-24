@@ -80,9 +80,10 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       CommentArticleEvent event, Emitter<ArticleState> emit) async {
     emit(ArticleState.loading());
     try {
-      final comment = await articleUsecase.commentArticle(
+      await articleUsecase.commentArticle(
           event.articleId, event.userId, event.articleCommentEntity);
-      emit(ArticleState.success(comment));
+      final article = await articleUsecase.getArticleById(event.articleId);
+      emit(ArticleState.success(article.comments));
     } catch (e) {
       emit(ArticleState.error(e.toString()));
     }
@@ -92,9 +93,10 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       ReplyCommentArticleEvent event, Emitter<ArticleState> emit) async {
     emit(ArticleState.loading());
     try {
-      final reply = await articleUsecase.commentArticle(
+      await articleUsecase.commentArticle(
           event.articleId, event.userId, event.articleCommentEntity);
-      emit(ArticleState.success(reply));
+      final article = await articleUsecase.getArticleById(event.articleId);
+      emit(ArticleState.success(article.comments));
     } catch (e) {
       emit(ArticleState.error(e.toString()));
     }

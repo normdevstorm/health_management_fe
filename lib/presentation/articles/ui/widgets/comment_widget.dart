@@ -30,7 +30,7 @@ class _CommentWidgetState extends State<CommentWidget> {
     });
   }
 
-  _sendReply(int parentId) {
+  void _sendReply(int parentId) {
     final replyText = _replyController.text.trim();
     if (replyText.isNotEmpty) {
       final reply = ArticleCommentEntity(
@@ -45,7 +45,6 @@ class _CommentWidgetState extends State<CommentWidget> {
             ReplyCommentArticleEvent(
                 widget.comment.articleId!, widget.comment.userId!, reply),
           );
-
       // Dọn dẹp UI
       _replyController.clear();
       _toggleReplying();
@@ -136,7 +135,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.send, color: Colors.blue),
-                    onPressed: _sendReply(widget.comment.id ?? 0),
+                    onPressed: () => _sendReply(widget.comment.id ?? 0),
                   ),
                 ],
               ),
