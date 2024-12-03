@@ -114,22 +114,20 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                     MainAxisAlignment.spaceAround,
                                 children: [
                                   BlocBuilder<ArticleBloc, ArticleState>(
-                                    buildWhen: (previous, current) => current
-                                        .data.runtimeType is Map<String, int?>,
+                                    buildWhen: (previous, current) =>
+                                        current.data is Map<String, int?>,
                                     builder: (context, state) {
                                       final upVoteCount = (state.data
-                                              .runtimeType is Map<String, int?>)
+                                              is Map<String, int?>)
                                           ? (state.data
                                               as Map<String, int?>)["up_vote"]
                                           : data.upVoteCount;
                                       final downVoteCount = (state.data
-                                              .runtimeType is Map<String, int?>)
+                                              is Map<String, int?>)
                                           ? (state.data
                                               as Map<String, int?>)["down_vote"]
                                           : data.downVoteCount;
                                       return Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           _stateWidget(
                                               Icons.thumb_up,

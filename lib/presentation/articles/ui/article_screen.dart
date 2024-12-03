@@ -119,26 +119,28 @@ class ArticleItem extends StatelessWidget {
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'update') {
-                          _navigateToUpdateArticle(context, article);
-                        } else if (value == 'delete') {
-                          _deleteArticle(context, article.id!, article.userId!);
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => [
-                        const PopupMenuItem(
-                          value: 'update',
-                          child: Text('Update'),
-                        ),
-                        const PopupMenuItem(
-                          value: 'delete',
-                          child: Text('Delete'),
-                        ),
-                      ],
-                      icon: const Icon(Icons.more_vert),
-                    ),
+                    if (article.userId == 2)
+                      PopupMenuButton<String>(
+                        onSelected: (value) {
+                          if (value == 'update') {
+                            _navigateToUpdateArticle(context, article);
+                          } else if (value == 'delete') {
+                            _deleteArticle(
+                                context, article.id!, article.userId!);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          const PopupMenuItem(
+                            value: 'update',
+                            child: Text('Update'),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
+                        ],
+                        icon: const Icon(Icons.more_vert),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -163,14 +165,16 @@ class ArticleItem extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 // Vote, Comment, View Counts
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("Upvotes: ${article.upVoteCount}"),
+                    Text("Downvotes: ${article.downVoteCount}"),
                     Text("Comments: ${article.commentCount}"),
                     Text("Views: ${article.viewCount}"),
                   ],
-                ),
+                )
               ],
             ),
           ),
@@ -191,6 +195,11 @@ class ArticleItem extends StatelessWidget {
         return UpdateArticleDialog(article: article);
       },
     );
+
+    // Fetch lại danh sách bài viết sau khi đóng dialog
+    context
+        .read<ArticleBloc>()
+        .add(GetAllArticleByUserIdEvent(userId: article.userId!));
   }
 
   void _deleteArticle(BuildContext context, int articleId, int userId) {
@@ -198,6 +207,9 @@ class ArticleItem extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Article deleted successfully')),
     );
+    context
+        .read<ArticleBloc>()
+        .add(GetAllArticleByUserIdEvent(userId: article.userId!));
   }
 
   void _navigateToArticleDetail(BuildContext context, int articleId) {
@@ -205,7 +217,8 @@ class ArticleItem extends StatelessWidget {
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(
-          create: (context) => ArticleBloc(articleUsecase: getIt())..add(GetArticleByIdEvent(articleId)),
+          create: (context) => ArticleBloc(articleUsecase: getIt())
+            ..add(GetArticleByIdEvent(articleId)),
           child: ArticleDetailScreen(articleId: articleId),
         ),
       ),

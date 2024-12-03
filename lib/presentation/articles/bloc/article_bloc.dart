@@ -60,6 +60,8 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       final article =
           await articleUsecase.deleteArticle(event.articleId, event.userId);
       emit(ArticleState.success(article));
+      // Phát sự kiện để lấy lại danh sách bài viết
+      add(GetAllArticleByUserIdEvent(userId: event.userId));
     } catch (e) {
       emit(ArticleState.error(e.toString()));
     }
@@ -69,9 +71,12 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       UpdateArticleEvent event, Emitter<ArticleState> emit) async {
     emit(ArticleState.loading());
     try {
-      final article =
+      final articleUpdate =
           await articleUsecase.updateArticle(event.articleEntity, event.userId);
-      emit(ArticleState.success(article));
+      final articles = await articleUsecase.getAllArticleByUserId(event.userId);
+      emit(ArticleState.success(articles));
+      // Phát sự kiện để lấy lại danh sách bài viết
+      add(GetAllArticleByUserIdEvent(userId: event.userId));
     } catch (e) {
       emit(ArticleState.error(e.toString()));
     }

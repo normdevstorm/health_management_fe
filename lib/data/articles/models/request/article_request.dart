@@ -7,12 +7,14 @@ part 'article_request.g.dart';
 
 @JsonSerializable()
 class ArticleRequest {
+  final int? id;
   final String? title;
   final String? content;
   final ArticleCategory? category;
   final List<ArticleMediaRequest>? media;
 
   const ArticleRequest({
+    this.id,
     this.title,
     this.content,
     this.category,
@@ -26,6 +28,7 @@ class ArticleRequest {
 
   factory ArticleRequest.fromEntity(ArticleEntity entity) {
     return ArticleRequest(
+      id: entity.id,
       title: entity.title,
       content: entity.content,
       category: entity.category,
