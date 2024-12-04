@@ -14,6 +14,8 @@ import 'package:health_management/data/chat/repositories/chat_group_repository.d
 import 'package:health_management/data/chat/repositories/contacts_repository.dart';
 import 'package:health_management/data/chat/repositories/status_repository.dart';
 import 'package:health_management/data/chat/repositories/user_repository.dart';
+import 'package:health_management/data/doctor_schedule/api/doctor_schedule_api.dart';
+import 'package:health_management/data/doctor_schedule/repositories/doctor_schedule_repository_impl.dart';
 import 'package:health_management/data/health_provider/api/health_provider_api.dart';
 import 'package:health_management/data/health_provider/repositories/health_provider_repository_impl.dart';
 import 'package:health_management/data/prescription/repositories/prescription_repository_impl.dart';
@@ -38,6 +40,7 @@ import 'package:health_management/domain/chat/usecases/chat_group/chat_group_use
 import 'package:health_management/domain/chat/usecases/contacts/contacts_use_case.dart';
 import 'package:health_management/domain/chat/usecases/status/status_cases.dart';
 import 'package:health_management/domain/chat/usecases/user/user_cases.dart';
+import 'package:health_management/domain/doctor_schedule/usecases/doctor_schedule_usecase.dart';
 import 'package:health_management/domain/health_provider/repositories/health_provider_repository.dart';
 import 'package:health_management/domain/user/repositories/user_repository.dart';
 import 'package:health_management/domain/verify_code/usecases/verify_code_usecase.dart';
@@ -61,6 +64,7 @@ import '../../data/user/api/user_api.dart';
 import '../../data/user/repositories/user_repository_impl.dart';
 import '../../data/verify_code/repositories/verify_code_repository_impl.dart';
 import '../../domain/auth/repositories/authentication_repository.dart';
+import '../../domain/doctor_schedule/repositories/doctor_schedule_repository.dart';
 import '../../domain/health_provider/usecases/health_provider_usecase.dart';
 import '../../domain/prescription/repositories/prescription_repository.dart';
 import '../../domain/prescription/usecases/prescription_usecase.dart';
@@ -109,10 +113,12 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => AuthenticationApi(dio));
   getIt.registerLazySingleton(() => AppointmentApi(dio));
   getIt.registerLazySingleton(() => UserApi(dio));
-  getIt.registerLazySingleton(() => PrescriptionApi(dio,  baseUrl: 'http://127.0.0.1:8000/api/chat/'));
+  getIt.registerLazySingleton(
+      () => PrescriptionApi(dio, baseUrl: 'http://localhost:8000/api/chat/'));
   getIt.registerLazySingleton(
       () => VerifyCodeApi(dio, baseUrl: 'https://api.duynguyendev.xyz/api/v1'));
   getIt.registerLazySingleton(() => HealthProviderApi(dio));
+  getIt.registerLazySingleton(() => DoctorScheduleApi(dio));
 }
 
 void setUpAppComponent() async {
@@ -136,6 +142,8 @@ void setUpAppComponent() async {
       () => HealthProviderRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton<PrescriptionRepository>(
       () => PrescriptionRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton<DoctorScheduleRepository>(
+      () => DoctorScheduleRepositoryImpl(getIt(), getIt()));
 
   //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));
@@ -145,6 +153,7 @@ void setUpAppComponent() async {
   getIt.registerLazySingleton(() => UserUseCase(getIt()));
   getIt.registerLazySingleton(() => HealthProviderUseCase(getIt()));
   getIt.registerLazySingleton(() => PrescriptionUseCase(getIt()));
+  getIt.registerLazySingleton(() => DoctorScheduleUseCase(getIt()));
 
   // Inject chat dpendencies
   //DataSources

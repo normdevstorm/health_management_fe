@@ -27,11 +27,13 @@ class ChooseDoctorScreen extends StatelessWidget {
               if (doctor.doctorProfile?.id != null) {
                 context.read<AppointmentBloc>().add(
                     ColectDataDoctorEvent(doctorId: doctor.doctorProfile!.id!));
-                context.pushNamed(RouteDefine.createAppointmentChooseTime);
+                context.pushNamed(RouteDefine.createAppointmentChooseTime,
+                    extra: doctor.doctorProfile!.id!);
               }
             },
             doctorName: '${doctor.firstName} ${doctor.lastName}',
-            doctorSpecialization: doctor.doctorProfile?.specialization?.name.toUpperCase() ?? "",
+            doctorSpecialization:
+                doctor.doctorProfile?.specialization?.name.toUpperCase() ?? "",
             experience: doctor.doctorProfile?.experience.toString() ?? "",
             reviews: doctor.doctorProfile?.rating.toString() ?? "",
             image: 'assets/images/placeholder.png',

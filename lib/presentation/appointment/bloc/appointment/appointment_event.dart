@@ -50,13 +50,14 @@ final class ColectDataDoctorEvent extends AppointmentEvent {
   List<Object> get props => [doctorId];
 }
 
-final class CollectDataDatetimeEvent extends AppointmentEvent {
+final class CollectDataDatetimeAndNoteEvent extends AppointmentEvent {
   final DateTime scheduledAt;
+  final String? note;
 
-  const CollectDataDatetimeEvent({required this.scheduledAt});
+  const CollectDataDatetimeAndNoteEvent({required this.scheduledAt, this.note});
 
   @override
-  List<Object> get props => [scheduledAt];
+  List<Object> get props => [scheduledAt, note ?? ''] ;
 }
 
 final class UpdateAppointmentRecordEvent extends AppointmentEvent {

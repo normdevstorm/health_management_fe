@@ -25,8 +25,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
         (event, emit) => _onCollectDataHealthProviderEvent(event, emit));
     on<ColectDataDoctorEvent>(
         (event, emit) => _onColectDataDoctorEvent(event, emit));
-    on<CollectDataDatetimeEvent>((event, emit) =>
-        _onCollectDataDatetimeEvent(event, emit));
+    on<CollectDataDatetimeAndNoteEvent>(
+        (event, emit) => _onCollectDataDatetimeEvent(event, emit));
     on<UpdateAppointmentRecordEvent>(
         (event, emit) => _onUpdateAppointmentRecordEvent(event, emit));
     on<DeleteAppointmentRecordEvent>(
@@ -84,14 +84,16 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       Emitter<AppointmentState> emit) async {
     AppointmentRecordEntity filledAppointmentRecordEntity =
         state.data as AppointmentRecordEntity;
-    emit(CreateAppointmentRecordState.loading(createAppointmentRecordEntity: filledAppointmentRecordEntity));
+    emit(CreateAppointmentRecordState.loading(
+        createAppointmentRecordEntity: filledAppointmentRecordEntity));
     try {
       final appointmentRecord = await appointmentUseCase
           .createAppointmentRecord(filledAppointmentRecordEntity);
       emit(CreateAppointmentRecordState.success(
           createdAppointmentRecordEntity: appointmentRecord));
-    } on ApiException catch  (e) {
-      emit(CreateAppointmentRecordState.error(ApiException.getErrorMessage(e), createdAppointmentRecordEntity: filledAppointmentRecordEntity));
+    } on ApiException catch (e) {
+      emit(CreateAppointmentRecordState.error(ApiException.getErrorMessage(e),
+          createdAppointmentRecordEntity: filledAppointmentRecordEntity));
     }
   }
 
@@ -118,13 +120,14 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
   }
 
   _onCollectDataDatetimeEvent(
-      CollectDataDatetimeEvent event, Emitter<AppointmentState> emit) {
+      CollectDataDatetimeAndNoteEvent event, Emitter<AppointmentState> emit) {
     final DateTime scheduledAt = event.scheduledAt;
+    final String? note = event.note;
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
             .copyWith(
                 scheduledAt: scheduledAt,
                 status: AppointmentStatus.scheduled,
-                note: "This one is created manually")));
+                note: note)));
   }
 }
