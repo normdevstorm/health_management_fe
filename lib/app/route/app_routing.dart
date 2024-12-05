@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/main.dart';
-import 'package:health_management/presentation/appointment/ui/screens/appointment_details.dart';
 import 'package:health_management/presentation/details/chat_route.dart';
 import 'package:health_management/presentation/auth/auth_route.dart';
 import 'package:health_management/presentation/settings/settings_route.dart';
 import 'package:health_management/presentation/splash/ui/splash_screen.dart';
 import '../../presentation/auth/appointment_route.dart';
 import '../../presentation/home/ui/screens/home_page.dart';
-import '../../presentation/prescription/ui/screens/prescription_screen.dart';
 import 'route_define.dart';
 
 ///TODO: group naviagtor keys into one separate file

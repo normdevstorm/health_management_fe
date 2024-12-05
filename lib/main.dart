@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
@@ -21,7 +20,7 @@ import 'package:health_management/firebase_options_chat.dart'
     as firebase_options_chat;
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
-import 'app/config/firebase_api.dart';
+// import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/toast_manager.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';

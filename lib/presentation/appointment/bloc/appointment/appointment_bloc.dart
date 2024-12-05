@@ -10,7 +10,6 @@ import 'package:health_management/domain/health_provider/entities/health_provide
 import 'package:health_management/domain/health_provider/usecases/health_provider_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 
-import '../../../../app/managers/session_manager.dart';
 part 'appointment_event.dart';
 part 'appointment_state.dart';
 
