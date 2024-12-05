@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/chat/ui/main/home/chat_screen/chat_page.dart';
 import 'package:health_management/presentation/chat/ui/main/home/general/home_page.dart';
-import '../chat/bloc/auth/auth_cubit.dart';
 import '../chat/bloc/call/call_cubit.dart';
 import '../chat/bloc/chat/bottom_chat/bottom_chat_cubit.dart';
 import '../chat/bloc/chat/chat_contacts/chat_cubit.dart';

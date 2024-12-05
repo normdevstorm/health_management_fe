@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:health_management/app/managers/size_manager.dart';
-import 'package:health_management/presentation/common/tag_chip.dart';
 
 class CustomListTile extends StatelessWidget {
   final Widget? leading;

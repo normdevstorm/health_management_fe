@@ -4,8 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
-import 'package:health_management/presentation/common/tag.dart';
-import 'package:health_management/presentation/common/tag_list.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
