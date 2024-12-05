@@ -92,6 +92,7 @@ class AuthenticationBloc
                   email: event.email,
                   password: event.password,
                   username: event.email,
+                  
                   role: Role.doctor);
             }
           }
@@ -175,6 +176,7 @@ class AuthenticationBloc
       await registerToFirebase(
           email: event.email,
           password: event.password,
+          mainServiceId: registerEntity?.user.id,
           username: event.username);
       emit(RegisterSuccess(registerEntity));
     } on ApiException catch (e) {
@@ -196,6 +198,7 @@ class AuthenticationBloc
       {required String email,
       required String password,
       required String username,
+      int? mainServiceId,
       Role role = Role.user}) async {
     try {
       final userCredential = await appChatUseCases.auth.signUp(email, password);
@@ -222,6 +225,7 @@ class AuthenticationBloc
           groupId: [],
           isOnline: true,
           role: role,
+          mainServiceId: mainServiceId,
         );
         appChatUseCases.user.insertUser(saveUser);
       }

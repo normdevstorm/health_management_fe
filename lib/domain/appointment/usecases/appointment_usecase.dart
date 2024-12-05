@@ -10,11 +10,13 @@ class AppointmentUseCase {
     return _repository.getAllAppointmentRecords();
   }
 
-  Future<AppointmentRecordEntity> createAppointmentRecord(AppointmentRecordEntity appointment) async {
+  Future<AppointmentRecordEntity> createAppointmentRecord(
+      AppointmentRecordEntity appointment) async {
     return _repository.createAppointmentRecord(appointment);
   }
 
-  Future<AppointmentRecordEntity> updateAppointmentRecord(AppointmentRecordEntity appointment) async {
+  Future<AppointmentRecordEntity> updateAppointmentRecord(
+      AppointmentRecordEntity appointment) async {
     return _repository.updateAppointmentRecord(appointment);
   }
 
@@ -22,8 +24,13 @@ class AppointmentUseCase {
     return _repository.deleteAppointmentRecord(appointmentId);
   }
 
-  Future<List<AppointmentRecordEntity>> getAppointmentRecordByUserId({required int userId}) async {
+  Future<List<AppointmentRecordEntity>> getAppointmentRecordByUserId(
+      {required int userId}) async {
     return _repository.getAppointmentRecordByUserId(userId);
   }
-}
 
+  Future<AppointmentRecordEntity> getAppointmentRecordById(
+      {required int appointmentId}) async {
+    return _repository.getAppointmentRecordById(appointmentId);
+  }
+}

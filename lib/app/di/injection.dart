@@ -113,8 +113,8 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => AuthenticationApi(dio));
   getIt.registerLazySingleton(() => AppointmentApi(dio));
   getIt.registerLazySingleton(() => UserApi(dio));
-  getIt.registerLazySingleton(
-      () => PrescriptionApi(dio, baseUrl: 'http://localhost:8000/api/chat/'));
+  getIt.registerLazySingleton(() => PrescriptionApi(dio,
+      baseUrl: 'https://api.duynguyendev.xyz/api/v1/openai/chat/'));
   getIt.registerLazySingleton(
       () => VerifyCodeApi(dio, baseUrl: 'https://api.duynguyendev.xyz/api/v1'));
   getIt.registerLazySingleton(() => HealthProviderApi(dio));

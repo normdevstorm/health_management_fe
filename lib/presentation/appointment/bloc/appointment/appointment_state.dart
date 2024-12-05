@@ -41,10 +41,9 @@ class AppointmentState<T> extends Equatable {
   List<Object?> get props => [status, data, errorMessage];
 }
 
-
 class CancelAppointmentRecordState extends AppointmentState {
   const CancelAppointmentRecordState._({
-     super.data,
+    super.data,
     required super.status,
     super.errorMessage,
   }) : super._();
@@ -60,7 +59,7 @@ class CancelAppointmentRecordState extends AppointmentState {
     );
   }
 
-  factory CancelAppointmentRecordState.success(String  message) {
+  factory CancelAppointmentRecordState.success(String message) {
     return CancelAppointmentRecordState._(
       status: BlocStatus.success,
       data: message,
@@ -89,33 +88,70 @@ class CreateAppointmentRecordState extends AppointmentState {
     );
   }
 
-  factory CreateAppointmentRecordState.inProgress({required AppointmentRecordEntity createAppointmentRecordEntity}) {
+  factory CreateAppointmentRecordState.inProgress(
+      {required AppointmentRecordEntity createAppointmentRecordEntity}) {
     return CreateAppointmentRecordState._(
       status: BlocStatus.inProgress,
       data: createAppointmentRecordEntity,
     );
-  } 
-   factory CreateAppointmentRecordState.loading({required AppointmentRecordEntity createAppointmentRecordEntity}) {
+  }
+  factory CreateAppointmentRecordState.loading(
+      {required AppointmentRecordEntity createAppointmentRecordEntity}) {
     return CreateAppointmentRecordState._(
       status: BlocStatus.loading,
       data: createAppointmentRecordEntity,
     );
   }
 
-  factory CreateAppointmentRecordState.success({required AppointmentRecordEntity createdAppointmentRecordEntity}) {
+  factory CreateAppointmentRecordState.success(
+      {required AppointmentRecordEntity createdAppointmentRecordEntity}) {
     return CreateAppointmentRecordState._(
       status: BlocStatus.success,
       data: createdAppointmentRecordEntity,
-      
     );
   }
 
-  factory CreateAppointmentRecordState.error(String errorMessage, {required AppointmentRecordEntity createdAppointmentRecordEntity}) {
+  factory CreateAppointmentRecordState.error(String errorMessage,
+      {required AppointmentRecordEntity createdAppointmentRecordEntity}) {
     return CreateAppointmentRecordState._(
       status: BlocStatus.error,
       data: createdAppointmentRecordEntity,
       errorMessage: errorMessage,
     );
   }
+}
 
+class GetAppointmentDetailState extends AppointmentState {
+  const GetAppointmentDetailState._({
+    super.data,
+    required super.status,
+    super.errorMessage,
+  }) : super._();
+  factory GetAppointmentDetailState.initial() {
+    return const GetAppointmentDetailState._(
+      status: BlocStatus.initial,
+    );
+  }
+  factory GetAppointmentDetailState.loading() {
+    return const GetAppointmentDetailState._(
+      status: BlocStatus.loading,
+    );
+  }
+
+  factory GetAppointmentDetailState.success(
+      {required AppointmentRecordEntity appointmentRecordEntity}) {
+    return GetAppointmentDetailState._(
+      status: BlocStatus.success,
+      data: appointmentRecordEntity,
+    );
+  }
+
+  factory GetAppointmentDetailState.error(
+    String errorMessage,
+  ) {
+    return GetAppointmentDetailState._(
+      status: BlocStatus.error,
+      errorMessage: errorMessage,
+    );
+  }
 }

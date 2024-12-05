@@ -15,9 +15,9 @@ final class GetAllAppointmentRecordEvent extends AppointmentEvent {
 }
 
 final class GetAppointmentDetailEvent extends AppointmentEvent {
-  final String appointmentId;
+  final int appointmentId;
 
-  const GetAppointmentDetailEvent(this.appointmentId);
+  const GetAppointmentDetailEvent({required this.appointmentId});
 
   @override
   List<Object> get props => [appointmentId];

@@ -13,6 +13,7 @@ class UserChatModel {
   final List<String> groupId;
   final bool isOnline;
   final Role role;
+  final int? mainServiceId;
   UserChatModel({
     required this.uid,
     required this.userName,
@@ -20,6 +21,7 @@ class UserChatModel {
     required this.lastSeen,
     required this.groupId,
     required this.isOnline,
+     this.mainServiceId,
     this.role = Role.user,
   });
 
@@ -33,6 +35,7 @@ class UserChatModel {
     bool? isOnline,
     List<String>? chats,
     Role? role,
+    int? mainServiceId,
   }) {
     return UserChatModel(
       uid: uid ?? this.uid,
@@ -42,6 +45,7 @@ class UserChatModel {
       groupId: groupId ?? this.groupId,
       isOnline: isOnline ?? this.isOnline,
       role: role ?? this.role,
+      mainServiceId: mainServiceId ?? this.mainServiceId,
     );
   }
 
@@ -53,8 +57,8 @@ class UserChatModel {
       'lastSeen': lastSeen.millisecondsSinceEpoch,
       'groupId': groupId,
       'isOnline': isOnline,
-      'role': role.toString().split('.').last, 
-    };
+      'role': role.toString().split('.').last,
+      'mainServiceId': mainServiceId,};
   }
 
   factory UserChatModel.fromMap(Map<String, dynamic> map) {
@@ -66,7 +70,9 @@ class UserChatModel {
       groupId:
           (map['groupId'] as List<dynamic>).map((e) => e as String).toList(),
       isOnline: map['isOnline'] as bool,
-      role: Role.values.firstWhere((e) => e.toString() == 'Role.${map['role']}'),
+      role:
+          Role.values.firstWhere((e) => e.toString() == 'Role.${map['role']}'),
+      mainServiceId: map['mainServiceId'] as int?,
     );
   }
 
@@ -77,7 +83,7 @@ class UserChatModel {
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, userName: $userName, profileImage: $profileImage, lastSeen: $lastSeen, groupId: $groupId, isOnline: $isOnline, role: $role)';
+    return 'UserModel(uid: $uid, userName: $userName, profileImage: $profileImage, lastSeen: $lastSeen, groupId: $groupId, isOnline: $isOnline, role: $role, mainServiceId: $mainServiceId)';
   }
 
   @override
@@ -90,7 +96,8 @@ class UserChatModel {
         other.lastSeen == lastSeen &&
         listEquals(other.groupId, groupId) &&
         other.isOnline == isOnline &&
-        other.role == role;
+        other.role == role &&
+        other.mainServiceId == mainServiceId;
   }
 
   @override
@@ -101,6 +108,7 @@ class UserChatModel {
         lastSeen.hashCode ^
         groupId.hashCode ^
         isOnline.hashCode ^
-        role.hashCode;
+        role.hashCode ^
+        mainServiceId.hashCode;
   }
 }

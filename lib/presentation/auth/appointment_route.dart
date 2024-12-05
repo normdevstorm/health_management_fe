@@ -3,17 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/domain/prescription/entities/prescription_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/doctor_schedule/doctor_schedule_bloc.dart';
 import 'package:health_management/presentation/appointment/bloc/health_provider/health_provider_bloc.dart';
+import 'package:health_management/presentation/appointment/ui/screens/appointment_details.dart';
 import 'package:health_management/presentation/appointment/ui/screens/appointment_home.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_appointment_date_time.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_doctor_screen.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_health_provider_screen.dart';
-import 'package:health_management/presentation/prescription/bloc/prescription_ai_analysis_bloc.dart';
-import 'package:health_management/presentation/prescription/ui/screens/prescription_screen.dart';
+import '../../domain/prescription/entities/prescription_entity.dart';
 import '../appointment/bloc/appointment/appointment_bloc.dart';
+import '../chat/bloc/contacts/contacts_cubit.dart';
+import '../prescription/bloc/prescription_ai_analysis_bloc.dart';
+import '../prescription/ui/screens/prescription_screen.dart';
 part 'appointment_route.g.dart';
 
 @TypedShellRoute<AppointmentRoute>(
@@ -23,7 +25,12 @@ part 'appointment_route.g.dart';
     TypedGoRoute<AppointmentDetailsRoute>(
         path: "/appointment/details/:appointmentId",
         name: RouteDefine.appointmentDetails,
-        routes: []),
+        routes: [
+          TypedGoRoute<AppointmentDetailsPrescription>(
+            path: "/prescription",
+            name: RouteDefine.appointmentDetailsPrescription,
+          )
+        ]),
     TypedGoRoute<AppointmentCreateRoute>(
         path: "/appointment/create",
         name: RouteDefine.createAppointment,
@@ -47,22 +54,41 @@ class AppointmentRoute extends ShellRouteData {
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
     return BlocProvider(
-      create: (context) => AppointmentBloc(appointmentUseCase: getIt()),
+      create: (context) => AppointmentBloc(
+          appointmentUseCase: getIt(), healthProviderUseCase: getIt()),
       child: navigator,
     );
   }
 }
 
-class AppointmentDetailsRoute extends GoRouteData {
-  final String appointmentId;
-  AppointmentDetailsRoute({required this.appointmentId});
+class AppointmentDetailsPrescription extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    PrescriptionEntity? prescription = state.extra as PrescriptionEntity?;
+    final PrescriptionEntity? prescription = state.extra as PrescriptionEntity?;
     return BlocProvider(
       create: (context) =>
           PrescriptionAiAnalysisBloc(prescriptionAiAnalysisUseCase: getIt()),
       child: MedicineListScreen(prescriptions: prescription?.details),
+    );
+  }
+}
+
+class AppointmentDetailsRoute extends GoRouteData {
+  final int appointmentId;
+  AppointmentDetailsRoute({required this.appointmentId});
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    int appointmentId =
+        int.tryParse(state.pathParameters['appointmentId'] ?? '0') ?? 0;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<AppointmentBloc>.value(
+          value: BlocProvider.of<AppointmentBloc>(context)
+            ..add(GetAppointmentDetailEvent(appointmentId: appointmentId)),
+        ),
+        BlocProvider(create: (context) => ContactsCubit()..getAllContacts()),
+      ],
+      child: AppointmentDetails(),
     );
   }
 }
@@ -105,6 +131,7 @@ class AppointmentCreateChooseDoctor extends AppointmentCreateRoute {
     return ChooseDoctorScreen(doctors: state.extra as List<UserEntity>);
   }
 }
+
 // class AppointmentCreateChooseDepartment extends AppointmentCreateRoute {
 //   @override
 //   Widget build(BuildContext context, GoRouterState state) {

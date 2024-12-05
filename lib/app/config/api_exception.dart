@@ -53,7 +53,7 @@ abstract class ApiException with _$ApiException {
       try {
         ApiException apiException;
         if (error is DioException) {
-          String? message = error.response?.data['message'] ?? "";
+          String? message = error.response?.data?['message'];
           switch (error.type) {
             case DioExceptionType.cancel:
               apiException =

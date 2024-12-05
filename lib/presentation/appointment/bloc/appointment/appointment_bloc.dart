@@ -2,18 +2,24 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/api_exception.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
+import 'package:health_management/domain/health_provider/usecases/health_provider_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
+
+import '../../../../app/managers/session_manager.dart';
 part 'appointment_event.dart';
 part 'appointment_state.dart';
 
 class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
   final AppointmentUseCase appointmentUseCase;
+  final HealthProviderUseCase healthProviderUseCase;
 
-  AppointmentBloc({required this.appointmentUseCase})
+  AppointmentBloc(
+      {required this.appointmentUseCase, required this.healthProviderUseCase})
       : super(AppointmentState.initial()) {
     on<GetAllAppointmentRecordEvent>(
         (event, emit) => _onGetAllAppointmentRecordEvent(event, emit));
@@ -37,8 +43,9 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       Emitter<AppointmentState> emit) async {
     emit(AppointmentState.loading());
     try {
+      final user= await SharedPreferenceManager.getUser();
       final appointmentRecords =
-          await appointmentUseCase.getAppointmentRecordByUserId(userId: 1);
+          await appointmentUseCase.getAppointmentRecordByUserId(userId: user!.id!);
       emit(AppointmentState.success(appointmentRecords));
     } on ApiException catch (e) {
       emit(AppointmentState.error(ApiException.getErrorMessage(e)));
@@ -47,13 +54,20 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
 
   _onGetAppointmentDetailEvent(
       GetAppointmentDetailEvent event, Emitter<AppointmentState> emit) async {
-    // emit(AppointmentState.loading());
-    // try {
-    //   final appointmentRecord = await appointmentUseCase.getAppointmentRecord(event.appointmentId);
-    //   emit(AppointmentState.success(appointmentRecord));
-    // } catch (e) {
-    //   emit(AppointmentState.error(e.toString()));
-    // }
+    emit(GetAppointmentDetailState.loading());
+    try {
+      final appointmentRecord = await appointmentUseCase
+          .getAppointmentRecordById(appointmentId: event.appointmentId);
+      final healthProviderList =
+          await healthProviderUseCase.getAllHealthProvider();
+      final healthProvider = healthProviderList.firstWhere(
+          (element) => element.id == appointmentRecord.healthProvider?.id);
+      emit(GetAppointmentDetailState.success(
+          appointmentRecordEntity:
+              appointmentRecord.copyWith(healthProvider: healthProvider)));
+    } on ApiException catch (e) {
+      emit(GetAppointmentDetailState.error(ApiException.getErrorMessage(e)));
+    }
   }
 
   _onUpdateAppointmentRecordEvent(UpdateAppointmentRecordEvent event,
@@ -98,13 +112,14 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
   }
 
   _onCollectDataHealthProviderEvent(
-      CollectDataHealthProviderEvent event, Emitter<AppointmentState> emit) {
+      CollectDataHealthProviderEvent event, Emitter<AppointmentState> emit) async{
     emit(CreateAppointmentRecordState.initial());
     final int? providerId = event.appointmentRecordEntity.healthProvider?.id;
+    final int userId = (await SharedPreferenceManager.getUser())!.id!;
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
             .copyWith(
-                user: UserEntity(id: 1),
+                user: UserEntity(id: userId),
                 healthProvider: HealthProviderEntity(id: providerId),
                 appointmentType: AppointmentType.inPerson)));
   }

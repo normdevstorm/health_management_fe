@@ -105,7 +105,8 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                             previous.status != current.status &&
                             ![
                               CreateAppointmentRecordState,
-                              CancelAppointmentRecordState
+                              CancelAppointmentRecordState,
+                              GetAppointmentDetailState
                             ].contains(current.runtimeType),
                         builder: (context, state) {
                           //todo: handle data for dis widget later on
@@ -132,7 +133,8 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                           previous.status != current.status &&
                           ![
                             CreateAppointmentRecordState,
-                            CancelAppointmentRecordState
+                            CancelAppointmentRecordState,
+                            GetAppointmentDetailState
                           ].contains(current.runtimeType),
                       builder: (context, state) {
                         List<AppointmentRecordEntity> appointmentRecords = [];
@@ -156,7 +158,12 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                                           (index) =>
                                               const AppointmentRecordEntity(),
                                         )
-                                      : appointmentRecords),
+                                      : appointmentRecords.where(
+                                          (element) {
+                                            return element.status !=
+                                                AppointmentStatus.cancelled;
+                                          },
+                                        ).toList()),
                             ],
                           ),
                         );
@@ -398,6 +405,7 @@ class AppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        //TODO: re-navigate after the appointment details screen is created
         context.pushNamed(RouteDefine.appointmentDetails,
             extra: prescription,
             pathParameters: {'appointmentId': id.toString()});

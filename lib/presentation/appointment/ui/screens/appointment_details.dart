@@ -1,12 +1,28 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/size_manager.dart';
+import 'package:health_management/app/managers/toast_manager.dart';
+import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
+import 'package:health_management/domain/chat/models/user_model.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
+import 'package:health_management/presentation/common/shimmer_loading.dart';
 
+import '../../../../app/route/route_define.dart';
+import '../../../../domain/health_provider/entities/health_provider_entity.dart';
+import '../../../../domain/prescription/entities/prescription_entity.dart';
+import '../../../chat/bloc/contacts/contacts_cubit.dart';
+import '../../../chat/ui/main/home/chat_screen/chat_page.dart';
+import '../../bloc/appointment/appointment_bloc.dart';
 import '../widgets/common_separator.dart';
 
 class AppointmentDetails extends StatelessWidget {
-  const AppointmentDetails({super.key});
+  AppointmentDetails({super.key});
+  AppointmentRecordEntity appointmentRecordEntity =
+      const AppointmentRecordEntity();
 
   @override
   Widget build(BuildContext context) {
@@ -14,48 +30,87 @@ class AppointmentDetails extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Appointment Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _buildSection(
-              context,
-              child: _buildDateTimeBox(),
-            ),
-            _buildSection(
-              context,
-              child: _buildHealthProviderBox(),
-            ),
-            const SizedBox(width: 8),
-            _buildSection(
-              context,
-              child: _buildDoctorDetailsBox(),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSection(
-                    context,
-                    child: _buildNotesBox(),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: BlocConsumer<AppointmentBloc, AppointmentState>(
+            listener: (context, state) {
+              if (state.status == BlocStatus.error) {
+                ToastManager.showToast(
+                    context: context,
+                    message: state.errorMessage ?? "Something went wrong!!!");
+              }
+            },
+            listenWhen: (previous, current) =>
+                previous != current && current is GetAppointmentDetailState,
+            buildWhen: (previous, current) =>
+                previous.status != current.status &&
+                current is GetAppointmentDetailState,
+            builder: (context, state) {
+              bool isLoading = [BlocStatus.loading, BlocStatus.initial]
+                  .contains(state.status);
+              if (state.status == BlocStatus.success &&
+                  state.data is AppointmentRecordEntity) {
+                appointmentRecordEntity = state.data as AppointmentRecordEntity;
+              }
+
+              return ShimmerWidget(
+                child: ShimmerLoading(
+                  isLoading: isLoading,
+                  child: Column(
+                    children: [
+                      _buildSection(
+                        height: 120.h,
+                        context,
+                        child: _buildDateTimeBox(
+                            dateTime: appointmentRecordEntity.scheduledAt),
+                      ),
+                      _buildSection(
+                        height: 280.h,
+                        context,
+                        child: _buildHealthProviderBox(
+                            healthProvider:
+                                appointmentRecordEntity.healthProvider),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildSection(
+                        height: 150.h,
+                        context,
+                        child: _buildDoctorDetailsBox(
+                            doctor: appointmentRecordEntity.doctor,
+                            context: context),
+                      ),
+                      //TODO: Add responsiveness to note box
+                      _buildSection(
+                        height: 150.h,
+                        context,
+                        child:
+                            _buildNotesBox(note: appointmentRecordEntity.note),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildSection(
+                        height: 100.h,
+                        context,
+                        child: _buildPrescriptionBox(
+                            appointmentId: appointmentRecordEntity.id,
+                            prescription: appointmentRecordEntity.prescription,
+                            context: context),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildSection(
-                    context,
-                    child: _buildPrescriptionBox(),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildSection(BuildContext context, {required Widget child}) {
+  Widget _buildSection(BuildContext context,
+      {required Widget child, double? height}) {
     return Container(
+      height: height,
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -78,7 +133,7 @@ class AppointmentDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildDateTimeBox() {
+  Widget _buildDateTimeBox({DateTime? dateTime}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -94,8 +149,12 @@ class AppointmentDetails extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Text('JUN 9', style: TextStyle(fontSize: 30.sp))),
-              Text('Wednesday', style: TextStyle(fontSize: 16.sp)),
+              Expanded(
+                  child: Text(
+                      '${dateTime != null ? DateFormat('MMM').format(dateTime) : ''} ${dateTime?.day ?? ''}',
+                      style: TextStyle(fontSize: 30.sp))),
+              Text(DateFormat('EEEE').format(dateTime ?? DateTime.now()),
+                  style: TextStyle(fontSize: 16.sp)),
               10.verticalSpace,
             ],
           ),
@@ -114,7 +173,9 @@ class AppointmentDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                  child: Text('10:00 AM', style: TextStyle(fontSize: 30.sp))),
+                  child: Text(
+                      DateFormat('h:mm a').format(dateTime ?? DateTime.now()),
+                      style: TextStyle(fontSize: 30.sp))),
               Text('Time', style: TextStyle(fontSize: 16.sp)),
               10.verticalSpace,
             ],
@@ -124,7 +185,7 @@ class AppointmentDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildHealthProviderBox() {
+  Widget _buildHealthProviderBox({HealthProviderEntity? healthProvider}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -150,7 +211,7 @@ class AppointmentDetails extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.blueAccent),
               ),
-              child: Text('Health Provider Name',
+              child: Text(healthProvider?.name ?? 'Loading',
                   style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
@@ -167,7 +228,8 @@ class AppointmentDetails extends StatelessWidget {
               children: [
                 Text('City',
                     style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                Text('Hanoi', style: TextStyle(fontSize: 16.sp)),
+                Text(healthProvider?.address?.city ?? "Loading",
+                    style: TextStyle(fontSize: 16.sp)),
               ],
             ),
             Column(
@@ -175,7 +237,8 @@ class AppointmentDetails extends StatelessWidget {
               children: [
                 Text('District',
                     style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                Text('Thanh Xuan', style: TextStyle(fontSize: 16.sp)),
+                Text(healthProvider?.address?.addressLine1 ?? "Loading",
+                    style: TextStyle(fontSize: 16.sp)),
               ],
             ),
             Column(
@@ -183,7 +246,8 @@ class AppointmentDetails extends StatelessWidget {
               children: [
                 Text('Street',
                     style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                Text('Tran Phu', style: TextStyle(fontSize: 16.sp)),
+                Text(healthProvider?.address?.streetNumber ?? "Loading",
+                    style: TextStyle(fontSize: 16.sp)),
               ],
             ),
           ],
@@ -249,36 +313,224 @@ class AppointmentDetails extends StatelessWidget {
     );
   }
 
-  Widget _buildDoctorDetailsBox() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildDoctorDetailsBox(
+      {UserEntity? doctor, required BuildContext context}) {
+    UserChatModel? doctorChatModel;
+    return BlocBuilder<ContactsCubit, ContactsState>(
+      builder: (context, state) {
+        if (state is GetAllContactsSuccess) {
+          try {
+            doctorChatModel = state.contacts.firstWhere((element) =>
+                element.mainServiceId == doctor?.doctorProfile?.id);
+          } catch (e) {
+            doctorChatModel = null;
+          }
+        }
+        return Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlueAccent.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.person,
+                    size: 50.r,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                15.horizontalSpace,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${doctor?.firstName} ${doctor?.lastName}',
+                        style: TextStyle(
+                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                    Text(
+                        doctor?.doctorProfile?.specialization?.name ??
+                            "Loading",
+                        style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: List.generate(5, (index) {
+                    return Icon(
+                      Icons.star,
+                      color: Colors.yellow,
+                      size: 18.r,
+                    );
+                  }),
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
+                  ),
+                  onPressed: () {
+                    if (doctorChatModel != null) {
+                      context.pushNamed(RouteDefine.chatDetails,
+                          extra: ChatPage(
+                            name: doctorChatModel!.userName,
+                            receiverId: doctorChatModel!.uid,
+                            profilePicture: doctorChatModel!.profileImage,
+                            isGroupChat: false,
+                          ),
+                          pathParameters: {
+                            'userId': doctorChatModel!.userName
+                          });
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(Icons.chat, color: Colors.white),
+                      5.horizontalSpace,
+                      const Text('Chat', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildNotesBox({String? note}) {
+    return Stack(
       children: [
-        Text('Doctor Details:', style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
-        Text('Doctor Name', style: TextStyle(fontSize: 16)),
+        Container(
+          margin: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.blueAccent),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 5,
+                height: double.infinity,
+                color: Colors.blueAccent,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(note ?? 'No notes pinned for this appointment',
+                        style: const TextStyle(fontSize: 16)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: const Text(
+              'Note',
+              style: TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildNotesBox() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildPrescriptionBox(
+      {int? appointmentId,
+      PrescriptionEntity? prescription,
+      required BuildContext context}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Notes:', style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
-        Text('Some notes about the appointment',
-            style: TextStyle(fontSize: 16)),
-      ],
-    );
-  }
-
-  Widget _buildPrescriptionBox() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Prescription:', style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
-        Text('Prescription details', style: TextStyle(fontSize: 16)),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.lightBlueAccent.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.blueAccent),
+          ),
+          padding: const EdgeInsets.all(8),
+          child: Icon(
+            Icons.medication,
+            size: 50.r,
+            color: Colors.blueAccent,
+          ),
+        ),
+        15.horizontalSpace,
+        Expanded(
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Prescription',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  15.verticalSpace,
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(150.w, 40.h),
+                      backgroundColor: Colors.blueAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: () {
+                      // Add your onPressed code here!
+                      if (appointmentId != null) {
+                        context.pushNamed(
+                            RouteDefine.appointmentDetailsPrescription,
+                            extra: prescription,
+                            pathParameters: {
+                              'appointmentId': appointmentId.toString()
+                            });
+                      }
+                    },
+                    child: const Text('See details',
+                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                  ),
+                ],
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Chip(
+                  label: const Text(
+                    'Available',
+                    style: TextStyle(
+                      color: Colors.green,
+                    ),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: const BorderSide(color: Colors.green),
+                  ),
+                  backgroundColor: Colors.transparent,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
