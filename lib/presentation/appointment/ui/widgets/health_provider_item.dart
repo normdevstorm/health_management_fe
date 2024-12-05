@@ -94,7 +94,7 @@ class HealthProviderItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Icon(CupertinoIcons.location_circle,
-                      color: const Color(0xFF629d92)),
+                      color: Color(0xFF629d92)),
                   Text(
                     distance,
                     style: const TextStyle(

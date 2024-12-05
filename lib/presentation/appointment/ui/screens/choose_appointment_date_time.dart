@@ -60,7 +60,6 @@ class _ChooseAppointmentDateTimeScreenState
           previous.status != current.status &&
           current is CreateAppointmentRecordState,
       listener: (context, state) {
-        // TODO: implement listener
         if (state.status == BlocStatus.success) {
           context.goNamed(RouteDefine.appointment);
         } else if (state.status == BlocStatus.error) {

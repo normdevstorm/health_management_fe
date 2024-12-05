@@ -29,7 +29,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     try {
       final response = await api.createAppointmentRecord(
           AppointmentRecordRequest.fromEntity(appointment));
-      return response.data?.toEntity() ?? AppointmentRecordEntity();
+      return response.data?.toEntity() ?? const AppointmentRecordEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
@@ -42,7 +42,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     try {
       final response = await api.updateAppointmentRecord(
           UpdateAppointmentRecordRequest.fromEntity(appointment));
-      return response.data?.toEntity() ?? AppointmentRecordEntity();
+      return response.data?.toEntity() ?? const AppointmentRecordEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);

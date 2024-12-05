@@ -55,7 +55,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     try {
       final response = await api.refreshToken({"refresh_token": refreshToken});
       if(response.data == null) {
-        throw ApiException.defaultError("Failed to refresh token");
+        throw const ApiException.defaultError("Failed to refresh token");
       }
       RefreshResponse refreshResponse = response.data! ;
        SessionManager().setSession(
