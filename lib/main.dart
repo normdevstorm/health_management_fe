@@ -191,38 +191,259 @@ class _ArticleHomeSate extends State<ArticleHome> {
     context.read<ArticleBloc>().add(GetAllArticleEvent());
   }
 
+  bool _showAllArticles = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Home"),
-      ),
-      body: BlocBuilder<ArticleBloc, ArticleState>(
-        builder: (context, state) {
-          if (state.status == BlocStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              color: Colors.blue,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CircleAvatar(
+                        radius: 30,
+                        backgroundImage: NetworkImage(
+                          'https://via.placeholder.com/150',
+                        ),
+                      ),
+                      Stack(
+                        children: [
+                          Icon(Icons.notifications,
+                              color: Colors.white, size: 30),
+                          Positioned(
+                            right: 0,
+                            child: Container(
+                              height: 18,
+                              width: 18,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "2",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  // Greeting Text
+                  const Text(
+                    "Good Morning.....",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  const Text(
+                    "LAKSHAY",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Search Bar
+                  Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.yellow,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 15),
+                        const Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              hintText: "Search......",
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.search),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // "Top Doctors" Title
+                  const Text(
+                    "Top Doctors",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  // Doctors List
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildDoctorCard(
+                            "Neurologist", "https://via.placeholder.com/100"),
+                        _buildDoctorCard(
+                            "Urologist", "https://via.placeholder.com/100"),
+                        _buildDoctorCard(
+                            "Pediatrician", "https://via.placeholder.com/100"),
+                        _buildDoctorCard(
+                            "Radiologist", "https://via.placeholder.com/100"),
+                        _buildDoctorCard(
+                            "Surgeon", "https://via.placeholder.com/100"),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Banner Slider
+                  const Text(
+                    "Promotional Banners",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  _buildBannerSlider(),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: BlocBuilder<ArticleBloc, ArticleState>(
+              builder: (context, state) {
+                if (state.status == BlocStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (state.status == BlocStatus.error) {
-            return Center(child: Text(state.errorMessage.toString()));
-          }
+                if (state.status == BlocStatus.error) {
+                  return Center(child: Text(state.errorMessage.toString()));
+                }
 
-          if (state.status == BlocStatus.success) {
-            final articles = state.data as List<ArticleEntity>;
+                if (state.status == BlocStatus.success) {
+                  final articles = state.data as List<ArticleEntity>;
+                  // Hiển thị số lượng bài viết dựa trên trạng thái
+                  final displayedArticles =
+                      _showAllArticles ? articles : articles.take(5).toList();
 
-            return ListView.builder(
-              itemCount: articles.length,
-              itemBuilder: (context, index) {
-                return ArticleItem(article: articles[index]);
+                  return Column(
+                    children: [
+                      const Text(
+                        "Articles",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: displayedArticles.length,
+                        itemBuilder: (context, index) {
+                          return ArticleItem(article: displayedArticles[index]);
+                        },
+                      ),
+                      if (articles.length > 5)
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _showAllArticles = !_showAllArticles;
+                            });
+                          },
+                          child: Text(
+                            _showAllArticles ? "Show less" : "Show more",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                }
+
+                return const Center(child: Text('No articles found'));
               },
-            );
-          }
-
-          return const Center(child: Text('No articles found'));
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+Widget _buildBannerSlider() {
+  final List<String> bannerUrls = [
+    'https://isofhcare-backup.s3-ap-southeast-1.amazonaws.com/images/hinh-anh-benh-vien-da-khoa-vinmec-times-city-ivie_f94ff195_aacc_40e7_981e_99d7d3b8bd94.jpg',
+    'https://www.vinmec.com/static//uploads/05_12_2018_03_21_27_275433_jpg_081e7b384a.jpg',
+    'https://cdn.hellobacsi.com/wp-content/uploads/2018/07/Benh-vien-da-khoa-medlatec-e1532330580709.jpg?w=828&q=75',
+  ];
+
+  return SizedBox(
+    height: 200,
+    child: PageView.builder(
+      itemCount: bannerUrls.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.network(
+              bannerUrls[index],
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      },
+    ),
+  );
+}
+
+Widget _buildDoctorCard(String title, String imageUrl) {
+  return Container(
+    margin: const EdgeInsets.only(right: 15),
+    child: Column(
+      children: [
+        CircleAvatar(
+          radius: 40,
+          backgroundImage: NetworkImage(imageUrl),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+      ],
+    ),
+  );
 }
 
 class SkeletonPage extends StatefulWidget {
