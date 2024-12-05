@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,22 +13,23 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/domain/articles/usecases/article_usecase.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
-import 'package:health_management/domain/user/entities/user_entity.dart';
-import 'package:health_management/domain/user/usecases/user_usecase.dart';
+import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
+import 'package:health_management/firebase_options_chat.dart'
+    as firebase_options_chat;
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/article_screen.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
-import 'package:logger/logger.dart';
+// import 'app/config/firebase_api.dart';
+import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
-import 'app/managers/local_storage.dart';
+import 'app/managers/toast_manager.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
 
 void main() async {
@@ -36,40 +39,50 @@ void main() async {
   configureDependencies(FlavorManager.values.firstWhere(
       (element) => element.name == flavor,
       orElse: () => FlavorManager.dev));
-  await SharedPreferenceManager.init();
-  // if (!kIsWeb) {
-  //   await FirebaseApi().initNotificaiton();
-  // }
+  //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
+  // Initialize the cloud message Firebase project
+  // await FirebaseMessageService().initNotificaiton();
+  // Initialize the chat Firebase project
+  await Firebase.initializeApp(
+    options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
+    //TODO: UNCOMMENT THIS LINE TO RUN ON MOBILE DEVICES
+    name: 'chatApp',
+  );
 
-  runApp(
-    Material(
-      child: EasyLocalization(
-        supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-        path: 'assets/resources/langs/langs.csv',
-        assetLoader: CsvAssetLoader(),
-        startLocale: const Locale('vi', 'VN'),
-        useFallbackTranslations: true,
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => AuthenticationBloc(
-                  authenticationUsecase: getIt<AuthenticationUsecase>(),
-                  verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
-            ),
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    builder: (context, child) => EasyLocalization(
+      supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+      path: 'assets/resources/langs/langs.csv',
+      assetLoader: CsvAssetLoader(),
+      startLocale: const Locale('vi', 'VN'),
+      useFallbackTranslations: true,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => AuthenticationBloc(
+                appChatUseCases: getIt<AppChatUseCases>(),
+                authenticationUsecase: getIt<AuthenticationUsecase>(),
+                verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
+          ),
             BlocProvider(
               create: (context) => ArticleBloc(
                 articleUsecase: getIt<ArticleUsecase>(),
               ),
             ),
-          ],
-          child: BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: _authenticationListener,
-            child: const MyApp(),
-          ),
+        ],
+        child: const BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: _authenticationListener,
+          child: MyApp(),
         ),
       ),
     ),
-  );
+  ));
 }
 
 void _authenticationListener(BuildContext context, AuthenticationState state) {
@@ -99,10 +112,10 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   if (state is AuthenticationError) {
     String errorMessage = state.message;
     //todo: localize this message
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Text(errorMessage),
-    );
+    ToastManager.showToast(context: currentContext, message: errorMessage);
+    if (state.runtimeType == CheckLoginStatusErrorState) {
+      GoRouter.of(currentContext).goNamed(RouteDefine.login);
+    }
     return;
   }
 }
@@ -121,42 +134,42 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       darkTheme: ThemeManager.darkTheme,
       theme: ThemeManager.lightTheme.copyWith(
-          textTheme: ThemeManager.lightTheme.textTheme.copyWith(
-            bodyLarge: ThemeManager.lightTheme.textTheme.bodyLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            bodyMedium: ThemeManager.lightTheme.textTheme.bodyMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            bodySmall: ThemeManager.lightTheme.textTheme.bodySmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineLarge: ThemeManager.lightTheme.textTheme.displayLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineMedium: ThemeManager.lightTheme.textTheme.headlineMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            displayLarge: ThemeManager.lightTheme.textTheme.displayLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            displayMedium: ThemeManager.lightTheme.textTheme.bodyMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            displaySmall: ThemeManager.lightTheme.textTheme.displaySmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineSmall: ThemeManager.lightTheme.textTheme.headlineSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelLarge: ThemeManager.lightTheme.textTheme.labelLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelMedium: ThemeManager.lightTheme.textTheme.labelMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelSmall: ThemeManager.lightTheme.textTheme.labelSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleLarge: ThemeManager.lightTheme.textTheme.titleLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleMedium: ThemeManager.lightTheme.textTheme.titleMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleSmall: ThemeManager.lightTheme.textTheme.titleSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-          ),
+          // textTheme: ThemeManager.lightTheme.textTheme.copyWith(
+          //   bodyLarge: ThemeManager.lightTheme.textTheme.bodyLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   bodyMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   bodySmall: ThemeManager.lightTheme.textTheme.bodySmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineLarge: ThemeManager.lightTheme.textTheme.displayLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineMedium: ThemeManager.lightTheme.textTheme.headlineMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displayLarge: ThemeManager.lightTheme.textTheme.displayLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displayMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displaySmall: ThemeManager.lightTheme.textTheme.displaySmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineSmall: ThemeManager.lightTheme.textTheme.headlineSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelLarge: ThemeManager.lightTheme.textTheme.labelLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelMedium: ThemeManager.lightTheme.textTheme.labelMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelSmall: ThemeManager.lightTheme.textTheme.labelSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleLarge: ThemeManager.lightTheme.textTheme.titleLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleMedium: ThemeManager.lightTheme.textTheme.titleMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleSmall: ThemeManager.lightTheme.textTheme.titleSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          // ),
           pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-          })),
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+      })),
       routerConfig: AppRouting.shellRouteConfig,
       debugShowCheckedModeBanner: false,
     );
@@ -167,7 +180,7 @@ class MyApp extends StatelessWidget {
         textDirection: ui.TextDirection.ltr,
         child: Stack(children: [
           mainApp,
-          Positioned(bottom: 5.sp, right: 5.sp, child: ChuckerLogButton())
+          Positioned(bottom: 5.sp, right: 5.sp, child: const ChuckerLogButton())
         ]),
       ),
       child: mainApp,

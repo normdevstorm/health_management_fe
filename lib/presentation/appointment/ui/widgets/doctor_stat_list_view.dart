@@ -13,7 +13,7 @@ class DoctorStatListview extends StatelessWidget {
       height: 100.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: 3,
         itemBuilder: (context, index) => Center(
           child: Container(
@@ -21,7 +21,7 @@ class DoctorStatListview extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
             margin: EdgeInsets.symmetric(horizontal: 12.w),
             decoration: BoxDecoration(
-                color: Color(0xffe4e8f1),
+                color: const Color(0xffe4e8f1),
                 borderRadius: BorderRadius.circular(20)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +34,7 @@ class DoctorStatListview extends StatelessWidget {
                   maxLines: 2,
                   style: TextStyle(
                       fontSize: 14.sp,
-                      color: Color(0xFF283545),
+                      color: const Color(0xFF283545),
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -42,7 +42,7 @@ class DoctorStatListview extends StatelessWidget {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20.sp,
-                      color: Color(0xFF283545)),
+                      color: const Color(0xFF283545)),
                 )
               ],
             ),

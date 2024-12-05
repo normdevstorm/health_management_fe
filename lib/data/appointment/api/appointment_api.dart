@@ -13,6 +13,9 @@ abstract class AppointmentApi {
   @GET('/appointment-record/all')
   Future<ApiResponse<List<AppointmentRecordResponse>>>
       getAllAppointmentRecords();
+  @GET('/appointment-record/{id}')
+  Future<ApiResponse<AppointmentRecordResponse>>
+      getAppointmentRecordById(@Path('id') int appointmentId);
   @POST('/appointment-record/create')
   Future<ApiResponse<AppointmentRecordResponse>> createAppointmentRecord(
       @Body() AppointmentRecordRequest appointment);
@@ -22,4 +25,7 @@ abstract class AppointmentApi {
   @DELETE('/appointment-record/delete/{id}')
   Future<ApiResponse<String>> deleteAppointmentRecord(
       @Path('id') int appointmentId);
+  @GET('/appointment-record/user/{id}')
+  Future<ApiResponse<List<AppointmentRecordResponse>>>
+      getAppointmentRecordByUserId(@Path('id') int userId);
 }

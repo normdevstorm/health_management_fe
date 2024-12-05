@@ -1,4 +1,3 @@
-import 'package:health_management/app/app.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'articles_comment_response.g.dart';

@@ -88,12 +88,12 @@ class HealthProviderItem extends StatelessWidget {
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20.0),
-                color: Color(0xFFe9f5f3),
+                color: const Color(0xFFe9f5f3),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(CupertinoIcons.location_circle,
+                  const Icon(CupertinoIcons.location_circle,
                       color: Color(0xFF629d92)),
                   Text(
                     distance,

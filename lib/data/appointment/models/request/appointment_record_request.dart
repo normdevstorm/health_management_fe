@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:easy_localization/easy_localization.dart';
 import '../../../../app/app.dart';
 import '../../../../domain/appointment/entities/appointment_record_entity.dart';
 import '../../../prescription/models/request/update_prescription_request.dart';

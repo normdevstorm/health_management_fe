@@ -3,6 +3,7 @@ plugins {
     // START: FlutterFire Configuration
     id 'com.google.gms.google-services'
     // END: FlutterFire Configuration
+
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
@@ -32,6 +33,9 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+            // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true   
+            // Sets Java compatibility to Java 8    
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -88,3 +92,13 @@ android {
     }
 }
 ///todo: config google services later
+// Add your dependencies here
+dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    implementation 'com.google.firebase:firebase-firestore:24.0.0' // Use the latest version
+    implementation 'com.google.android.gms:play-services-base:18.1.0' // Use the latest version
+    implementation 'com.google.firebase:firebase-analytics:21.0.0' // or the latest version
+    implementation 'com.google.firebase:firebase-auth:21.0.0' // or the latest version
+    implementation 'com.google.android.gms:play-services-auth:20.0.0' // or the latest version
+    // Add other Firebase dependencies as needed
+}

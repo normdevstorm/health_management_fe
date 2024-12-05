@@ -8,11 +8,11 @@ class HealthProviderState<T> extends Equatable {
   const HealthProviderState._({required this.status, this.data, this.errorMessage});
  
   factory HealthProviderState.initial() {
-    return HealthProviderState._(status: BlocStatus.initial);
+    return const HealthProviderState._(status: BlocStatus.initial);
   }
 
   factory HealthProviderState.loading() {
-    return HealthProviderState._(status: BlocStatus.loading);
+    return const HealthProviderState._(status: BlocStatus.loading);
   }
 
   factory HealthProviderState.success(T data) {

@@ -23,11 +23,9 @@ class AuthenticationUsecase {
   }
 
   Future<LoginEntity?> refreshToken(String refreshToken) async {
-    LoginResponse? loginResponse =
+    LoginEntity? loginEntity =
         await _authenticationRepository.refreshToken(refreshToken);
-    return LoginEntity(
-        accessToken: loginResponse?.accessToken,
-        refreshToken: loginResponse?.refreshToken);
+    return loginEntity;
   }
 
   Future<void> logout() async {

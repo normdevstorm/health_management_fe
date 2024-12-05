@@ -1,21 +1,22 @@
 {
   "project_info": {
-    "project_number": "810131365389",
-    "project_id": "cloud-message-test-1d41b",
-    "storage_bucket": "cloud-message-test-1d41b.appspot.com"
+    "project_number": "155656307072",
+    "firebase_url": "https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "chat-app-5d601",
+    "storage_bucket": "chat-app-5d601.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:2e5ad1fb49e21175e77f44",
+        "mobilesdk_app_id": "1:155656307072:android:a0eefb7abc3bb3eb044165",
         "android_client_info": {
-          "package_name": "com.example.health_management"
+          "package_name": "com.app.health_management_chat"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
+          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
         }
       ],
       "services": {
@@ -26,7 +27,26 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:c3531c7d1b27024de77f44",
+        "mobilesdk_app_id": "1:155656307072:android:1694286354f70c80044165",
+        "android_client_info": {
+          "package_name": "com.example.chat_app_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:155656307072:android:f2ea46f210f4876d044165",
         "android_client_info": {
           "package_name": "com.example.health_management.dev"
         }
@@ -34,45 +54,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:c68ba9159afb083ae77f44",
-        "android_client_info": {
-          "package_name": "com.example.health_management.staging"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:810131365389:android:2cb204926734553de77f44",
-        "android_client_info": {
-          "package_name": "com.example.test_push_noti_fcm"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAXjpUAtFNe7h1Ed92ZPUP50SNchyXLEeQ"
+          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
         }
       ],
       "services": {

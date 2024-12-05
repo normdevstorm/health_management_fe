@@ -17,7 +17,7 @@ class AppBarIconButton extends StatelessWidget {
             iconSize: WidgetStateProperty.all(size.r),
             shape: WidgetStateProperty.all(
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
-            side: WidgetStateProperty.all(BorderSide(
+            side: WidgetStateProperty.all(const BorderSide(
                 color: Color(0xFFeff5f9),
                 style: BorderStyle.solid,
                 width: 0.5,

@@ -1,5 +1,4 @@
 import 'package:health_management/app/app.dart';
-import 'package:json_annotation/json_annotation.dart';
 // part 'article_vote_entity.g.dart';
 
 // @JsonSerializable()

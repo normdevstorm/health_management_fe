@@ -3,12 +3,17 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  agora_rtc_engine
+  audioplayers_windows
   cloud_firestore
   connectivity_plus
   emoji_picker_flutter
+  file_selector_windows
   firebase_auth
   firebase_core
   firebase_storage
+  geolocator_windows
+  iris_method_channel
   permission_handler_windows
   share_plus
   url_launcher_windows

@@ -35,6 +35,12 @@ final class LoginError extends AuthenticationError {
   @override
   List<Object?> get props => [message];
 }
+final class CheckLoginStatusErrorState extends AuthenticationError {
+  const CheckLoginStatusErrorState(super.message);
+
+  @override
+  List<Object?> get props => [message];
+}
 
 // Register state
 final class RegisterSuccess extends AuthenticationState {

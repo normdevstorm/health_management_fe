@@ -84,7 +84,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             current.data.runtimeType == ArticleEntity,
         builder: (context, state) {
           if (state.status == BlocStatus.loading) {
-            return Center(child: CircularProgressIndicator(value: 8));
+            return const Center(child: CircularProgressIndicator(value: 8));
           }
           if (state.status == BlocStatus.success) {
             final data = state.data as ArticleEntity;

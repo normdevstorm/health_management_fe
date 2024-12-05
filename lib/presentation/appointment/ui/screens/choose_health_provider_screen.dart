@@ -15,6 +15,7 @@ import 'package:health_management/presentation/common/shimmer_loading.dart';
 
 import '../../bloc/health_provider/health_provider_bloc.dart';
 
+// ignore: must_be_immutable
 class ChooseHealthProviderScreen extends StatelessWidget {
   final ValueNotifier<int?> selectedHealthProviderNotifier =
       ValueNotifier(null);
@@ -42,7 +43,7 @@ class ChooseHealthProviderScreen extends StatelessWidget {
                 if (state.status == BlocStatus.success) {
                   healthProviders = state.data as List<HealthProviderEntity>;
                 }
-                return Shimmer(
+                return ShimmerWidget(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -82,7 +83,9 @@ class ChooseHealthProviderScreen extends StatelessWidget {
                                 hospitalSpecialties: HospitalSpecialty.values,
                                 doctorsCount: _getDoctorsCount(value == null
                                     ? []
-                                    : healthProviders.elementAt(value).doctors ??
+                                    : healthProviders
+                                            .elementAt(value)
+                                            .doctors ??
                                         []),
                               ),
                             ),
@@ -106,18 +109,26 @@ class ChooseHealthProviderScreen extends StatelessWidget {
                       message: "Please select a health provider");
                   return;
                 }
-      
+
                 context
                     .read<AppointmentBloc>()
                     .add(CollectDataHealthProviderEvent(AppointmentRecordEntity(
-                      healthProvider:
-                          healthProviders[selectedHealthProviderNotifier.value!],
+                      healthProvider: healthProviders[
+                          selectedHealthProviderNotifier.value!],
                     )));
                 context.pushNamed(RouteDefine.createAppointmentChooseDoctor,
-                    extra: healthProviders[selectedHealthProviderNotifier.value!]
-                            .doctors
-                            ?.where((e) => e.doctorProfile?.specialization == HospitalSpecialty.values[selectedHealthSpecialtyNotifier.value!] ,).toList() ??
-                        []);
+                    extra:
+                        healthProviders[selectedHealthProviderNotifier.value!]
+                                .doctors
+                                ?.where(
+                                  (e) =>
+                                      e.doctorProfile?.specialization ==
+                                      HospitalSpecialty.values[
+                                          selectedHealthSpecialtyNotifier
+                                              .value!],
+                                )
+                                .toList() ??
+                            []);
               },
               child: Icon(
                 Icons.arrow_forward_outlined,

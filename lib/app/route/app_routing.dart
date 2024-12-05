@@ -7,7 +7,6 @@ import 'package:health_management/presentation/details/chat_route.dart';
 import 'package:health_management/presentation/auth/auth_route.dart';
 import 'package:health_management/presentation/settings/settings_route.dart';
 import 'package:health_management/presentation/splash/ui/splash_screen.dart';
-
 import '../../presentation/auth/appointment_route.dart';
 import 'route_define.dart';
 
@@ -62,7 +61,7 @@ class AppRouting {
                     GoRoute(
                         name: RouteDefine.home,
                         path: '/home',
-                        builder: (context, state) => ArticleHome(
+                        builder: (context, state) => const ArticleHome(
                               title: 'Home',
                             ))
                   ]),
@@ -74,7 +73,7 @@ class AppRouting {
                   routes: <RouteBase>[$appointmentRoute]),
               StatefulShellBranch(
                   navigatorKey: rootNavigatorProfile,
-                  routes: <RouteBase>[$settingRoute])
+                  routes: <RouteBase>[$settingsRoute])
             ])
       ]);
 }

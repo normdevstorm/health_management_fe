@@ -32,7 +32,6 @@ class RefreshTokenInterceptor extends Interceptor {
             err.requestOptions.headers['Authorization'] =
                 'Bearer ${SessionManager().getSession()!.accessToken}';
             failedRequests.add({'handler': handler, 'err': err});
-            // TODO Retry all the requests that were added to the queue
             getIt<Logger>().i(SessionManager().getSession()?.accessToken);
             for (var request in failedRequests) {
               await getIt<Dio>()
