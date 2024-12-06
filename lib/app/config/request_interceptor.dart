@@ -4,7 +4,6 @@ import 'package:health_management/app/managers/session_manager.dart';
 class RequestInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // TODO: implement onRequest
     // super.onRequest(options, handler);
     if (['/auth/register', '/auth/login', '/auth/refresh-token', '/mail/verify_code']
         .contains(options.path)) {

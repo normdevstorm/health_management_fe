@@ -17,7 +17,7 @@ class DoctorProfileDetailsScreen extends StatelessWidget {
         Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            DoctorProfileAppBar(),
+            const DoctorProfileAppBar(),
             Expanded(
                 child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +67,7 @@ class DoctorAbout extends StatelessWidget {
           SizedBox(height: 10.h),
           Text(
             doctor.doctorProfile?.about ?? "",
-            style: TextStyle(fontSize: 16.sp, color: Color(0xFF283545)),
+            style: TextStyle(fontSize: 16.sp, color: const Color(0xFF283545)),
           ),
         ],
       ),

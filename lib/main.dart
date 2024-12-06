@@ -1,8 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,23 +13,26 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/app/utils/multi-languages/locale_keys.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/domain/articles/usecases/article_usecase.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
-import 'package:health_management/domain/user/entities/user_entity.dart';
-import 'package:health_management/domain/user/usecases/user_usecase.dart';
+import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
+import 'package:health_management/firebase_options_chat.dart'
+    as firebase_options_chat;
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/article_screen.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
-import 'package:logger/logger.dart';
+// import 'app/config/firebase_api.dart';
+import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
-import 'app/managers/local_storage.dart';
+import 'app/managers/toast_manager.dart';
+import 'domain/doctor/usecases/doctor_usecase.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
+import 'presentation/home/bloc/home_bloc.dart';
 
 void main() async {
   //create before runApp method to wrap all the procedures
@@ -36,40 +41,53 @@ void main() async {
   configureDependencies(FlavorManager.values.firstWhere(
       (element) => element.name == flavor,
       orElse: () => FlavorManager.dev));
-  await SharedPreferenceManager.init();
-  // if (!kIsWeb) {
-  //   await FirebaseApi().initNotificaiton();
-  // }
+  //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
+  // Initialize the cloud message Firebase project
+  // await FirebaseMessageService().initNotificaiton();
+  // Initialize the chat Firebase project
+  await Firebase.initializeApp(
+    options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
+    //TODO: UNCOMMENT THIS LINE TO RUN ON MOBILE DEVICES
+    name: 'chatApp',
+  );
 
-  runApp(
-    Material(
-      child: EasyLocalization(
-        supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-        path: 'assets/resources/langs/langs.csv',
-        assetLoader: CsvAssetLoader(),
-        startLocale: const Locale('vi', 'VN'),
-        useFallbackTranslations: true,
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => AuthenticationBloc(
-                  authenticationUsecase: getIt<AuthenticationUsecase>(),
-                  verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
-            ),
-            BlocProvider(
-              create: (context) => ArticleBloc(
-                articleUsecase: getIt<ArticleUsecase>(),
-              ),
-            ),
-          ],
-          child: BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: _authenticationListener,
-            child: const MyApp(),
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    localizationsDelegates: const [
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    builder: (context, child) => EasyLocalization(
+      supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+      path: 'assets/resources/langs/langs.csv',
+      assetLoader: CsvAssetLoader(),
+      startLocale: const Locale('vi', 'VN'),
+      useFallbackTranslations: true,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => AuthenticationBloc(
+                appChatUseCases: getIt<AppChatUseCases>(),
+                authenticationUsecase: getIt<AuthenticationUsecase>(),
+                verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
           ),
+          BlocProvider(
+            create: (context) => ArticleBloc(
+              articleUsecase: getIt<ArticleUsecase>(),
+            ),
+          ),
+          BlocProvider(
+              create: (context) =>
+                  HomeBloc(doctorUseCase: getIt<DoctorUseCase>())),
+        ],
+        child: const BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: _authenticationListener,
+          child: MyApp(),
         ),
       ),
     ),
-  );
+  ));
 }
 
 void _authenticationListener(BuildContext context, AuthenticationState state) {
@@ -99,10 +117,10 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   if (state is AuthenticationError) {
     String errorMessage = state.message;
     //todo: localize this message
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Text(errorMessage),
-    );
+    ToastManager.showToast(context: currentContext, message: errorMessage);
+    if (state.runtimeType == CheckLoginStatusErrorState) {
+      GoRouter.of(currentContext).goNamed(RouteDefine.login);
+    }
     return;
   }
 }
@@ -121,42 +139,42 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.light,
       darkTheme: ThemeManager.darkTheme,
       theme: ThemeManager.lightTheme.copyWith(
-          textTheme: ThemeManager.lightTheme.textTheme.copyWith(
-            bodyLarge: ThemeManager.lightTheme.textTheme.bodyLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            bodyMedium: ThemeManager.lightTheme.textTheme.bodyMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            bodySmall: ThemeManager.lightTheme.textTheme.bodySmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineLarge: ThemeManager.lightTheme.textTheme.displayLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineMedium: ThemeManager.lightTheme.textTheme.headlineMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            displayLarge: ThemeManager.lightTheme.textTheme.displayLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            displayMedium: ThemeManager.lightTheme.textTheme.bodyMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            displaySmall: ThemeManager.lightTheme.textTheme.displaySmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            headlineSmall: ThemeManager.lightTheme.textTheme.headlineSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelLarge: ThemeManager.lightTheme.textTheme.labelLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelMedium: ThemeManager.lightTheme.textTheme.labelMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            labelSmall: ThemeManager.lightTheme.textTheme.labelSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleLarge: ThemeManager.lightTheme.textTheme.titleLarge
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleMedium: ThemeManager.lightTheme.textTheme.titleMedium
-                ?.copyWith(fontFamily: 'Poppins'),
-            titleSmall: ThemeManager.lightTheme.textTheme.titleSmall
-                ?.copyWith(fontFamily: 'Poppins'),
-          ),
+          // textTheme: ThemeManager.lightTheme.textTheme.copyWith(
+          //   bodyLarge: ThemeManager.lightTheme.textTheme.bodyLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   bodyMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   bodySmall: ThemeManager.lightTheme.textTheme.bodySmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineLarge: ThemeManager.lightTheme.textTheme.displayLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineMedium: ThemeManager.lightTheme.textTheme.headlineMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displayLarge: ThemeManager.lightTheme.textTheme.displayLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displayMedium: ThemeManager.lightTheme.textTheme.bodyMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   displaySmall: ThemeManager.lightTheme.textTheme.displaySmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   headlineSmall: ThemeManager.lightTheme.textTheme.headlineSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelLarge: ThemeManager.lightTheme.textTheme.labelLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelMedium: ThemeManager.lightTheme.textTheme.labelMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   labelSmall: ThemeManager.lightTheme.textTheme.labelSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleLarge: ThemeManager.lightTheme.textTheme.titleLarge
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleMedium: ThemeManager.lightTheme.textTheme.titleMedium
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          //   titleSmall: ThemeManager.lightTheme.textTheme.titleSmall
+          //       ?.copyWith(fontFamily: 'Poppins'),
+          // ),
           pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-          })),
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+      })),
       routerConfig: AppRouting.shellRouteConfig,
       debugShowCheckedModeBanner: false,
     );
@@ -167,283 +185,12 @@ class MyApp extends StatelessWidget {
         textDirection: ui.TextDirection.ltr,
         child: Stack(children: [
           mainApp,
-          Positioned(bottom: 5.sp, right: 5.sp, child: ChuckerLogButton())
+          Positioned(bottom: 5.sp, right: 5.sp, child: const ChuckerLogButton())
         ]),
       ),
       child: mainApp,
     );
   }
-}
-
-class ArticleHome extends StatefulWidget {
-  const ArticleHome({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<ArticleHome> createState() => _ArticleHomeSate();
-}
-
-class _ArticleHomeSate extends State<ArticleHome> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ArticleBloc>().add(GetAllArticleEvent());
-  }
-
-  bool _showAllArticles = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              color: Colors.blue,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage(
-                          'https://via.placeholder.com/150',
-                        ),
-                      ),
-                      Stack(
-                        children: [
-                          Icon(Icons.notifications,
-                              color: Colors.white, size: 30),
-                          Positioned(
-                            right: 0,
-                            child: Container(
-                              height: 18,
-                              width: 18,
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "2",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // Greeting Text
-                  const Text(
-                    "Good Morning.....",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  const Text(
-                    "LAKSHAY",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Search Bar
-                  Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.yellow,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 15),
-                        const Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Search......",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.search),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // "Top Doctors" Title
-                  const Text(
-                    "Top Doctors",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  // Doctors List
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildDoctorCard(
-                            "Neurologist", "https://via.placeholder.com/100"),
-                        _buildDoctorCard(
-                            "Urologist", "https://via.placeholder.com/100"),
-                        _buildDoctorCard(
-                            "Pediatrician", "https://via.placeholder.com/100"),
-                        _buildDoctorCard(
-                            "Radiologist", "https://via.placeholder.com/100"),
-                        _buildDoctorCard(
-                            "Surgeon", "https://via.placeholder.com/100"),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Banner Slider
-                  const Text(
-                    "Promotional Banners",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  _buildBannerSlider(),
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: BlocBuilder<ArticleBloc, ArticleState>(
-              builder: (context, state) {
-                if (state.status == BlocStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (state.status == BlocStatus.error) {
-                  return Center(child: Text(state.errorMessage.toString()));
-                }
-
-                if (state.status == BlocStatus.success) {
-                  final articles = state.data as List<ArticleEntity>;
-                  // Hiển thị số lượng bài viết dựa trên trạng thái
-                  final displayedArticles =
-                      _showAllArticles ? articles : articles.take(5).toList();
-
-                  return Column(
-                    children: [
-                      const Text(
-                        "Articles",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: displayedArticles.length,
-                        itemBuilder: (context, index) {
-                          return ArticleItem(article: displayedArticles[index]);
-                        },
-                      ),
-                      if (articles.length > 5)
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _showAllArticles = !_showAllArticles;
-                            });
-                          },
-                          child: Text(
-                            _showAllArticles ? "Show less" : "Show more",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                    ],
-                  );
-                }
-
-                return const Center(child: Text('No articles found'));
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-Widget _buildBannerSlider() {
-  final List<String> bannerUrls = [
-    'https://isofhcare-backup.s3-ap-southeast-1.amazonaws.com/images/hinh-anh-benh-vien-da-khoa-vinmec-times-city-ivie_f94ff195_aacc_40e7_981e_99d7d3b8bd94.jpg',
-    'https://www.vinmec.com/static//uploads/05_12_2018_03_21_27_275433_jpg_081e7b384a.jpg',
-    'https://cdn.hellobacsi.com/wp-content/uploads/2018/07/Benh-vien-da-khoa-medlatec-e1532330580709.jpg?w=828&q=75',
-  ];
-
-  return SizedBox(
-    height: 200,
-    child: PageView.builder(
-      itemCount: bannerUrls.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.network(
-              bannerUrls[index],
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
-      },
-    ),
-  );
-}
-
-Widget _buildDoctorCard(String title, String imageUrl) {
-  return Container(
-    margin: const EdgeInsets.only(right: 15),
-    child: Column(
-      children: [
-        CircleAvatar(
-          radius: 40,
-          backgroundImage: NetworkImage(imageUrl),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          title,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-      ],
-    ),
-  );
 }
 
 class SkeletonPage extends StatefulWidget {

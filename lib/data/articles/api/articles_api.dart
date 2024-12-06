@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:health_management/app/app.dart';
 import 'package:health_management/data/articles/models/request/article_comment_request.dart';
 import 'package:health_management/data/articles/models/request/article_request.dart';
 import 'package:health_management/data/articles/models/response/articles_comment_response.dart';

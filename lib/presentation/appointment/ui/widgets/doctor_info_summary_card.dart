@@ -17,12 +17,12 @@ class DoctorInfoSummaryCard extends StatelessWidget {
       color: Colors.white,
       elevation: 5.h,
       margin: EdgeInsets.symmetric(horizontal: 25.w),
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
           side: BorderSide(color: Color(0xff1c6ba4), width: 0.5),
           borderRadius: BorderRadius.all(Radius.circular(25))),
       child: ListTile(
         minVerticalPadding: 30.h,
-        title: Text("Specialization"),
+        title: const Text("Specialization"),
         subtitle: Text(doctor.doctorProfile?.specialization?.name.toUpperCase() ?? ""),
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(20),
@@ -33,7 +33,7 @@ class DoctorInfoSummaryCard extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
-        trailing: Icon(Icons.arrow_forward_ios),
+        trailing: const Icon(Icons.arrow_forward_ios),
       ),
     );
   }

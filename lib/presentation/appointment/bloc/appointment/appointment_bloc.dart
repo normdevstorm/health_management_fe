@@ -1,18 +1,24 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/config/api_exception.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
+import 'package:health_management/domain/health_provider/usecases/health_provider_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
+
 part 'appointment_event.dart';
 part 'appointment_state.dart';
 
 class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
   final AppointmentUseCase appointmentUseCase;
+  final HealthProviderUseCase healthProviderUseCase;
 
-  AppointmentBloc({required this.appointmentUseCase})
+  AppointmentBloc(
+      {required this.appointmentUseCase, required this.healthProviderUseCase})
       : super(AppointmentState.initial()) {
     on<GetAllAppointmentRecordEvent>(
         (event, emit) => _onGetAllAppointmentRecordEvent(event, emit));
@@ -24,8 +30,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
         (event, emit) => _onCollectDataHealthProviderEvent(event, emit));
     on<ColectDataDoctorEvent>(
         (event, emit) => _onColectDataDoctorEvent(event, emit));
-    on<CollectDataDatetimeEvent>((event, emit) =>
-        _onCollectDataDatetimeEvent(event, emit));
+    on<CollectDataDatetimeAndNoteEvent>(
+        (event, emit) => _onCollectDataDatetimeEvent(event, emit));
     on<UpdateAppointmentRecordEvent>(
         (event, emit) => _onUpdateAppointmentRecordEvent(event, emit));
     on<DeleteAppointmentRecordEvent>(
@@ -36,23 +42,31 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       Emitter<AppointmentState> emit) async {
     emit(AppointmentState.loading());
     try {
+      final user= await SharedPreferenceManager.getUser();
       final appointmentRecords =
-          await appointmentUseCase.getAllAppointmentRecords();
+          await appointmentUseCase.getAppointmentRecordByUserId(userId: user!.id!);
       emit(AppointmentState.success(appointmentRecords));
-    } catch (e) {
-      emit(AppointmentState.error(e.toString()));
+    } on ApiException catch (e) {
+      emit(AppointmentState.error(ApiException.getErrorMessage(e)));
     }
   }
 
   _onGetAppointmentDetailEvent(
       GetAppointmentDetailEvent event, Emitter<AppointmentState> emit) async {
-    // emit(AppointmentState.loading());
-    // try {
-    //   final appointmentRecord = await appointmentUseCase.getAppointmentRecord(event.appointmentId);
-    //   emit(AppointmentState.success(appointmentRecord));
-    // } catch (e) {
-    //   emit(AppointmentState.error(e.toString()));
-    // }
+    emit(GetAppointmentDetailState.loading());
+    try {
+      final appointmentRecord = await appointmentUseCase
+          .getAppointmentRecordById(appointmentId: event.appointmentId);
+      final healthProviderList =
+          await healthProviderUseCase.getAllHealthProvider();
+      final healthProvider = healthProviderList.firstWhere(
+          (element) => element.id == appointmentRecord.healthProvider?.id);
+      emit(GetAppointmentDetailState.success(
+          appointmentRecordEntity:
+              appointmentRecord.copyWith(healthProvider: healthProvider)));
+    } on ApiException catch (e) {
+      emit(GetAppointmentDetailState.error(ApiException.getErrorMessage(e)));
+    }
   }
 
   _onUpdateAppointmentRecordEvent(UpdateAppointmentRecordEvent event,
@@ -62,8 +76,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       final appointmentRecord = await appointmentUseCase
           .updateAppointmentRecord(event.updateAppointmentRecordEntity);
       emit(AppointmentState.success(appointmentRecord));
-    } catch (e) {
-      emit(AppointmentState.error(e.toString()));
+    } on ApiException catch (e) {
+      emit(AppointmentState.error(ApiException.getErrorMessage(e)));
     }
   }
 
@@ -74,8 +88,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       final String message =
           await appointmentUseCase.deleteAppointmentRecord(event.appointmentId);
       emit(CancelAppointmentRecordState.success(message));
-    } catch (e) {
-      emit(CancelAppointmentRecordState.error(e.toString()));
+    } on ApiException catch (e) {
+      emit(CancelAppointmentRecordState.error(ApiException.getErrorMessage(e)));
     }
   }
 
@@ -83,25 +97,28 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       Emitter<AppointmentState> emit) async {
     AppointmentRecordEntity filledAppointmentRecordEntity =
         state.data as AppointmentRecordEntity;
-    emit(CreateAppointmentRecordState.loading(createAppointmentRecordEntity: filledAppointmentRecordEntity));
+    emit(CreateAppointmentRecordState.loading(
+        createAppointmentRecordEntity: filledAppointmentRecordEntity));
     try {
       final appointmentRecord = await appointmentUseCase
           .createAppointmentRecord(filledAppointmentRecordEntity);
       emit(CreateAppointmentRecordState.success(
           createdAppointmentRecordEntity: appointmentRecord));
-    } catch (e) {
-      emit(CreateAppointmentRecordState.error(e.toString(), createdAppointmentRecordEntity: filledAppointmentRecordEntity));
+    } on ApiException catch (e) {
+      emit(CreateAppointmentRecordState.error(ApiException.getErrorMessage(e),
+          createdAppointmentRecordEntity: filledAppointmentRecordEntity));
     }
   }
 
   _onCollectDataHealthProviderEvent(
-      CollectDataHealthProviderEvent event, Emitter<AppointmentState> emit) {
+      CollectDataHealthProviderEvent event, Emitter<AppointmentState> emit) async{
     emit(CreateAppointmentRecordState.initial());
     final int? providerId = event.appointmentRecordEntity.healthProvider?.id;
+    final int userId = (await SharedPreferenceManager.getUser())!.id!;
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
             .copyWith(
-                user: UserEntity(id: 3),
+                user: UserEntity(id: userId),
                 healthProvider: HealthProviderEntity(id: providerId),
                 appointmentType: AppointmentType.inPerson)));
   }
@@ -117,13 +134,14 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
   }
 
   _onCollectDataDatetimeEvent(
-      CollectDataDatetimeEvent event, Emitter<AppointmentState> emit) {
+      CollectDataDatetimeAndNoteEvent event, Emitter<AppointmentState> emit) {
     final DateTime scheduledAt = event.scheduledAt;
+    final String? note = event.note;
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
             .copyWith(
                 scheduledAt: scheduledAt,
                 status: AppointmentStatus.scheduled,
-                note: "This one is created manually")));
+                note: note)));
   }
 }

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferenceManager {
@@ -50,5 +53,29 @@ class SharedPreferenceManager {
 
   static Future<bool> deleteUserId() {
     return _instance.remove("user-id");
+  }
+
+  static Future<void> setUser(UserEntity userEntity) async {
+    _instance.setString("user", jsonEncode(userEntity.toJson()));
+  }
+
+  static Future<UserEntity?> getUser() async {
+    String? userRes = _instance.getString("user");
+    if (userRes != null) {
+      return UserEntity.fromJson(jsonDecode(userRes));
+    }
+    return null;
+  }
+
+  static Future<void> saveFcmToken(String fcmToken) async {
+    await _instance.setString("fcmToken", fcmToken);
+  }
+
+  static String? readFcmToken() {
+    return _instance.getString("fcmToken");
+  }
+
+  static Future<bool> deleteFcmToken() {
+    return _instance.remove("fcmToken");
   }
 }

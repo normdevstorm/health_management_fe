@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
@@ -24,7 +26,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ArticleBloc>().add(GetAllArticleByUserIdEvent(userId: 2));
+    context
+        .read<ArticleBloc>()
+        .add(const GetAllArticleByUserIdEvent(userId: 2));
   }
 
   @override
@@ -34,6 +38,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
         title: const Text("Articles"),
       ),
       body: BlocBuilder<ArticleBloc, ArticleState>(
+        buildWhen: (previous, current) =>
+            previous.status != current.status &&
+            (current.data.runtimeType == List<ArticleEntity>),
         builder: (context, state) {
           if (state.status == BlocStatus.loading) {
             return const Center(child: CircularProgressIndicator());
@@ -44,7 +51,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
           }
 
           if (state.status == BlocStatus.success) {
-            final articles = state.data as List<ArticleEntity>;
+            List<ArticleEntity> articles;
+            try {
+              articles = state.data as List<ArticleEntity>;
+            } catch (e) {
+              // TODO
+              articles = [];
+            }
 
             return ListView.builder(
               itemCount: articles.length + 1,
@@ -166,15 +179,61 @@ class ArticleItem extends StatelessWidget {
                 const SizedBox(height: 8),
                 // Vote, Comment, View Counts
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Upvotes: ${article.upVoteCount}"),
-                    Text("Downvotes: ${article.downVoteCount}"),
-                    Text("Comments: ${article.commentCount}"),
-                    Text("Views: ${article.viewCount}"),
-                  ],
-                )
+                BlocBuilder<ArticleBloc, ArticleState>(
+                  buildWhen: (previous, current) =>
+                      current.data != previous.data,
+                  builder: (context, state) {
+                    final upVoteCount = (state.data == Map<String, int?>)
+                        ? (state.data as Map<String, int?>)["up_vote"]
+                        : article.upVoteCount;
+                    final downVoteCount = (state.data == Map<String, int?>)
+                        ? (state.data as Map<String, int?>)["down_vote"]
+                        : article.downVoteCount;
+                    final commentCount =
+                        (state.data == List<ArticleCommentEntity>)
+                            ? (state.data as List<ArticleCommentEntity>).length
+                            : article.commentCount;
+                    final viewCount = article.viewCount;
+
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.thumb_up,
+                                size: 16, color: Colors.black),
+                            const SizedBox(width: 4),
+                            Text('${upVoteCount ?? 0}'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.thumb_down,
+                                size: 16, color: Colors.black),
+                            const SizedBox(width: 4),
+                            Text('${downVoteCount ?? 0}'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.comment,
+                                size: 16, color: Colors.black),
+                            const SizedBox(width: 4),
+                            Text('${commentCount ?? 0}'),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.visibility,
+                                size: 16, color: Colors.black),
+                            const SizedBox(width: 4),
+                            Text('${viewCount ?? 0}'),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -216,8 +275,8 @@ class ArticleItem extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BlocProvider(
-          create: (context) => ArticleBloc(articleUsecase: getIt())
+        builder: (context) => BlocProvider<ArticleBloc>.value(
+          value: BlocProvider.of<ArticleBloc>(context)
             ..add(GetArticleByIdEvent(articleId)),
           child: ArticleDetailScreen(articleId: articleId),
         ),

@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/data/articles/api/articles_api.dart';
 import 'package:health_management/data/articles/models/request/article_comment_request.dart';
 import 'package:health_management/data/articles/models/request/article_request.dart';
-import 'package:health_management/data/articles/models/response/articles_response.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/domain/articles/repositories/article_repository.dart';
@@ -23,7 +20,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
     try {
       final response = await api.createArticle(
           ArticleRequest.fromEntity(articleEntity), userId);
-      return response.data?.toEntity() ?? ArticleEntity();
+      return response.data?.toEntity() ?? const ArticleEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
@@ -60,7 +57,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
     try {
       final response = await api.updateArticle(
           ArticleRequest.fromEntity(articleEntity), userId);
-      return response.data?.toEntity() ?? ArticleEntity();
+      return response.data?.toEntity() ?? const ArticleEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
@@ -84,7 +81,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
     try {
       final response = await api.commentArticle(articleId, userId,
           ArticleCommentRequest.fromEntity(articleCommentEntity));
-      return response.data?.toEntity() ?? ArticleCommentEntity();
+      return response.data?.toEntity() ?? const ArticleCommentEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
@@ -108,7 +105,7 @@ class ArticleRepositoryImpl implements ArticleRepository {
   Future<ArticleEntity> getArticleById(int id) async {
     try {
       final response = await api.getArticleById(id);
-      return response.data?.toEntity() ?? ArticleEntity();
+      return response.data?.toEntity() ?? const ArticleEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);

@@ -4,52 +4,59 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/articles/ui/article_screen.dart';
+import 'package:health_management/presentation/edit_profile/ui/edit_profile_screen.dart';
 import 'package:health_management/presentation/settings/ui/screen/settings_screen.dart';
-
+import '../../domain/user/usecases/user_usecase.dart';
+import '../edit_profile/bloc/edit_profile_bloc.dart';
 part 'settings_route.g.dart';
 
-@TypedShellRoute<SettingRoute>(
-  routes: [
-    TypedGoRoute<SettingHomeRoute>(
-      path: "/settings/home",
+@TypedShellRoute<SettingsRoute>(routes: [
+  TypedGoRoute<SettingScreenRoute>(
+      path: '/settings',
       name: RouteDefine.settings,
       routes: [
-        // TypedGoRoute<SettingDataProfileRoute>(
-        //   path: "/profile",
-        //   name: RouteDefine.profile,
-        // ),
+        TypedGoRoute<ProfileRoute>(
+            path: '/edit-profile', name: RouteDefine.editProfile),
         TypedGoRoute<SettingArticleRoute>(
           path: "/article",
           name: RouteDefine.article,
         ),
-      ],
-    ),
-  ],
-)
-class SettingRoute extends ShellRouteData {
+      ]),
+])
+class SettingsRoute extends ShellRouteData {
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
-    return navigator;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => EditProfileBloc(
+            userUseCase: getIt<UserUseCase>(),
+          ),
+        ),
+      ],
+      child: navigator,
+    );
   }
 }
 
-class SettingHomeRoute extends GoRouteData {
+class ProfileRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return SettingsScreen();
+    return const EditProfileScreen();
   }
 }
 
-// class SettingDataProfileRoute extends GoRouteData {
-//   @override
-//   Widget build(BuildContext context, GoRouterState state) {
-//     return DataProfileScreen();
-//   }
-// }
+class SettingScreenRoute extends GoRouteData {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    // TODO: implement build
+    return const SettingsScreen();
+  }
+}
 
 class SettingArticleRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return ArticleScreen();
+    return const ArticleScreen();
   }
 }

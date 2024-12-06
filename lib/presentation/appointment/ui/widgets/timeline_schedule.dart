@@ -2,37 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TimelineSchedule extends StatefulWidget {
-  const TimelineSchedule({super.key});
+    final ScrollController scrollController;
+
+  const TimelineSchedule({super.key, required this.scrollController});
 
   @override
   State<TimelineSchedule> createState() => _TimelineScheduleState();
 }
 
 class _TimelineScheduleState extends State<TimelineSchedule> {
-  final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
-    // TODO: implement initState
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      scrollController.animateTo(
+      widget.scrollController.animateTo(
         DateTime.now().hour * 100.h,
-        duration: Duration(seconds: 1),
+        duration: const Duration(seconds: 1),
         curve: Curves.easeIn,
       );
     });
-    // scrollController.animateTo(
-    //   DateTime.now().hour * 100.h,
-    //   duration: Duration(seconds: 1),
-    //   curve: Curves.easeIn,
-    // );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      controller: scrollController,
+      controller: widget.scrollController,
       itemCount: 24,
       itemBuilder: (context, index) {
         return TimelineItem(hour: index, isNow: index == DateTime.now().hour);
@@ -61,7 +56,7 @@ class TimelineItem extends StatelessWidget {
                 padding: EdgeInsets.only(right: 10.w),
                 child: Text(
                   '${hour.toString().padLeft(2, '0')}:00',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),
               if (isNow) ...[
@@ -84,7 +79,7 @@ class TimelineItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(width: 60.w),
-                Expanded(
+                const Expanded(
                   child: Card(
                     color: Color(0xFFf2e7eb),
                     child: ListTile(

@@ -4,8 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
-import 'package:health_management/presentation/common/tag.dart';
-import 'package:health_management/presentation/common/tag_list.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -24,6 +22,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     controller = PageController(initialPage: 1);
   }
 
+  void _navigateToEditProfile() {
+    context.pushNamed(RouteDefine.editProfile);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 CircleAvatar(
                   radius: 30.r,
-                  backgroundImage: NetworkImage(
+                  backgroundImage: const NetworkImage(
                       'https://cdn.eva.vn/upload/3-2022/images/2022-08-12/image7-1660292089-178-width640height700.jpg'),
                 ),
                 SizedBox(width: 16.w),
@@ -101,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }),
                   buildMenuItem(context, 'Logout', Icons.logout, () {
                     print('Logout clicked');
-                    context.read<AuthenticationBloc>().add(LogOutEvent());
+                    context.read<AuthenticationBloc>().add(const LogOutEvent());
                   }),
                 ],
               ),
@@ -117,7 +119,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return ListTile(
       leading: Icon(icon, color: Colors.blue),
       title: Text(title, style: TextStyle(fontSize: 16.sp)),
-      trailing: Icon(Icons.arrow_forward_ios, color: Colors.grey),
+      trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
       onTap: onClicked,
     );
   }

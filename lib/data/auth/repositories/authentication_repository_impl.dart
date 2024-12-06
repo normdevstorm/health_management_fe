@@ -3,6 +3,7 @@ import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/managers/session_manager.dart';
 import 'package:health_management/data/auth/models/request/login_request_model.dart';
 import 'package:health_management/data/auth/models/response/login_response_model.dart';
+import 'package:health_management/data/auth/models/response/refresh_response_model.dart';
 import 'package:health_management/domain/auth/entities/login_entity.dart';
 import 'package:health_management/domain/auth/entities/register_entity.dart';
 import 'package:logger/logger.dart';
@@ -37,7 +38,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<LoginResponse?> login(LoginRequest request) async {
     try {
       LoginResponse apiResponse = await api.login(request);
-      // SharedPreferenceManager.setUserId(apiResponse.userId);
+      await SharedPreferenceManager.setUser(apiResponse.userResponse.toEntity());
       SessionManager().setSession(
           LoginEntity(
               accessToken: apiResponse.accessToken,
@@ -50,12 +51,21 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   }
 
   @override
-  Future<LoginResponse?> refreshToken(String refreshToken) async {
+  Future<LoginEntity?> refreshToken(String refreshToken) async {
     try {
-      final  response =
-          await api.refreshToken({"refresh_token": refreshToken});
-      LoginResponse? loginResponse = response.data;
-      return loginResponse;
+      final response = await api.refreshToken({"refresh_token": refreshToken});
+      if(response.data == null) {
+        throw const ApiException.defaultError("Failed to refresh token");
+      }
+      RefreshResponse refreshResponse = response.data! ;
+       SessionManager().setSession(
+          LoginEntity(
+              accessToken: refreshResponse.accessToken,
+              refreshToken: refreshResponse.refreshToken),
+          true);
+      return LoginEntity(
+          accessToken: refreshResponse.accessToken,
+          refreshToken: refreshResponse.refreshToken,);
     } catch (e) {
       throw ApiException.getDioException(e);
     }

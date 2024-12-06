@@ -11,7 +11,7 @@ class DoctorProfileAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Color(0xff1c6ba4),
       ),
       height: 200.h,
@@ -23,17 +23,17 @@ class DoctorProfileAppBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              AppBarIconButton(
+              const AppBarIconButton(
                 size: 30,
               ),
               Text(
                 'Doctor Profile',
                 style: TextStyle(
-                    color: Color(0xFFeff5f9),
+                    color: const Color(0xFFeff5f9),
                     fontSize: 20.sp,
                     fontWeight: FontWeight.bold),
               ),
-              AppBarIconButton(
+              const AppBarIconButton(
                 size: 30,
                 icon: Icons.more_vert,
               ),

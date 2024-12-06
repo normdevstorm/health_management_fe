@@ -23,7 +23,6 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
-        // TODO: implement listener
         if (state is GetVerifyCodeSuccess) {
           GoRouter.of(context).pushNamed(RouteDefine.verifyCode,
               extra: RegisterSubmitEvent(

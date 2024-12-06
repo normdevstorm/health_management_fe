@@ -29,7 +29,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     try {
       final response = await api.createAppointmentRecord(
           AppointmentRecordRequest.fromEntity(appointment));
-      return response.data?.toEntity() ?? AppointmentRecordEntity();
+      return response.data?.toEntity() ?? const AppointmentRecordEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
@@ -42,7 +42,7 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     try {
       final response = await api.updateAppointmentRecord(
           UpdateAppointmentRecordRequest.fromEntity(appointment));
-      return response.data?.toEntity() ?? AppointmentRecordEntity();
+      return response.data?.toEntity() ?? const AppointmentRecordEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
@@ -54,6 +54,29 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     try {
       final response = await api.deleteAppointmentRecord(appointmentId);
       return response.data!;
+    } catch (e) {
+      logger.e(e);
+      throw ApiException.getDioException(e);
+    }
+  }
+
+  @override
+  Future<List<AppointmentRecordEntity>> getAppointmentRecordByUserId(
+      int userId) async {
+    try {
+      final response = await api.getAppointmentRecordByUserId(userId);
+      return (response.data ?? []).map((e) => e.toEntity()).toList();
+    } catch (e) {
+      logger.e(e);
+      throw ApiException.getDioException(e);
+    }
+  }
+  
+  @override
+  Future<AppointmentRecordEntity> getAppointmentRecordById(int appointmentId) async{    
+    try {
+      final response = await api.getAppointmentRecordById(appointmentId);
+      return response.data?.toEntity() ?? const AppointmentRecordEntity();
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);
