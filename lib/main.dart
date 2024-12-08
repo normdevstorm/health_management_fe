@@ -1,3 +1,4 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -41,7 +42,7 @@ void main() async {
       orElse: () => FlavorManager.dev));
   //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
   // Initialize the cloud message Firebase project
-  // await FirebaseMessageService().initNotificaiton();
+  await FirebaseMessageService().initNotificaiton();
   // Initialize the chat Firebase project
   await Firebase.initializeApp(
     options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
@@ -49,36 +50,39 @@ void main() async {
     name: 'chatApp',
   );
 
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    localizationsDelegates: const [
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    builder: (context, child) => EasyLocalization(
-      supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-      path: 'assets/resources/langs/langs.csv',
-      assetLoader: CsvAssetLoader(),
-      startLocale: const Locale('vi', 'VN'),
-      useFallbackTranslations: true,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => AuthenticationBloc(
-                appChatUseCases: getIt<AppChatUseCases>(),
-                authenticationUsecase: getIt<AuthenticationUsecase>(),
-                verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
-          ),
+  runApp(CalendarControllerProvider(
+    controller: EventController(),
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: (context, child) => EasyLocalization(
+        supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+        path: 'assets/resources/langs/langs.csv',
+        assetLoader: CsvAssetLoader(),
+        startLocale: const Locale('vi', 'VN'),
+        useFallbackTranslations: true,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => AuthenticationBloc(
+                  appChatUseCases: getIt<AppChatUseCases>(),
+                  authenticationUsecase: getIt<AuthenticationUsecase>(),
+                  verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
+            ),
             BlocProvider(
               create: (context) => ArticleBloc(
                 articleUsecase: getIt<ArticleUsecase>(),
               ),
             ),
-        ],
-        child: const BlocListener<AuthenticationBloc, AuthenticationState>(
-          listener: _authenticationListener,
-          child: MyApp(),
+          ],
+          child: const BlocListener<AuthenticationBloc, AuthenticationState>(
+            listener: _authenticationListener,
+            child: MyApp(),
+          ),
         ),
       ),
     ),
@@ -201,7 +205,7 @@ class _ArticleHomeSate extends State<ArticleHome> {
   @override
   void initState() {
     super.initState();
-    context.read<ArticleBloc>().add(GetAllArticleEvent());
+    context.read<ArticleBloc>().add(const GetAllArticleEvent());
   }
 
   @override

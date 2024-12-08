@@ -327,16 +327,6 @@ class _ChooseAppointmentDateTimeScreenState
     );
   }
 
-  Widget _buildTimeButton(String time) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.grey,
-        overlayColor: Colors.white,
-      ),
-      child: Text(time),
-    );
-  }
 }
 
 class ChooseShiftTimeWidget extends StatelessWidget {

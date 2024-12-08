@@ -13,6 +13,7 @@ import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/common/shimmer_loading.dart';
 
+import '../../../../app/managers/local_storage.dart';
 import '../../../../app/route/route_define.dart';
 import '../../../../domain/health_provider/entities/health_provider_entity.dart';
 import '../../../../domain/prescription/entities/prescription_entity.dart';
@@ -21,10 +22,26 @@ import '../../../chat/ui/main/home/chat_screen/chat_page.dart';
 import '../../bloc/appointment/appointment_bloc.dart';
 import '../widgets/common_separator.dart';
 
-class AppointmentDetails extends StatelessWidget {
-  AppointmentDetails({super.key});
+class AppointmentDetails extends StatefulWidget {
+  const AppointmentDetails({required this.appointmentId, super.key});
+  final int appointmentId;
+
+  @override
+  State<AppointmentDetails> createState() => _AppointmentDetailsState();
+}
+
+class _AppointmentDetailsState extends State<AppointmentDetails> {
   AppointmentRecordEntity appointmentRecordEntity =
       const AppointmentRecordEntity();
+  var _isDoctor = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context
+        .read<AppointmentBloc>()
+        .add(GetAppointmentDetailEvent(appointmentId: widget.appointmentId));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +53,13 @@ class AppointmentDetails extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: BlocConsumer<AppointmentBloc, AppointmentState>(
-            listener: (context, state) {
+            listener: (context, state) async {
+              if (state.status == BlocStatus.loading) {
+                _isDoctor = (Role.doctor ==
+                    await SharedPreferenceManager.getUserRole());
+                return;
+              }
+
               if (state.status == BlocStatus.error) {
                 ToastManager.showToast(
                     context: context,
@@ -58,7 +81,7 @@ class AppointmentDetails extends StatelessWidget {
 
               return ShimmerWidget(
                 child: ShimmerLoading(
-                  isLoading: isLoading,
+                  isLoading: isLoading && appointmentRecordEntity.id == null,
                   child: Column(
                     children: [
                       _buildSection(
@@ -462,6 +485,8 @@ class AppointmentDetails extends StatelessWidget {
       {int? appointmentId,
       PrescriptionEntity? prescription,
       required BuildContext context}) {
+    var isPrescriptionDetailsAvailable =
+        (prescription?.details ?? []).isNotEmpty;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -499,12 +524,14 @@ class AppointmentDetails extends StatelessWidget {
                     ),
                     onPressed: () {
                       // Add your onPressed code here!
-                      if (appointmentId != null) {
+                      if ((appointmentId != null &&
+                              isPrescriptionDetailsAvailable) ||
+                          _isDoctor) {
                         context.pushNamed(
                             RouteDefine.appointmentDetailsPrescription,
                             extra: prescription,
                             pathParameters: {
-                              'appointmentId': appointmentId.toString()
+                              'appointmentId': appointmentId.toString(),
                             });
                       }
                     },
@@ -517,15 +544,22 @@ class AppointmentDetails extends StatelessWidget {
                 top: 0,
                 right: 0,
                 child: Chip(
-                  label: const Text(
-                    'Available',
+                  label: Text(
+                    isPrescriptionDetailsAvailable
+                        ? 'Available'
+                        : 'Not Available',
                     style: TextStyle(
-                      color: Colors.green,
+                      color: isPrescriptionDetailsAvailable
+                          ? Colors.green
+                          : Colors.red,
                     ),
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(color: Colors.green),
+                    side: BorderSide(
+                        color: isPrescriptionDetailsAvailable
+                            ? Colors.green
+                            : Colors.red),
                   ),
                   backgroundColor: Colors.transparent,
                 ),

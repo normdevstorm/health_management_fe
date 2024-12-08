@@ -63,6 +63,7 @@ import '../../data/chat/datasources/user/user_data_source.dart';
 import '../../data/chat/repositories/auth_repository.dart';
 import '../../data/chat/repositories/chat_contact_repository.dart';
 import '../../data/chat/repositories/chat_repository.dart';
+import '../../data/prescription/api/medication_api.dart';
 import '../../data/prescription/api/prescription_api.dart';
 import '../../data/user/api/user_api.dart';
 import '../../data/user/repositories/user_repository_impl.dart';
@@ -119,6 +120,7 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => UserApi(dio));
   getIt.registerLazySingleton(() => PrescriptionApi(dio,
       baseUrl: 'https://api.duynguyendev.xyz/api/v1/openai/chat/'));
+  getIt.registerLazySingleton(() => MedicationApi(dio));
   getIt.registerLazySingleton(
       () => VerifyCodeApi(dio, baseUrl: 'https://api.duynguyendev.xyz/api/v1'));
   getIt.registerLazySingleton(() => HealthProviderApi(dio));
@@ -147,11 +149,11 @@ void setUpAppComponent() async {
   getIt.registerLazySingleton<HealthProviderRepository>(
       () => HealthProviderRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton<PrescriptionRepository>(
-      () => PrescriptionRepositoryImpl(getIt(), getIt()));
+      () => PrescriptionRepositoryImpl(getIt(), getIt(), getIt()));
   getIt.registerLazySingleton<DoctorScheduleRepository>(
       () => DoctorScheduleRepositoryImpl(getIt(), getIt()));
-    getIt.registerLazySingleton<ArticleRepository>(
-      () => ArticleRepositoryImpl(getIt(), getIt()));  
+  getIt.registerLazySingleton<ArticleRepository>(
+      () => ArticleRepositoryImpl(getIt(), getIt()));
 
   //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));

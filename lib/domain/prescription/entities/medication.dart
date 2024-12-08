@@ -4,7 +4,7 @@ part 'medication.g.dart';
 
 @JsonSerializable()
 class Medication {
-  int id;
+  int? id;
   String? name;
   String? imageUrl;
   String? description;
@@ -12,7 +12,7 @@ class Medication {
   String? expDate;
 
   Medication({
-    required this.id,
+    this.id,
     this.name,
     this.imageUrl,
     this.description,

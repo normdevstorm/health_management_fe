@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:health_management/app/app.dart';
+
+import '../app.dart';
 
 class ToastManager {
   ToastManager();
 
-  static showToast( {required BuildContext context, required String message}) {
+  static showToast(
+      {required BuildContext context,
+      required String message,
+      bool isErrorToast = false}) {
     FToast fToast = FToast();
     fToast.init(context);
     Widget toast = Container(
@@ -17,10 +21,11 @@ class ToastManager {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.clear_outlined,
-            color: ColorManager.errorColorLight,
-          ),
+          if (isErrorToast)
+            const Icon(
+              Icons.clear_outlined,
+              color: ColorManager.errorColorLight,
+            ),
           const SizedBox(
             width: 12.0,
           ),
@@ -35,7 +40,7 @@ class ToastManager {
         ],
       ),
     );
-
+    fToast.removeQueuedCustomToasts();
     fToast.showToast(
       child: toast,
       gravity: ToastGravity.TOP,

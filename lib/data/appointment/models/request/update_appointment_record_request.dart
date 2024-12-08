@@ -4,7 +4,7 @@ import 'package:health_management/domain/appointment/entities/appointment_record
 import '../../../../app/app.dart';
 part 'update_appointment_record_request.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class UpdateAppointmentRecordRequest {
   final int? id;
   final String? note;

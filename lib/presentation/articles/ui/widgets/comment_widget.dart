@@ -102,8 +102,8 @@ class _CommentWidgetState extends State<CommentWidget> {
                 const SizedBox(width: 16),
                 GestureDetector(
                   onTap: _toggleReplying,
-                  child: Row(
-                    children: const [
+                  child: const Row(
+                    children: [
                       Icon(Icons.reply, size: 18, color: Colors.grey),
                       SizedBox(width: 4),
                       Text(

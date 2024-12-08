@@ -26,11 +26,13 @@ final GlobalKey<NavigatorState> globalRootNavigatorKey =
 //     GlobalKey<NavigatorState>();
 
 class AppRouting {
-  static final RouteObserver<ModalRoute<void>> _routeObserver =
+  static final RouteObserver<ModalRoute<void>> routeObserver =
+      RouteObserver<ModalRoute<void>>();
+  static final RouteObserver<ModalRoute<void>> appointmentRouteObserver =
       RouteObserver<ModalRoute<void>>();
   static GoRouter get shellRouteConfig => _shellRoute;
   static final GoRouter _shellRoute = GoRouter(
-      observers: [ChuckerFlutter.navigatorObserver, _routeObserver],
+      observers: [ChuckerFlutter.navigatorObserver, routeObserver],
       navigatorKey: globalRootNavigatorKey,
       initialLocation: '/',
       debugLogDiagnostics: true,
@@ -69,6 +71,7 @@ class AppRouting {
                   navigatorKey: rootNavigatorChat,
                   routes: <RouteBase>[$chatRoute]),
               StatefulShellBranch(
+                  observers: [appointmentRouteObserver],
                   navigatorKey: rootNavigatorAppointment,
                   routes: <RouteBase>[$appointmentRoute]),
               StatefulShellBranch(

@@ -13,6 +13,7 @@ import 'package:health_management/presentation/appointment/ui/screens/choose_doc
 import 'package:health_management/presentation/appointment/ui/screens/choose_health_provider_screen.dart';
 import '../../domain/prescription/entities/prescription_entity.dart';
 import '../appointment/bloc/appointment/appointment_bloc.dart';
+import '../appointment/bloc/medication/medication_bloc.dart';
 import '../chat/bloc/contacts/contacts_cubit.dart';
 import '../prescription/bloc/prescription_ai_analysis_bloc.dart';
 import '../prescription/ui/screens/prescription_screen.dart';
@@ -65,11 +66,23 @@ class AppointmentDetailsPrescription extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     final PrescriptionEntity? prescription = state.extra as PrescriptionEntity?;
-    return BlocProvider(
-      create: (context) =>
-          PrescriptionAiAnalysisBloc(prescriptionAiAnalysisUseCase: getIt()),
-      child: MedicineListScreen(prescriptions: prescription?.details),
-    );
+    int appointmentId =
+        int.tryParse(state.pathParameters['appointmentId'] ?? '0') ?? 0;
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => PrescriptionAiAnalysisBloc(
+                prescriptionAiAnalysisUseCase: getIt()),
+          ),
+          BlocProvider(
+            create: (context) => MedicationBloc(prescriptionUseCase: getIt())
+              ..add(GetAllMedicationEvent()),
+          ),
+        ],
+        child: MedicineListScreen(
+          prescriptions: prescription?.details,
+          appointmentId: appointmentId,
+        ));
   }
 }
 
@@ -82,13 +95,9 @@ class AppointmentDetailsRoute extends GoRouteData {
         int.tryParse(state.pathParameters['appointmentId'] ?? '0') ?? 0;
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AppointmentBloc>.value(
-          value: BlocProvider.of<AppointmentBloc>(context)
-            ..add(GetAppointmentDetailEvent(appointmentId: appointmentId)),
-        ),
         BlocProvider(create: (context) => ContactsCubit()..getAllContacts()),
       ],
-      child: AppointmentDetails(),
+      child: AppointmentDetails(appointmentId: appointmentId),
     );
   }
 }
@@ -131,10 +140,3 @@ class AppointmentCreateChooseDoctor extends AppointmentCreateRoute {
     return ChooseDoctorScreen(doctors: state.extra as List<UserEntity>);
   }
 }
-
-// class AppointmentCreateChooseDepartment extends AppointmentCreateRoute {
-//   @override
-//   Widget build(BuildContext context, GoRouterState state) {
-//     return ChooseD;
-//   }
-// }
