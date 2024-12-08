@@ -199,13 +199,17 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                         child: const Icon(Icons.delete,
                                             color: Colors.white)),
                                     child: MedicineCard(
-                                        name: prescriptionList[index]
-                                            .medication
-                                            ?.name,
-                                        dosage: prescriptionList[index].dosage,
-                                        expDate: prescriptionList[index]
-                                            .medication
-                                            ?.expDate),
+                                      name: prescriptionList[index]
+                                          .medication
+                                          ?.name,
+                                      dosage: prescriptionList[index].dosage,
+                                      expDate: prescriptionList[index]
+                                          .medication
+                                          ?.expDate,
+                                      imageUrl: prescriptionList[index]
+                                          .medication
+                                          ?.imageUrl,
+                                    ),
                                   )
                                 : MedicineCard(
                                     name: prescriptionList[index]
@@ -214,7 +218,11 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                                     dosage: prescriptionList[index].dosage,
                                     expDate: prescriptionList[index]
                                         .medication
-                                        ?.expDate);
+                                        ?.expDate,
+                                    imageUrl: prescriptionList[index]
+                                        .medication
+                                        ?.imageUrl,
+                                  );
                           },
                         );
                       }),
@@ -508,11 +516,13 @@ class MedicineCard extends StatelessWidget {
   final String? name;
   final String? dosage;
   final String? expDate;
+  final String? imageUrl;
 
   const MedicineCard({
     this.name,
     this.dosage,
     this.expDate,
+    this.imageUrl,
     super.key,
   });
 
@@ -531,8 +541,8 @@ class MedicineCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                'assets/images/placeholder.png',
+              child: Image.network(
+                imageUrl ?? 'assets/images/placeholder.png',
                 height: 80,
                 width: 80,
                 fit: BoxFit.cover,

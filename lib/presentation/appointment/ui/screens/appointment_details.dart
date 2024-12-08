@@ -346,7 +346,8 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
         if (state is GetAllContactsSuccess) {
           try {
             doctorChatModel = state.contacts.firstWhere((element) =>
-                element.mainServiceId == doctor?.doctorProfile?.id);
+                element.mainServiceId == doctor?.doctorProfile?.id &&
+                element.role == Role.doctor);
           } catch (e) {
             doctorChatModel = null;
           }
