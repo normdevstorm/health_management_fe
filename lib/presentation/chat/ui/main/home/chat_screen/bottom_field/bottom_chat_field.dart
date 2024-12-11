@@ -1,6 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/utils/constants/app_color.dart';
 import 'package:health_management/domain/chat/models/message_reply_model.dart';
 import 'package:health_management/presentation/chat/bloc/chat/in_chat/in_chat_cubit.dart';
@@ -78,32 +79,38 @@ class BottomChatField extends StatelessWidget {
 
                   //The ConstrainedBox widget is used to set constraints on the size of its child widget, which is a Scrollbar widget.
                   child: Scrollbar(
-                    child: TextField(
-                      onTap: onTapTextField,
-                      onChanged: onTextFieldValueChanged,
-                      controller: messageController,
-                      focusNode: focusNode,
-                      cursorColor: AppColor.grey,
-                      maxLines: null,
-                      textAlignVertical: TextAlignVertical.center,
-                      textInputAction: TextInputAction.newline,
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: AppColor.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Type a message',
-                        hintStyle: TextStyle(
+                    child: KeyboardVisibilityBuilder(
+                        builder: (p0, isKeyboardVisible) {
+                      if (!isKeyboardVisible) {
+                        AppRouting.navBarVisibleNotifier.value = false;
+                      }
+                      return TextField(
+                        onTap: onTapTextField,
+                        onChanged: onTextFieldValueChanged,
+                        controller: messageController,
+                        focusNode: focusNode,
+                        cursorColor: AppColor.grey,
+                        maxLines: null,
+                        textAlignVertical: TextAlignVertical.center,
+                        textInputAction: TextInputAction.newline,
+                        style: TextStyle(
                           fontSize: 20,
-                          color: AppColor.grey,
-                          fontWeight: FontWeight.normal,
+                          color: AppColor.black,
+                          fontWeight: FontWeight.w500,
                         ),
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                      ),
-                    ),
+                        decoration: InputDecoration(
+                          hintText: 'Type a message',
+                          hintStyle: TextStyle(
+                            fontSize: 20,
+                            color: AppColor.grey,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                        ),
+                      );
+                    }),
                   ),
                 ),
               ),

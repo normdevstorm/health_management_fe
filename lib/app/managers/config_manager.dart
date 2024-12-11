@@ -14,7 +14,7 @@ class ConfigManager {
   static ConfigManager? _instance;
 
   static ConfigManager devConfig = ConfigManager._(
-    apiBaseUrl: 'http://localhost:8081/api/v1/core',
+    apiBaseUrl: 'https://api.duynguyendev.xyz/api/v1/core',
     appFlavor: FlavorManager.dev,
   );
 

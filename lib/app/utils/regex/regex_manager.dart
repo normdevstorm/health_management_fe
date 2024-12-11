@@ -1,3 +1,4 @@
 class RegexManager {
-  static RegExp hideBottomNavBarPaths = RegExp(r'^(/appointment/create|/chat/.*)');
+  static RegExp hideBottomNavBarPaths =
+      RegExp(r'^(/appointment/create|/chat/.*|/appointment/details/.*)');
 }

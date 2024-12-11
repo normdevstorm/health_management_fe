@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
+import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/domain/doctor_schedule/entities/doctor_schedule_entity.dart';
 import 'package:health_management/domain/doctor_schedule/entities/shift_time_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/appointment/appointment_bloc.dart';
@@ -29,6 +33,12 @@ class _ChooseAppointmentDateTimeScreenState
           hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0));
   final TextEditingController dateEditingController = TextEditingController();
   final TextEditingController noteEditingController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final keyboardVisibilityController = KeyboardVisibilityController();
+  final FocusNode noteFocusNode = FocusNode();
+
+  final GlobalKey _saveButtonKey = GlobalKey();
+  double renderSaveButtonHeight = 0;
   List<ShiftTimeEntity> shifts = [];
 
   @override
@@ -39,294 +49,311 @@ class _ChooseAppointmentDateTimeScreenState
         .add(GetDoctorScheduleEvent(doctorId: widget.doctorId));
   }
 
-  //todo: place this list in constant manager
-  final List<Map<String, String>> times = [
-    {'7:00 AM': 'Morning'},
-    {'8:00 AM': 'Morning'},
-    {'9:00 AM': 'Morning'},
-    {'10:00 AM': 'Morning'},
-    {'11:00 AM': 'Morning'},
-    {'1:00 PM': 'Afternoon'},
-    {'2:00 PM': 'Afternoon'},
-    {'3:00 PM': 'Afternoon'},
-    {'4:00 PM': 'Afternoon'},
-    {'5:00 PM': 'Afternoon'},
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AppointmentBloc, AppointmentState>(
-      listenWhen: (previous, current) =>
-          previous.status != current.status &&
-          current is CreateAppointmentRecordState,
-      listener: (context, state) {
-        if (state.status == BlocStatus.success) {
-          context.goNamed(RouteDefine.appointment);
-        } else if (state.status == BlocStatus.error) {
-          ToastManager.showToast(
-              context: context, message: state.errorMessage!);
-        }
-      },
-      child: BlocConsumer<DoctorScheduleBloc, DoctorScheduleState>(
-          listenWhen: (previous, current) => previous.status != current.status,
+    return Scaffold(
+      body: Padding(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: BlocListener<AppointmentBloc, AppointmentState>(
+          listenWhen: (previous, current) =>
+              previous.status != current.status &&
+              current is CreateAppointmentRecordState,
           listener: (context, state) {
-            if (state.status == BlocStatus.error) {
+            if (state.status == BlocStatus.success) {
+              context.pop();
+              ToastManager.showToast(
+                  context: context,
+                  message: 'Appointment created successfully');
+              context.goNamed(RouteDefine.appointment);
+            } else if (state.status == BlocStatus.error) {
+              context.pop();
               ToastManager.showToast(
                   context: context, message: state.errorMessage!);
+            } else if (state.status == BlocStatus.loading) {
+              showDialog(
+                  barrierDismissible: true,
+                  barrierColor: Colors.white.withOpacity(0.3),
+                  context: context,
+                  builder: (context) => Center(
+                          child: SizedBox(
+                        height: 40.h,
+                        width: 40.w,
+                        child: CircularProgressIndicator(
+                          color: ColorManager.primaryColorLight,
+                          strokeWidth: 4.w,
+                        ),
+                      )));
             }
           },
-          buildWhen: (previous, current) => previous.status != current.status,
-          builder: (context, state) {
-            if (state.status == BlocStatus.loading) {
-              return const Center(child: CircularProgressIndicator());
-            }
+          child: BlocConsumer<DoctorScheduleBloc, DoctorScheduleState>(
+              listenWhen: (previous, current) =>
+                  previous.status != current.status,
+              listener: (context, state) {
+                if (state.status == BlocStatus.error) {
+                  ToastManager.showToast(
+                      context: context, message: state.errorMessage!);
+                }
+              },
+              buildWhen: (previous, current) =>
+                  previous.status != current.status,
+              builder: (context, state) {
+                if (state.status == BlocStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-            if (state.status == BlocStatus.error) {
-              return Center(child: Text(state.errorMessage!));
-            }
-
-            return ValueListenableBuilder(
-                valueListenable: selectedDateNotifier,
-                builder: (context, value, child) {
-                  shifts = times
-                      .map((e) => ShiftTimeEntity(
-                            name: e.keys.first,
-                            partOfDay: e.values.first,
-                            startTime:
-                                (int.tryParse(e.keys.first.split(':').first) ??
+                if (state.status == BlocStatus.error) {
+                  return Center(child: Text(state.errorMessage!));
+                }
+                return ValueListenableBuilder(
+                    valueListenable: selectedDateNotifier,
+                    builder: (context, value, child) {
+                      shifts = ConstantManager.defaultDoctorWorkingShifts
+                          .map((e) => ShiftTimeEntity(
+                                name: e.keys.first,
+                                partOfDay: e.values.first,
+                                startTime: (int.tryParse(
+                                            e.keys.first.split(':').first) ??
                                         0) +
                                     (e.values.first == 'Morning' ? 0 : 12),
-                          ))
-                      .toList();
-                  // compare the date
-                  List<DoctorScheduleEntity> doctorSchedules = state.data ?? [];
-                  for (var element in doctorSchedules) {
-                    if (element.startTime
-                            ?.copyWith(hour: 0, minute: 0, second: 0) ==
-                        selectedDateNotifier.value) {
-                      for (var shift in shifts) {
-                        if (element.startTime?.hour == shift.startTime &&
-                            element.currentPatientCount == 2) {
-                          shift.available = false;
+                              ))
+                          .toList();
+                      // compare the date
+                      List<DoctorScheduleEntity> doctorSchedules =
+                          state.data ?? [];
+                      for (var element in doctorSchedules) {
+                        if (element.startTime
+                                ?.copyWith(hour: 0, minute: 0, second: 0) ==
+                            selectedDateNotifier.value) {
+                          for (var shift in shifts) {
+                            if (element.startTime?.hour == shift.startTime &&
+                                element.currentPatientCount == 2) {
+                              shift.available = false;
+                            }
+                          }
                         }
                       }
-                    }
-                  }
 
-                  dateEditingController.text = selectedDateNotifier.value
-                      .toLocal()
-                      .toString()
-                      .split(' ')[0];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          30.verticalSpace,
-                          Text(
-                            "Booking Appointment",
-                            style: TextStyle(
-                                color: ColorManager.textBlockColorLight,
-                                fontSize: 25.sp,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          30.verticalSpace,
-                          const Text(
-                            'Select Date',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                      dateEditingController.text = selectedDateNotifier.value
+                          .toLocal()
+                          .toString()
+                          .split(' ')[0];
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
+                        child: NotificationListener(
+                          onNotification: (notification) {
+                            return true;
+                          },
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                30.verticalSpace,
+                                Text(
+                                  "Booking Appointment",
+                                  style: TextStyle(
+                                      color: ColorManager.textBlockColorLight,
+                                      fontSize: 25.sp,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                30.verticalSpace,
+                                const Text(
+                                  'Select Date',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                12.verticalSpace,
+                                TextFormField(
+                                  onTap: () async {
+                                    DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime(2100),
+                                      barrierColor:
+                                          Colors.black.withOpacity(0.7),
+                                    );
+                                    if (pickedDate != null) {
+                                      selectedDateNotifier.value =
+                                          pickedDate.toLocal();
+                                      dateEditingController.text = pickedDate
+                                          .toLocal()
+                                          .toString()
+                                          .split(' ')[0];
+                                    }
+                                  },
+                                  controller: dateEditingController,
+                                  readOnly: true,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.blue.shade100,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15.r),
+                                      borderSide: BorderSide(
+                                        color: ColorManager.primaryColorLight,
+                                        width: 1.w,
+                                      ),
+                                    ),
+                                    disabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15.r),
+                                      borderSide: BorderSide(
+                                        color:
+                                            ColorManager.buttonBorderColorLight,
+                                        width: 1.w,
+                                      ),
+                                    ),
+                                    hintText: "YYYY-MM-DD",
+                                    suffixIcon: const IconButton(
+                                      icon: Icon(Icons.calendar_today),
+                                      onPressed: null,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                const Divider(),
+                                const SizedBox(height: 20),
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    const Text(
+                                      'Morning',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ChooseShiftTimeWidget(
+                                      selectedTimeNotifier:
+                                          selectedTimeNotifier,
+                                      shifts: shifts,
+                                      partOfDay: 'Morning',
+                                    ),
+                                    const SizedBox(height: 20),
+                                    const Text(
+                                      'Afternoon',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    ChooseShiftTimeWidget(
+                                      selectedTimeNotifier:
+                                          selectedTimeNotifier,
+                                      shifts: shifts,
+                                      partOfDay: 'Afternoon',
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
+                                const Divider(),
+                                const Text(
+                                  'Notes for Doctor',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                12.verticalSpace,
+                                NotificationListener<ScrollNotification>(
+                                  onNotification: (notification) => true,
+                                  child: KeyboardVisibilityBuilder(
+                                      builder: (p0, isKeyboardVisible) {
+                                    if (!isKeyboardVisible) {
+                                      AppRouting.navBarVisibleNotifier.value =
+                                          false;
+                                      noteFocusNode.unfocus();
+                                    }
+                                    return TextFormField(
+                                      scrollController: scrollController,
+                                      controller: noteEditingController,
+                                      focusNode: noteFocusNode,
+                                      maxLines: 5,
+                                      decoration: InputDecoration(
+                                        hintText: 'Write your notes here...',
+                                        contentPadding: EdgeInsets.all(15.w),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                            color: ColorManager
+                                                .buttonBorderColorLight,
+                                            width: 2.w,
+                                          ),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                            color: ColorManager
+                                                .buttonEnabledColorLight,
+                                            width: 2.w,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.r),
+                                          borderSide: BorderSide(
+                                            color: Colors
+                                                .blue, // Change the color to green when focused
+                                            width: 2.w,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
+                                const SizedBox(height: 20),
+                                Center(
+                                  child: ElevatedButton(
+                                    key: _saveButtonKey,
+                                    onPressed: () {
+                                      // Handle the save action
+                                      context.read<AppointmentBloc>()
+                                        ..add(CollectDataDatetimeAndNoteEvent(
+                                          scheduledAt: selectedDateNotifier
+                                              .value
+                                              .copyWith(
+                                                  hour: selectedTimeNotifier
+                                                      .value),
+                                          note: noteEditingController.text,
+                                        ))
+                                        ..add(
+                                            const CreateAppointmentRecordEvent());
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: ColorManager
+                                          .buttonEnabledColorLight, // Background color
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            20.r), // Rounded corners
+                                      ),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 50.w, vertical: 15.h),
+                                    ),
+                                    child: Text(
+                                      'Save Appointment',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           ),
-                          12.verticalSpace,
-                          TextFormField(
-                            onTap: () async {
-                              DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime(2100),
-                                barrierColor: Colors.black.withOpacity(0.7),
-                              );
-                              if (pickedDate != null) {
-                                selectedDateNotifier.value =
-                                    pickedDate.toLocal();
-                                dateEditingController.text = pickedDate
-                                    .toLocal()
-                                    .toString()
-                                    .split(' ')[0];
-                              }
-                            },
-                            controller: dateEditingController,
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.blue.shade100,
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.r),
-                                borderSide: BorderSide(
-                                  color: ColorManager.primaryColorLight,
-                                  width: 1.w,
-                                ),
-                              ),
-                              disabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.r),
-                                borderSide: BorderSide(
-                                  color: ColorManager.buttonBorderColorLight,
-                                  width: 1.w,
-                                ),
-                              ),
-                              hintText: "YYYY-MM-DD",
-                              suffixIcon: const IconButton(
-                                icon: Icon(Icons.calendar_today),
-                                onPressed: null,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          const Divider(),
-                          const SizedBox(height: 20),
-                          // Column(
-                          //   crossAxisAlignment: CrossAxisAlignment.start,
-                          //   children: [
-                          //     const Text(
-                          //       'Morning',
-                          //       style: TextStyle(
-                          //           fontSize: 15, fontWeight: FontWeight.bold),
-                          //     ),
-                          //     const SizedBox(height: 10),
-                          //     ChooseShiftTimeWidget(
-                          //       selectedTimeNotifier: selectedTimeNotifier,
-                          //       shifts: shifts,
-                          //       partOfDay: 'Morning',
-                          //     ),
-                          //     const SizedBox(height: 20),
-                          //     const Text(
-                          //       'Afternoon',
-                          //       style: TextStyle(
-                          //           fontSize: 16, fontWeight: FontWeight.bold),
-                          //     ),
-                          //     const SizedBox(height: 10),
-                          //     ChooseShiftTimeWidget(
-                          //       selectedTimeNotifier: selectedTimeNotifier,
-                          //       shifts: shifts,
-                          //       partOfDay: 'Afternoon',
-                          //     ),
-                          //     const SizedBox(height: 20),
-                          //   ],
-                          // ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const Text(
-                                'Morning',
-                                style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 10),
-                              ChooseShiftTimeWidget(
-                                selectedTimeNotifier: selectedTimeNotifier,
-                                shifts: shifts,
-                                partOfDay: 'Morning',
-                              ),
-                              const SizedBox(height: 20),
-                              const Text(
-                                'Afternoon',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 10),
-                              ChooseShiftTimeWidget(
-                                selectedTimeNotifier: selectedTimeNotifier,
-                                shifts: shifts,
-                                partOfDay: 'Afternoon',
-                              ),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                          const Divider(),
-                          const Text(
-                            'Notes for Doctor',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          12.verticalSpace,
-                          TextFormField(
-                            controller: noteEditingController,
-                            maxLines: 5,
-                            decoration: InputDecoration(
-                              hintText: 'Write your notes here...',
-                              contentPadding: EdgeInsets.all(15.w),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.r),
-                                borderSide: BorderSide(
-                                  color: ColorManager.buttonBorderColorLight,
-                                  width: 2.w,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.r),
-                                borderSide: BorderSide(
-                                  color: ColorManager.buttonEnabledColorLight,
-                                  width: 2.w,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15.r),
-                                borderSide: BorderSide(
-                                  color: Colors
-                                      .blue, // Change the color to green when focused
-                                  width: 2.w,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Handle the save action
-                                context.read<AppointmentBloc>()
-                                  ..add(CollectDataDatetimeAndNoteEvent(
-                                    scheduledAt: selectedDateNotifier.value
-                                        .copyWith(
-                                            hour: selectedTimeNotifier.value),
-                                    note: noteEditingController.text,
-                                  ))
-                                  ..add(const CreateAppointmentRecordEvent());
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorManager
-                                    .buttonEnabledColorLight, // Background color
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      20.r), // Rounded corners
-                                ),
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 50.w, vertical: 15.h),
-                              ),
-                              child: Text(
-                                'Save Appointment',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                });
-          }),
+                        ),
+                      );
+                    });
+              }),
+        ),
+      ),
     );
   }
-
 }
 
 class ChooseShiftTimeWidget extends StatelessWidget {

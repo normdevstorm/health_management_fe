@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/di/injection.dart';
+import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/doctor_schedule/doctor_schedule_bloc.dart';
@@ -11,10 +12,18 @@ import 'package:health_management/presentation/appointment/ui/screens/appointmen
 import 'package:health_management/presentation/appointment/ui/screens/choose_appointment_date_time.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_doctor_screen.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_health_provider_screen.dart';
+import 'package:health_management/presentation/chat/ui/main/home/chat_screen/chat_page.dart';
 import '../../domain/prescription/entities/prescription_entity.dart';
 import '../appointment/bloc/appointment/appointment_bloc.dart';
 import '../appointment/bloc/medication/medication_bloc.dart';
+import '../chat/bloc/call/call_cubit.dart';
+import '../chat/bloc/chat/bottom_chat/bottom_chat_cubit.dart';
+import '../chat/bloc/chat/chat_contacts/chat_cubit.dart';
+import '../chat/bloc/chat/in_chat/in_chat_cubit.dart';
 import '../chat/bloc/contacts/contacts_cubit.dart';
+import '../chat/bloc/others/background_chat/background_cubit.dart';
+import '../chat/bloc/status/status_cubit.dart';
+import '../chat/bloc/user/user_cubit.dart';
 import '../prescription/bloc/prescription_ai_analysis_bloc.dart';
 import '../prescription/ui/screens/prescription_screen.dart';
 part 'appointment_route.g.dart';
@@ -30,6 +39,10 @@ part 'appointment_route.g.dart';
           TypedGoRoute<AppointmentDetailsPrescription>(
             path: "/prescription",
             name: RouteDefine.appointmentDetailsPrescription,
+          ),
+          TypedGoRoute<AppointmentDetailsChatRoute>(
+            path: "/chat/:userId",
+            name: RouteDefine.appointmentDetailsChat,
           )
         ]),
     TypedGoRoute<AppointmentCreateRoute>(
@@ -102,9 +115,38 @@ class AppointmentDetailsRoute extends GoRouteData {
   }
 }
 
+class AppointmentDetailsChatRoute extends GoRouteData {
+  final String userId;
+  const AppointmentDetailsChatRoute({required this.userId});
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    ChatPageData chatContactData = state.extra as ChatPageData;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ChatCubit()),
+        BlocProvider(create: (context) => InChatCubit()),
+        BlocProvider(create: (context) => UserCubit()),
+        BlocProvider(create: (context) => StatusCubit()),
+        BlocProvider(create: (context) => ContactsCubit()),
+        BlocProvider(create: (context) => CallCubit()),
+        BlocProvider(create: (context) => BottomChatCubit()),
+        BlocProvider(create: (context) => BackgroundCubit())
+      ],
+      child: ChatPage(
+        name: chatContactData.name,
+        receiverId: chatContactData.receiverId,
+        profilePicture: chatContactData.profilePicture,
+        isGroupChat: false,
+      ),
+    );
+  }
+}
+
 class AppointmentHomeRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
+    AppRouting.navBarVisibleNotifier.value = true;
     return const AppointmentHome();
   }
 }

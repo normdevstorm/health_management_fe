@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/size_manager.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
+import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
@@ -403,15 +404,16 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
                   ),
                   onPressed: () {
                     if (doctorChatModel != null) {
-                      context.pushNamed(RouteDefine.chatDetails,
-                          extra: ChatPage(
+                      context.pushNamed(RouteDefine.appointmentDetailsChat,
+                          extra: ChatPageData(
                             name: doctorChatModel!.userName,
                             receiverId: doctorChatModel!.uid,
                             profilePicture: doctorChatModel!.profileImage,
                             isGroupChat: false,
                           ),
                           pathParameters: {
-                            'userId': doctorChatModel!.userName
+                            'userId': doctorChatModel!.userName,
+                            'appointmentId': widget.appointmentId.toString(),
                           });
                     }
                   },

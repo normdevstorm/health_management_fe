@@ -5,6 +5,7 @@ import 'package:health_management/app/utils/extensions/time_extension.dart';
 import 'package:health_management/domain/chat/models/chat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_management/domain/prescription/entities/prescription_entity.dart';
 import 'package:health_management/presentation/chat/bloc/chat/chat_contacts/chat_cubit.dart';
 import 'package:health_management/presentation/chat/ui/main/home/chat_screen/chat_page.dart';
 import 'package:health_management/presentation/chat/widgets/chat_item.dart';
@@ -22,7 +23,7 @@ class ChatContactsCard extends StatelessWidget {
         return CustomListTile(
           onTap: () {
             context.pushNamed(RouteDefine.chatDetails,
-                extra: ChatPage(
+                extra: ChatPageData(
                   name: chat.name,
                   receiverId: chat.contactId,
                   profilePicture: chat.profileUrl,

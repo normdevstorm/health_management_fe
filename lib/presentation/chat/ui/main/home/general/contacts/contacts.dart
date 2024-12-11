@@ -55,7 +55,7 @@ class ContactsList extends StatelessWidget {
                           onTap: () {
                             print('contact: $contact');
                                                       context.pushNamed(RouteDefine.chatDetails,
-                              extra: ChatPage(
+                              extra: ChatPageData(
                                 name: contact.userName,
                                 receiverId: contact.uid,
                                 profilePicture: contact.profileImage,

@@ -260,7 +260,7 @@ class _SkeletonPageState extends State<SkeletonPage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _navBarVisibleNotifier = ValueNotifier<bool>(true);
+    _navBarVisibleNotifier = AppRouting.navBarVisibleNotifier;
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -285,10 +285,10 @@ class _SkeletonPageState extends State<SkeletonPage> {
   @override
   Widget build(BuildContext context) {
     return BottomBar(
+      showIcon: false,
       barColor: Colors.transparent,
       width: MediaQuery.of(context).size.width * 0.7,
       hideOnScroll: true,
-      reverse: true,
       body: (context, controller) {
         return Scaffold(
             body: SizedBox(
@@ -298,7 +298,8 @@ class _SkeletonPageState extends State<SkeletonPage> {
               Expanded(
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (scrollNotification) {
-                    if (scrollNotification is ScrollUpdateNotification) {
+                    if (scrollNotification is ScrollUpdateNotification &&
+                        scrollNotification.metrics.axis == Axis.vertical) {
                       if (scrollNotification.scrollDelta! > 0 &&
                           _navBarVisibleNotifier.value) {
                         _navBarVisibleNotifier.value = false;

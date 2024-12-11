@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
+import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/utils/date_converter.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import '../../../../app/managers/toast_manager.dart';
@@ -240,9 +241,9 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                               UpdatePrescriptionState
                             ].contains(current.runtimeType),
                         listener: (context, state) {
-                          // if (state.status == BlocStatus.success) {
-                          //   _eventController.addAll(state.data as List<AppointmentRecordEntity>);
-                          // }
+                          if (state.status == BlocStatus.success) {
+                            AppRouting.navBarVisibleNotifier.value = true;
+                          }
                         },
                         buildWhen: (previous, current) =>
                             previous.status != current.status &&

@@ -66,7 +66,7 @@ class ChatPersonDetailsRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    ChatPage chatContactData = state.extra as ChatPage;
+    ChatPageData chatContactData = state.extra as ChatPageData;
     return ChatPage(
       name: chatContactData.name,
       receiverId: chatContactData.receiverId,
@@ -77,7 +77,7 @@ class ChatPersonDetailsRoute extends GoRouteData {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
-    ChatPage chatContactData = state.extra as ChatPage;
+    ChatPageData chatContactData = state.extra as ChatPageData;
 
     return CustomTransitionPage(
       child: ChatPage(

@@ -3,15 +3,20 @@ import 'package:health_management/presentation/chat/ui/main/home/general/chat_co
 import 'package:health_management/presentation/chat/ui/main/home/general/contacts/contacts.dart';
 import 'package:health_management/presentation/chat/widgets/custom_separator.dart';
 
-class ChatHomePage extends StatelessWidget {
+class ChatHomePage extends StatefulWidget {
   static const String routeName = 'home';
 
   const ChatHomePage({super.key});
 
   @override
+  State<ChatHomePage> createState() => _ChatHomePageState();
+}
+
+class _ChatHomePageState extends State<ChatHomePage> {
+  @override
   Widget build(BuildContext context) {
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: const [
         ContactsList(),
         CustomSeparator(
