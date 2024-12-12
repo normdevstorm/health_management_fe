@@ -1,3 +1,4 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,6 +24,7 @@ import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 // import 'app/config/firebase_api.dart';
+import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/toast_manager.dart';
 import 'domain/doctor/usecases/doctor_usecase.dart';
@@ -38,7 +40,7 @@ void main() async {
       orElse: () => FlavorManager.dev));
   //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
   // Initialize the cloud message Firebase project
-  // await FirebaseMessageService().initNotificaiton();
+  await FirebaseMessageService().initNotificaiton();
   // Initialize the chat Firebase project
   await Firebase.initializeApp(
     options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
@@ -46,39 +48,42 @@ void main() async {
     name: 'chatApp',
   );
 
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    localizationsDelegates: const [
-      GlobalMaterialLocalizations.delegate,
-      GlobalWidgetsLocalizations.delegate,
-      GlobalCupertinoLocalizations.delegate,
-    ],
-    builder: (context, child) => EasyLocalization(
-      supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
-      path: 'assets/resources/langs/langs.csv',
-      assetLoader: CsvAssetLoader(),
-      startLocale: const Locale('vi', 'VN'),
-      useFallbackTranslations: true,
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => AuthenticationBloc(
-                appChatUseCases: getIt<AppChatUseCases>(),
-                authenticationUsecase: getIt<AuthenticationUsecase>(),
-                verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
-          ),
-          BlocProvider(
-            create: (context) => ArticleBloc(
-              articleUsecase: getIt<ArticleUsecase>(),
+  runApp(CalendarControllerProvider(
+    controller: EventController(),
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: (context, child) => EasyLocalization(
+        supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
+        path: 'assets/resources/langs/langs.csv',
+        assetLoader: CsvAssetLoader(),
+        startLocale: const Locale('vi', 'VN'),
+        useFallbackTranslations: true,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => AuthenticationBloc(
+                  appChatUseCases: getIt<AppChatUseCases>(),
+                  authenticationUsecase: getIt<AuthenticationUsecase>(),
+                  verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
             ),
-          ),
-          BlocProvider(
+            BlocProvider(
+              create: (context) => ArticleBloc(
+                articleUsecase: getIt<ArticleUsecase>(),
+              ),
+            ),
+                      BlocProvider(
               create: (context) =>
                   HomeBloc(doctorUseCase: getIt<DoctorUseCase>())),
-        ],
-        child: const BlocListener<AuthenticationBloc, AuthenticationState>(
-          listener: _authenticationListener,
-          child: MyApp(),
+          ],
+          child: const BlocListener<AuthenticationBloc, AuthenticationState>(
+            listener: _authenticationListener,
+            child: MyApp(),
+          ),
         ),
       ),
     ),
@@ -206,7 +211,7 @@ class _SkeletonPageState extends State<SkeletonPage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-    _navBarVisibleNotifier = ValueNotifier<bool>(true);
+    _navBarVisibleNotifier = AppRouting.navBarVisibleNotifier;
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.reverse) {
@@ -214,7 +219,8 @@ class _SkeletonPageState extends State<SkeletonPage> {
           _navBarVisibleNotifier.value = false;
         }
       } else if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
+              ScrollDirection.forward ||
+          _scrollController.position.maxScrollExtent > 0) {
         if (!_navBarVisibleNotifier.value) {
           _navBarVisibleNotifier.value = true;
         }
@@ -231,10 +237,10 @@ class _SkeletonPageState extends State<SkeletonPage> {
   @override
   Widget build(BuildContext context) {
     return BottomBar(
+      showIcon: false,
       barColor: Colors.transparent,
       width: MediaQuery.of(context).size.width * 0.7,
       hideOnScroll: true,
-      reverse: true,
       body: (context, controller) {
         return Scaffold(
             body: SizedBox(
@@ -244,7 +250,8 @@ class _SkeletonPageState extends State<SkeletonPage> {
               Expanded(
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (scrollNotification) {
-                    if (scrollNotification is ScrollUpdateNotification) {
+                    if (scrollNotification is ScrollUpdateNotification &&
+                        scrollNotification.metrics.axis == Axis.vertical) {
                       if (scrollNotification.scrollDelta! > 0 &&
                           _navBarVisibleNotifier.value) {
                         _navBarVisibleNotifier.value = false;
@@ -294,10 +301,15 @@ class _SkeletonPageState extends State<SkeletonPage> {
     );
   }
 
-  bool _hideBottomNavBar(BuildContext context) => GoRouter.of(context)
-      .routeInformationProvider
-      .value
-      .uri
-      .path
-      .startsWith(RegexManager.hideBottomNavBarPaths);
+  bool _hideBottomNavBar(BuildContext context) {
+    final bool hideNavBar = GoRouter.of(context)
+            .state
+            ?.matchedLocation
+            .startsWith(RegexManager.hideBottomNavBarPaths) ??
+        false;
+    if (!hideNavBar) {
+      _navBarVisibleNotifier.value = true;
+    }
+    return hideNavBar;
+  }
 }

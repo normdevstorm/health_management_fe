@@ -61,8 +61,7 @@ abstract class ApiException with _$ApiException {
                 (error.response?.data is String)) {
               message = error.response?.data;
             }
-          } on Exception catch (e) {
-            //
+          }catch (e) {
             message = null;
           }
           switch (error.type) {

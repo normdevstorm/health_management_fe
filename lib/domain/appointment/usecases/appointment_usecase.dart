@@ -33,4 +33,9 @@ class AppointmentUseCase {
       {required int appointmentId}) async {
     return _repository.getAppointmentRecordById(appointmentId);
   }
+
+Future<List<AppointmentRecordEntity>> getAppointmentRecordByDoctorId(
+      {required int doctorId}) async {
+    return _repository.getAppointmentRecordByDoctorId(doctorId);
+  }
 }

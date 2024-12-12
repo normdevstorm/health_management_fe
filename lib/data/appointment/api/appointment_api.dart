@@ -28,4 +28,6 @@ abstract class AppointmentApi {
   @GET('/appointment-record/user/{id}')
   Future<ApiResponse<List<AppointmentRecordResponse>>>
       getAppointmentRecordByUserId(@Path('id') int userId);
+  @GET('/appointment-record/doctor/{id}')
+  Future<ApiResponse<List<AppointmentRecordResponse>>> getAppointmentRecordByDoctorId(@Path('id') int doctorId);
 }

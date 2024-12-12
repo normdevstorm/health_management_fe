@@ -77,3 +77,12 @@ final class DeleteAppointmentRecordEvent extends AppointmentEvent {
   @override
   List<Object> get props => [appointmentId];
 }
+
+final class UpdatePrescriptionEvent extends AppointmentEvent {
+  final AppointmentRecordEntity appointment;
+
+  const UpdatePrescriptionEvent({required this.appointment});
+
+  @override
+  List<Object> get props => [appointment];
+}

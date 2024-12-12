@@ -68,21 +68,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   );
                 }),
             SizedBox(height: 20.h),
-            // // Tag List
-            // const TagList(tags: [
-            //   TagChip(text: 'General', isSelected: true),
-            //   TagChip(text: 'Security', isSelected: true),
-            //   TagChip(text: 'Account', isSelected: false),
-            //   TagChip(text: 'Notifications', isSelected: true),
-            //   TagChip(text: 'Help & Support', isSelected: false),
-            //   TagChip(text: 'Appearance', isSelected: true),
-            //   TagChip(text: 'Language', isSelected: false),
-            //   TagChip(text: 'Data Usage', isSelected: true),
-            //   TagChip(text: 'Accessibility', isSelected: false),
-            //   TagChip(text: 'Blocked Contacts', isSelected: true),
-            //   TagChip(text: 'Linked Devices', isSelected: false),
-            //   TagChip(text: 'Storage', isSelected: true),
-            // ]),
             SizedBox(height: 20.h),
             // Menu List
             Expanded(

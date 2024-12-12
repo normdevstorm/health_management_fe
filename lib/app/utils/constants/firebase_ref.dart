@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 class FirebaseRef {
   static const String DATABASE_URL =
       'https://chat-app-flutter-2f1e0-default-rtdb.asia-southeast1.firebasedatabase.app';

@@ -14,31 +14,34 @@ class ChooseDoctorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: 10.w,
-      ),
-      child: ListView.builder(
-        itemCount: doctors.length,
-        itemBuilder: (context, index) {
-          final doctor = doctors[index];
-          return DoctorCard(
-            onTap: () {
-              if (doctor.doctorProfile?.id != null) {
-                context.read<AppointmentBloc>().add(
-                    ColectDataDoctorEvent(doctorId: doctor.doctorProfile!.id!));
-                context.pushNamed(RouteDefine.createAppointmentChooseTime,
-                    extra: doctor.doctorProfile!.id!);
-              }
-            },
-            doctorName: '${doctor.firstName} ${doctor.lastName}',
-            doctorSpecialization:
-                doctor.doctorProfile?.specialization?.name.toUpperCase() ?? "",
-            experience: doctor.doctorProfile?.experience.toString() ?? "",
-            reviews: doctor.doctorProfile?.rating.toString() ?? "",
-            image: 'assets/images/placeholder.png',
-          );
-        },
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 10.w,
+        ),
+        child: ListView.builder(
+          itemCount: doctors.length,
+          itemBuilder: (context, index) {
+            final doctor = doctors[index];
+            return DoctorCard(
+              onTap: () {
+                if (doctor.doctorProfile?.id != null) {
+                  context.read<AppointmentBloc>().add(ColectDataDoctorEvent(
+                      doctorId: doctor.doctorProfile!.id!));
+                  context.pushNamed(RouteDefine.createAppointmentChooseTime,
+                      extra: doctor.doctorProfile!.id!);
+                }
+              },
+              doctorName: '${doctor.firstName} ${doctor.lastName}',
+              doctorSpecialization:
+                  doctor.doctorProfile?.specialization?.name.toUpperCase() ??
+                      "",
+              experience: doctor.doctorProfile?.experience.toString() ?? "",
+              reviews: doctor.doctorProfile?.rating.toString() ?? "",
+              image: 'assets/images/placeholder.png',
+            );
+          },
+        ),
       ),
     );
   }

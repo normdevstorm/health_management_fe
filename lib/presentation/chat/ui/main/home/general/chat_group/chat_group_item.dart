@@ -18,7 +18,7 @@ class ChatGroupCard extends StatelessWidget {
     return CustomListTile(
       onTap: () {
         context.pushNamed(RouteDefine.chatDetails,
-            extra: ChatPage(
+            extra: ChatPageData(
               name: group.name,
               receiverId: group.groupId,
               profilePicture: group.groupProfilePic,
