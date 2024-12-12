@@ -268,7 +268,8 @@ class _SkeletonPageState extends State<SkeletonPage> {
           _navBarVisibleNotifier.value = false;
         }
       } else if (_scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
+              ScrollDirection.forward ||
+          _scrollController.position.maxScrollExtent > 0) {
         if (!_navBarVisibleNotifier.value) {
           _navBarVisibleNotifier.value = true;
         }
@@ -349,10 +350,15 @@ class _SkeletonPageState extends State<SkeletonPage> {
     );
   }
 
-  bool _hideBottomNavBar(BuildContext context) => GoRouter.of(context)
-      .routeInformationProvider
-      .value
-      .uri
-      .path
-      .startsWith(RegexManager.hideBottomNavBarPaths);
+  bool _hideBottomNavBar(BuildContext context) {
+    final bool hideNavBar = GoRouter.of(context)
+            .state
+            ?.matchedLocation
+            .startsWith(RegexManager.hideBottomNavBarPaths) ??
+        false;
+    if (!hideNavBar) {
+      _navBarVisibleNotifier.value = true;
+    }
+    return hideNavBar;
+  }
 }

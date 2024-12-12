@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/di/injection.dart';
-import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/doctor_schedule/doctor_schedule_bloc.dart';
@@ -146,7 +145,6 @@ class AppointmentDetailsChatRoute extends GoRouteData {
 class AppointmentHomeRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    AppRouting.navBarVisibleNotifier.value = true;
     return const AppointmentHome();
   }
 }

@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/size_manager.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
-import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
@@ -52,7 +51,7 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(10.0),
           child: BlocConsumer<AppointmentBloc, AppointmentState>(
             listener: (context, state) async {
               if (state.status == BlocStatus.loading) {
@@ -100,13 +99,17 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
                       ),
                       const SizedBox(width: 8),
                       _buildSection(
-                        height: 150.h,
-                        context,
-                        child: _buildDoctorDetailsBox(
-                            doctor: appointmentRecordEntity.doctor,
-                            context: context),
-                      ),
-                      //TODO: Add responsiveness to note box
+                          height: 150.h,
+                          context,
+                          child: _isDoctor
+                              ? UserDetailsBox.patient(
+                                  appointmentId: widget.appointmentId,
+                                  patient: appointmentRecordEntity.user,
+                                )
+                              : UserDetailsBox.doctor(
+                                  appointmentId: widget.appointmentId,
+                                  doctor: appointmentRecordEntity.doctor,
+                                )),
                       _buildSection(
                         height: 150.h,
                         context,
@@ -283,154 +286,53 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
           height: 1.sp,
           color: Colors.grey.shade400,
         ),
-        8.verticalSpace,
+        20.verticalSpace,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Column(
-              children: [
-                Text("Distance"),
-                Text("1 KM AWAY"),
-              ],
-            ),
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset(
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.fill,
                 'assets/images/placeholder.png',
-                width: 200.w,
-                height: 80.h,
+                height: 120.h,
+                width: 250.w,
               ),
             ),
           ],
         ),
-        15.verticalSpace,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            ElevatedButton(
-              style: ButtonStyle(
-                  // elevation: WidgetStateProperty.all(10.h),
-                  backgroundColor: WidgetStateProperty.all(
-                      ColorManager.buttonEnabledColorLight),
-                  fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
-              onPressed: () {},
-              child: const Text(
-                'Copy Direction',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                  // elevation: WidgetStateProperty.all(10.h),
-                  backgroundColor: WidgetStateProperty.all(
-                      ColorManager.buttonEnabledColorLight),
-                  fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
-              onPressed: () {},
-              child: const Text(
-                'Open Maps',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        10.verticalSpace,
+        // 15.verticalSpace,
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //   children: [
+        //     ElevatedButton(
+        //       style: ButtonStyle(
+        //           // elevation: WidgetStateProperty.all(10.h),
+        //           backgroundColor: WidgetStateProperty.all(
+        //               ColorManager.buttonEnabledColorLight),
+        //           fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
+        //       onPressed: () {},
+        //       child: const Text(
+        //         'Copy Direction',
+        //         style: TextStyle(color: Colors.white),
+        //       ),
+        //     ),
+        //     ElevatedButton(
+        //       style: ButtonStyle(
+        //           // elevation: WidgetStateProperty.all(10.h),
+        //           backgroundColor: WidgetStateProperty.all(
+        //               ColorManager.buttonEnabledColorLight),
+        //           fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
+        //       onPressed: () {},
+        //       child: const Text(
+        //         'Open Maps',
+        //         style: TextStyle(color: Colors.white),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // 10.verticalSpace,
       ],
-    );
-  }
-
-  Widget _buildDoctorDetailsBox(
-      {UserEntity? doctor, required BuildContext context}) {
-    UserChatModel? doctorChatModel;
-    return BlocBuilder<ContactsCubit, ContactsState>(
-      builder: (context, state) {
-        if (state is GetAllContactsSuccess) {
-          try {
-            doctorChatModel = state.contacts.firstWhere((element) =>
-                element.mainServiceId == doctor?.doctorProfile?.id &&
-                element.role == Role.doctor);
-          } catch (e) {
-            doctorChatModel = null;
-          }
-        }
-        return Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlueAccent.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.blueAccent),
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.person,
-                    size: 50.r,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-                15.horizontalSpace,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${doctor?.firstName} ${doctor?.lastName}',
-                        style: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                    Text(
-                        doctor?.doctorProfile?.specialization?.name ??
-                            "Loading",
-                        style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: List.generate(5, (index) {
-                    return Icon(
-                      Icons.star,
-                      color: Colors.yellow,
-                      size: 18.r,
-                    );
-                  }),
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
-                  ),
-                  onPressed: () {
-                    if (doctorChatModel != null) {
-                      context.pushNamed(RouteDefine.appointmentDetailsChat,
-                          extra: ChatPageData(
-                            name: doctorChatModel!.userName,
-                            receiverId: doctorChatModel!.uid,
-                            profilePicture: doctorChatModel!.profileImage,
-                            isGroupChat: false,
-                          ),
-                          pathParameters: {
-                            'userId': doctorChatModel!.userName,
-                            'appointmentId': widget.appointmentId.toString(),
-                          });
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Icon(Icons.chat, color: Colors.white),
-                      5.horizontalSpace,
-                      const Text('Chat', style: TextStyle(color: Colors.white)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -443,7 +345,6 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.blueAccent),
           ),
           child: Row(
             children: [
@@ -457,7 +358,16 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(note ?? 'No notes pinned for this appointment',
+                    TextField(
+                        decoration: InputDecoration(
+                            border: InputBorder.none.copyWith(
+                                borderSide: BorderSide(
+                                    color: Colors.blue, width: 2.sp))),
+                        readOnly: true,
+                        maxLines: 3,
+                        controller: TextEditingController(
+                          text: note ?? 'No notes pinned for this appointment',
+                        ),
                         style: const TextStyle(fontSize: 16)),
                   ],
                 ),
@@ -475,7 +385,7 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
               borderRadius: BorderRadius.circular(5),
             ),
             child: const Text(
-              'Note',
+              'Notes for doctor',
               style: TextStyle(color: Colors.white, fontSize: 12),
             ),
           ),
@@ -519,7 +429,7 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
                   15.verticalSpace,
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(150.w, 40.h),
+                      minimumSize: Size(120.w, 40.h),
                       backgroundColor: Colors.blueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -547,10 +457,11 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
                 top: 0,
                 right: 0,
                 child: Chip(
+                  labelPadding: const EdgeInsets.all(2),
                   label: Text(
                     isPrescriptionDetailsAvailable
                         ? 'Available'
-                        : 'Not Available',
+                        : 'Unavailable',
                     style: TextStyle(
                       color: isPrescriptionDetailsAvailable
                           ? Colors.green
@@ -571,6 +482,150 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class UserDetailsBox extends StatelessWidget {
+  final UserEntity? user;
+  final int appointmentId;
+  final Role role;
+
+  factory UserDetailsBox.doctor({
+    required int appointmentId,
+    UserEntity? doctor,
+  }) {
+    return UserDetailsBox._(
+      appointmentId: appointmentId,
+      user: doctor,
+      role: Role.doctor,
+    );
+  }
+
+  factory UserDetailsBox.patient({
+    required int appointmentId,
+    UserEntity? patient,
+  }) {
+    return UserDetailsBox._(
+      appointmentId: appointmentId,
+      user: patient,
+      role: Role.user,
+    );
+  }
+
+  const UserDetailsBox._(
+      {Key? key, this.user, required this.appointmentId, required this.role})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    UserChatModel? userChatModel;
+    return BlocBuilder<ContactsCubit, ContactsState>(
+      builder: (context, state) {
+        if (state is GetAllContactsSuccess) {
+          try {
+            if (role == Role.user) {
+              userChatModel = state.contacts.firstWhere((element) =>
+                  element.mainServiceId == user?.id &&
+                  element.role == Role.user);
+            } else {
+              userChatModel = state.contacts.firstWhere((element) =>
+                  element.mainServiceId == user?.doctorProfile?.id &&
+                  element.role == Role.doctor);
+            }
+          } catch (e) {
+            userChatModel = null;
+          }
+        }
+        return Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlueAccent.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.person,
+                    size: 50.r,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                15.horizontalSpace,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${user?.firstName} ${user?.lastName}',
+                        style: TextStyle(
+                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                    Text(
+                        (role == Role.doctor)
+                            ? user?.doctorProfile?.specialization?.name
+                                    .toUpperCase() ??
+                                "Loading"
+                            : user?.allergies
+                                    ?.map((e) =>
+                                        e.allergyType?.name.toUpperCase())
+                                    .toList()
+                                    .join(', ') ??
+                                "Patient",
+                        style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: role == Role.user
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.spaceBetween,
+              children: [
+                if (role == Role.doctor)
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        Icons.star,
+                        color: Colors.yellow,
+                        size: 18.r,
+                      );
+                    }),
+                  ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
+                  ),
+                  onPressed: () {
+                    if (userChatModel != null) {
+                      context.pushNamed(RouteDefine.appointmentDetailsChat,
+                          extra: ChatPageData(
+                            name: userChatModel!.userName,
+                            receiverId: userChatModel!.uid,
+                            profilePicture: userChatModel!.profileImage,
+                            isGroupChat: false,
+                          ),
+                          pathParameters: {
+                            'userId': userChatModel!.userName,
+                            'appointmentId': appointmentId.toString(),
+                          });
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(Icons.chat, color: Colors.white),
+                      5.horizontalSpace,
+                      const Text('Chat', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

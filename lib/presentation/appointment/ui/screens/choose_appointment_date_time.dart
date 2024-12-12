@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
-import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/domain/doctor_schedule/entities/doctor_schedule_entity.dart';
 import 'package:health_management/domain/doctor_schedule/entities/shift_time_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/appointment/appointment_bloc.dart';
@@ -262,8 +260,6 @@ class _ChooseAppointmentDateTimeScreenState
                                   child: KeyboardVisibilityBuilder(
                                       builder: (p0, isKeyboardVisible) {
                                     if (!isKeyboardVisible) {
-                                      AppRouting.navBarVisibleNotifier.value =
-                                          false;
                                       noteFocusNode.unfocus();
                                     }
                                     return TextFormField(

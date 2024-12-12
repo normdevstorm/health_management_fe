@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
-import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/data/prescription/models/request/prescription_ai_analysis_request.dart';
 import 'package:health_management/domain/prescription/entities/prescription_details.dart';
 import 'package:health_management/presentation/prescription/bloc/prescription_ai_analysis_bloc.dart';
@@ -97,12 +95,6 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Medicine List'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _savePrescription,
-            ),
-          ],
         ),
         body: MultiBlocListener(
           listeners: [
@@ -147,6 +139,32 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                 }
               },
             ),
+            BlocListener<AppointmentBloc, AppointmentState>(
+                listenWhen: (previous, current) =>
+                    previous.status != current.status &&
+                    [current, previous]
+                        .every((element) => element is UpdatePrescriptionState),
+                listener: (context, state) {
+                  if (state is UpdatePrescriptionState &&
+                      state.status == BlocStatus.loading) {
+                    ToastManager.showToast(
+                        context: context, message: 'Updating prescription');
+                  }
+                  if (state is UpdatePrescriptionState &&
+                      state.status == BlocStatus.success) {
+                    ToastManager.showToast(
+                        context: context,
+                        message: 'Prescription updated successfully');
+                  }
+                  if (state is UpdatePrescriptionState &&
+                      state.status == BlocStatus.error) {
+                    ToastManager.showToast(
+                        context: context,
+                        message: 'Failed to update prescription',
+                        isErrorToast: true);
+                  }
+                },
+                bloc: context.read<AppointmentBloc>()),
           ],
           child: BlocConsumer<MedicationBloc, MedicationState>(
             listenWhen: (previous, current) =>
@@ -267,259 +285,282 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
   }
 
   Widget _buildAddMedicineBox(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        showBottomSheet(
-            elevation: 10.h,
-            enableDrag: true,
-            context: context,
-            builder: (parentContext) => StatefulBuilder(
-                  builder: (context, setState) => KeyboardVisibilityBuilder(
-                      builder: (context, isKeyboardVisible) {
-                    if (!isKeyboardVisible) {
-                      AppRouting.navBarVisibleNotifier.value = false;
-                    }
-                    return Padding(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.45,
-                        width: MediaQuery.of(context).size.width,
-                        padding:
-                            EdgeInsets.only(left: 16.w, right: 16.w, top: 16.h),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                          color: const Color(0xFFefeff5),
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(30.r),
-                              topRight: Radius.circular(30.r)),
-                        ),
-                        child: Column(
-                          children: [
-                            TextField(
-                              onSubmitted: (value) {
-                                _handleFocusChange();
-                              },
-                              autofocus: true,
-                              textInputAction:
-                                  TextInputAction.next, // Moves focus to next.
-                              focusNode: _nameFocusNode,
-                              controller: _nameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Name',
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  _filteredMedications = _allMedications
-                                      .where((med) => med.name!
-                                          .toLowerCase()
-                                          .contains(value.toLowerCase()))
-                                      .toList();
-                                });
-                              },
-                            ),
-                            if (_filteredMedications.isNotEmpty &&
-                                _nameController.text.isNotEmpty)
-                              Expanded(
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 10.h),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  // height: 200.h,
-                                  width: MediaQuery.of(context).size.width,
-                                  child: ListView.builder(
-                                    itemCount: _filteredMedications.length,
-                                    itemBuilder: (context, index) {
-                                      final medication =
-                                          _filteredMedications[index];
-                                      return ListTile(
-                                        tileColor: Colors.white,
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                                horizontal: 0),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        title: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          decoration: BoxDecoration(
-                                            // border: Border.all(
-                                            //     color: Colors.blueAccent),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                medication.name!,
-                                                style: const TextStyle(
-                                                    color: Colors.blueGrey),
-                                              ),
-                                              Divider(
-                                                height: 1.5.r,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        onTap: () {
-                                          setState(() {
-                                            _nameController.text =
-                                                medication.name!;
-                                            _filteredMedications.clear();
-                                          });
-                                        },
-                                      );
-                                    },
-                                  ),
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              showBottomSheet(
+                  elevation: 10.h,
+                  enableDrag: true,
+                  context: context,
+                  builder: (parentContext) => StatefulBuilder(
+                        builder: (context, setState) => Padding(
+                          padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.45,
+                            width: MediaQuery.of(context).size.width,
+                            padding: EdgeInsets.only(
+                                left: 16.w, right: 16.w, top: 16.h),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: const Offset(0, 3),
                                 ),
-                              )
-                            else
-                              Column(
-                                children: [
-                                  5.verticalSpace,
-                                  TextField(
-                                    autofocus: true,
-                                    controller: _dosageController,
-                                    textInputAction: TextInputAction
-                                        .next, // Moves focus to next.
-
-                                    decoration: const InputDecoration(
-                                        labelText: 'Dosage'),
-                                  ),
-                                  5.verticalSpace,
-                                  TextField(
-                                    autofocus: true,
-                                    controller: _frequencyController,
-                                    textInputAction: TextInputAction
-                                        .next, // Moves focus to next.
-
-                                    decoration: const InputDecoration(
-                                        labelText: 'Frequency'),
-                                  ),
-                                  5.verticalSpace,
-                                  TextField(
-                                    autofocus: true,
-                                    controller: _durationController,
-                                    textInputAction: TextInputAction
-                                        .next, // Moves focus to next.
-
-                                    decoration: const InputDecoration(
-                                        labelText: 'Duration'),
-                                  ),
-                                  5.verticalSpace,
-                                  TextField(
-                                    autofocus: true,
-                                    controller: _instructionsController,
-                                    textInputAction: TextInputAction
-                                        .next, // Moves focus to next.
-                                    decoration: const InputDecoration(
-                                        labelText: 'Instructions'),
-                                  ),
-                                ],
-                              ),
-                            15.verticalSpace,
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              ],
+                              color: const Color(0xFFefeff5),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(30.r),
+                                  topRight: Radius.circular(30.r)),
+                            ),
+                            child: Column(
                               children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.redAccent,
-                                  ),
-                                  onPressed: () {
-                                    _clearTextFields();
-                                    context.pop();
-                                    _enablePopNotifier.value = false;
+                                TextField(
+                                  onSubmitted: (value) {
+                                    _handleFocusChange();
                                   },
-                                  child: const Text('Cancel',
-                                      style: TextStyle(color: Colors.white)),
+                                  autofocus: true,
+                                  textInputAction: TextInputAction
+                                      .next, // Moves focus to next.
+                                  focusNode: _nameFocusNode,
+                                  controller: _nameController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Name',
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _filteredMedications = _allMedications
+                                          .where((med) => med.name!
+                                              .toLowerCase()
+                                              .contains(value.toLowerCase()))
+                                          .toList();
+                                    });
+                                  },
                                 ),
-                                15.horizontalSpace,
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blueAccent,
+                                if (_filteredMedications.isNotEmpty &&
+                                    _nameController.text.isNotEmpty)
+                                  Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.only(top: 10.h),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      // height: 200.h,
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ListView.builder(
+                                        itemCount: _filteredMedications.length,
+                                        itemBuilder: (context, index) {
+                                          final medication =
+                                              _filteredMedications[index];
+                                          return ListTile(
+                                            tileColor: Colors.white,
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            title: Container(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              decoration: BoxDecoration(
+                                                // border: Border.all(
+                                                //     color: Colors.blueAccent),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    medication.name!,
+                                                    style: const TextStyle(
+                                                        color: Colors.blueGrey),
+                                                  ),
+                                                  Divider(
+                                                    height: 1.5.r,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              setState(() {
+                                                _nameController.text =
+                                                    medication.name!;
+                                                _filteredMedications.clear();
+                                              });
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Column(
+                                    children: [
+                                      5.verticalSpace,
+                                      TextField(
+                                        autofocus: true,
+                                        controller: _dosageController,
+                                        textInputAction: TextInputAction
+                                            .next, // Moves focus to next.
+
+                                        decoration: const InputDecoration(
+                                            labelText: 'Dosage'),
+                                      ),
+                                      5.verticalSpace,
+                                      TextField(
+                                        autofocus: true,
+                                        controller: _frequencyController,
+                                        textInputAction: TextInputAction
+                                            .next, // Moves focus to next.
+
+                                        decoration: const InputDecoration(
+                                            labelText: 'Frequency'),
+                                      ),
+                                      5.verticalSpace,
+                                      TextField(
+                                        autofocus: true,
+                                        controller: _durationController,
+                                        textInputAction: TextInputAction
+                                            .next, // Moves focus to next.
+
+                                        decoration: const InputDecoration(
+                                            labelText: 'Duration'),
+                                      ),
+                                      5.verticalSpace,
+                                      TextField(
+                                        autofocus: true,
+                                        controller: _instructionsController,
+                                        textInputAction: TextInputAction
+                                            .next, // Moves focus to next.
+                                        decoration: const InputDecoration(
+                                            labelText: 'Instructions'),
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: () {
-                                    if (_validated) {
-                                      final selectedMedication =
-                                          _allMedications.firstWhere(
-                                              (med) =>
-                                                  med.name ==
-                                                  _nameController.text,
-                                              orElse: () => Medication(
-                                                  name: _nameController.text,
-                                                  expDate: '2024-12-31'));
-                                      final newMedicine = PrescriptionDetails(
-                                        medication: selectedMedication,
-                                        dosage: _dosageController.text,
-                                        frequency: _frequencyController.text,
-                                        duration: _durationController.text,
-                                        instructions:
-                                            _instructionsController.text,
-                                      );
-                                      _prescriptionListNotifier.value = List
-                                          .from(_prescriptionListNotifier.value)
-                                        ..add(newMedicine);
-                                      _clearTextFields();
-                                      context.pop();
-                                      _enablePopNotifier.value = false;
-                                    } else {
-                                      ToastManager.showToast(
-                                          context: context,
-                                          message:
-                                              "Please fill all the fields before submitting !!!",
-                                          isErrorToast: true);
-                                    }
-                                  },
-                                  child: const Text('Add',
-                                      style: TextStyle(color: Colors.white)),
+                                15.verticalSpace,
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.redAccent,
+                                      ),
+                                      onPressed: () {
+                                        _clearTextFields();
+                                        context.pop();
+                                        _enablePopNotifier.value = false;
+                                      },
+                                      child: const Text('Cancel',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                    15.horizontalSpace,
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blueAccent,
+                                      ),
+                                      onPressed: () {
+                                        if (_validated) {
+                                          final selectedMedication =
+                                              _allMedications.firstWhere(
+                                                  (med) =>
+                                                      med.name ==
+                                                      _nameController.text,
+                                                  orElse: () => Medication(
+                                                      name:
+                                                          _nameController.text,
+                                                      expDate: '2024-12-31'));
+                                          final newMedicine =
+                                              PrescriptionDetails(
+                                            medication: selectedMedication,
+                                            dosage: _dosageController.text,
+                                            frequency:
+                                                _frequencyController.text,
+                                            duration: _durationController.text,
+                                            instructions:
+                                                _instructionsController.text,
+                                          );
+                                          _prescriptionListNotifier.value =
+                                              List.from(
+                                                  _prescriptionListNotifier
+                                                      .value)
+                                                ..add(newMedicine);
+                                          _clearTextFields();
+                                          context.pop();
+                                          _enablePopNotifier.value = false;
+                                        } else {
+                                          ToastManager.showToast(
+                                              context: context,
+                                              message:
+                                                  "Please fill all the fields before submitting !!!",
+                                              isErrorToast: true);
+                                        }
+                                      },
+                                      child: const Text('Add',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
+                      ));
+            },
+            child: Card(
+              elevation: 4,
+              margin:
+                  const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add, color: Colors.blueAccent),
+                    SizedBox(width: 8),
+                    Text(
+                      'Add Medicine',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
                       ),
-                    );
-                  }),
-                ));
-      },
-      child: Card(
-        elevation: 4,
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.add, color: Colors.blueAccent),
-              SizedBox(width: 8),
-              Text(
-                'Add Medicine',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          child: ElevatedButton(
+            onPressed: _savePrescription,
+            style: ElevatedButton.styleFrom(
+              minimumSize:
+                  Size(50.w, 50.h), // Adjust the width and height as needed
+            ),
+            child: const Icon(
+              Icons.save,
+              color: Colors.blueAccent,
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -572,8 +613,15 @@ class MedicineCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                imageUrl ?? 'assets/images/placeholder.png',
+              child: FadeInImage.assetNetwork(
+                imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                  'assets/images/placeholder.png',
+                  height: 80,
+                  width: 80,
+                  fit: BoxFit.cover,
+                ),
+                placeholder: 'assets/images/circle_progress_indicator.gif',
+                image: imageUrl ?? 'assets/images/placeholder.png',
                 height: 80,
                 width: 80,
                 fit: BoxFit.cover,

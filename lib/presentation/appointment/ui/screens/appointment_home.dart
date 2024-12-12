@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
-import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/utils/date_converter.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import '../../../../app/managers/toast_manager.dart';
@@ -155,7 +154,7 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                                 CreateAppointmentRecordState,
                                 CancelAppointmentRecordState,
                                 GetAppointmentDetailState,
-                                UpdatePrescriptionState
+                                UpdatePrescriptionState,
                               ].contains(current.runtimeType),
                           builder: (context, state) {
                             List<AppointmentRecordEntity>
@@ -240,11 +239,7 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                               GetAppointmentDetailState,
                               UpdatePrescriptionState
                             ].contains(current.runtimeType),
-                        listener: (context, state) {
-                          if (state.status == BlocStatus.success) {
-                            AppRouting.navBarVisibleNotifier.value = true;
-                          }
-                        },
+                        listener: (context, state) {},
                         buildWhen: (previous, current) =>
                             previous.status != current.status &&
                             ![
@@ -276,6 +271,7 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                               physics: const NeverScrollableScrollPhysics(),
                               children: [
                                 ListAppointmentRecordWidget(
+                                    isForPatient: !_isDoctorNotifier.value,
                                     appointmentRecords: isLoading
                                         ? List.generate(
                                             3,
@@ -302,9 +298,11 @@ class ListAppointmentRecordWidget extends StatelessWidget {
   const ListAppointmentRecordWidget({
     super.key,
     required this.appointmentRecords,
+    required this.isForPatient,
   });
 
   final List<AppointmentRecordEntity> appointmentRecords;
+  final bool isForPatient;
 
   @override
   Widget build(BuildContext context) {
@@ -313,41 +311,68 @@ class ListAppointmentRecordWidget extends StatelessWidget {
         appointmentRecords.length,
         (index) => Padding(
           padding: const EdgeInsets.only(top: 10.0),
-          child: AppointmentCard(
-            id: appointmentRecords[index].id,
-            prescription: appointmentRecords[index].prescription,
-            onCancel: () {
-              if (appointmentRecords[index].id != null) {
-                context.read<AppointmentBloc>().add(
-                    DeleteAppointmentRecordEvent(
-                        appointmentId: appointmentRecords[index].id!));
-              }
-            },
-            doctorType: appointmentRecords[index]
-                .doctor
-                ?.doctorProfile
-                ?.specialization
-                ?.name
-                .toUpperCase(),
-            doctorRating: appointmentRecords[index]
-                .doctor
-                ?.doctorProfile
-                ?.rating
-                ?.toInt(),
-            doctorName: appointmentRecords[index].doctor?.firstName,
-            time: appointmentRecords[index].scheduledAt != null
-                ? DateConverter.convertToYearMonthDay(
-                    appointmentRecords[index].scheduledAt!,
-                  )
-                : null,
-            date: appointmentRecords[index].scheduledAt != null
-                ? DateConverter.convertToHourMinuteSecond(
-                    appointmentRecords[index].scheduledAt!,
-                  )
-                : null,
-            isCompleted:
-                appointmentRecords[index].status == AppointmentStatus.completed,
-          ),
+          child: isForPatient
+              ? AppointmentCard.doctor(
+                  id: appointmentRecords[index].id,
+                  prescription: appointmentRecords[index].prescription,
+                  onCancel: () {
+                    if (appointmentRecords[index].id != null) {
+                      context.read<AppointmentBloc>().add(
+                          DeleteAppointmentRecordEvent(
+                              appointmentId: appointmentRecords[index].id!));
+                    }
+                  },
+                  doctorType: appointmentRecords[index]
+                      .doctor
+                      ?.doctorProfile
+                      ?.specialization
+                      ?.name
+                      .toUpperCase(),
+                  doctorRating: appointmentRecords[index]
+                      .doctor
+                      ?.doctorProfile
+                      ?.rating
+                      ?.toInt(),
+                  doctorName: appointmentRecords[index].doctor?.firstName,
+                  time: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToYearMonthDay(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  date: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToHourMinuteSecond(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  isCompleted: appointmentRecords[index].status ==
+                      AppointmentStatus.completed,
+                )
+              : AppointmentCard.patient(
+                  id: appointmentRecords[index].id,
+                  prescription: appointmentRecords[index].prescription,
+                  onCancel: () {
+                    if (appointmentRecords[index].id != null) {
+                      context.read<AppointmentBloc>().add(
+                          DeleteAppointmentRecordEvent(
+                              appointmentId: appointmentRecords[index].id!));
+                    }
+                  },
+                  patientName: appointmentRecords[index].user?.firstName,
+                  patientCondition:
+                      appointmentRecords[index].user?.gender ?? "Patient",
+                  time: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToYearMonthDay(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  date: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToHourMinuteSecond(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  isCompleted: appointmentRecords[index].status ==
+                      AppointmentStatus.completed,
+                ),
         ),
       ),
     );
@@ -499,22 +524,73 @@ class AddButtonWidget extends StatelessWidget {
 
 class AppointmentCard extends StatelessWidget {
   final int? id;
+  final Role? role;
   final String? doctorType;
   final int? doctorRating;
-  final String? doctorName;
+  final String? userName;
   final String? time;
   final String? date;
   final bool isCompleted;
   final VoidCallback? onCancel;
   final PrescriptionEntity? prescription;
 
-  const AppointmentCard({
+  factory AppointmentCard.doctor({
+    int? id,
+    String? doctorType,
+    int? doctorRating,
+    String? doctorName,
+    String? time,
+    String? date,
+    required bool isCompleted,
+    VoidCallback? onCancel,
+    PrescriptionEntity? prescription,
+  }) {
+    return AppointmentCard._(
+      id: id,
+      role: Role.doctor,
+      doctorType: doctorType,
+      doctorRating: doctorRating,
+      userName: doctorName,
+      time: time,
+      date: date,
+      isCompleted: isCompleted,
+      onCancel: onCancel,
+      prescription: prescription,
+    );
+  }
+
+  factory AppointmentCard.patient({
+    int? id,
+    String? patientName,
+    String? patientCondition,
+    String? time,
+    String? date,
+    required bool isCompleted,
+    VoidCallback? onCancel,
+    PrescriptionEntity? prescription,
+  }) {
+    return AppointmentCard._(
+      id: id,
+      doctorType: patientCondition,
+      role: Role.user,
+      doctorRating: null,
+      userName: patientName,
+      time: time,
+      date: date,
+      isCompleted: isCompleted,
+      onCancel: onCancel,
+      prescription: prescription,
+    );
+  }
+
+  const AppointmentCard._({
     super.key,
     this.id,
+    this.role,
     this.onCancel,
     this.doctorType,
     this.doctorRating,
-    this.doctorName,
+    this.userName,
     this.time,
     this.date,
     this.isCompleted = false,
@@ -555,22 +631,24 @@ class AppointmentCard extends StatelessWidget {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                     //todo: to localize this text later on
-                    doctorName ?? "Loading...",
+                    userName ?? "Loading...",
                     style: StyleManager.buttonText,
                   ),
                   const SizedBox(height: 8),
                   Text(doctorType ?? "Loading...",
                       style: StyleManager.buttonText),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index <= (doctorRating ?? 0)
-                            ? Icons.star
-                            : Icons.star_border,
-                        color: Colors.amber,
-                      );
-                    }),
-                  ),
+                  if (role == Role.doctor) ...[
+                    Row(
+                      children: List.generate(5, (index) {
+                        return Icon(
+                          index <= (doctorRating ?? 0)
+                              ? Icons.star
+                              : Icons.star_border,
+                          color: Colors.amber,
+                        );
+                      }),
+                    )
+                  ],
                   const SizedBox(height: 8),
                   Text(
                     time ?? "Loading...",
@@ -652,79 +730,6 @@ class AppointmentCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class ScheduleTimeline extends StatefulWidget {
-  const ScheduleTimeline({super.key});
-
-  @override
-  State<ScheduleTimeline> createState() => _ScheduleTimelineState();
-}
-
-class _ScheduleTimelineState extends State<ScheduleTimeline> {
-  ScrollController? _scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-  }
-
-  @override
-  void dispose() {
-    _scrollController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Time line
-                    Timeline(
-                      scrollController: _scrollController,
-                      items: [
-                        TimelineItem(
-                          time: '09:00',
-                          content: Container(
-                            height: 40,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        const TimelineItem(
-                          time: '10:00',
-                          content: AppointmentCard(
-                            doctorType: 'Cardiologist',
-                            doctorName: 'Dan Johnson',
-                            time: '10:00-11:00',
-                            isCompleted: true,
-                          ),
-                        ),
-                        TimelineItem(
-                          time: '11:00',
-                          content: Container(
-                            height: 40,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )),
     );
   }
 }
