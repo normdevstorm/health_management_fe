@@ -7,13 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:health_management/main.dart';
 import 'package:health_management/presentation/details/chat_route.dart';
 import 'package:health_management/presentation/auth/auth_route.dart';
+import 'package:health_management/presentation/home/home_route.dart';
 import 'package:health_management/presentation/settings/settings_route.dart';
 import 'package:health_management/presentation/splash/ui/splash_screen.dart';
 import '../../presentation/auth/appointment_route.dart';
-import '../../presentation/home/ui/article_home_screen.dart';
 import '../../presentation/nav_bar/bloc/navigation_bar_bloc.dart';
 import 'custom_navigator_observer.dart';
-import 'route_define.dart';
 
 ///TODO: group naviagtor keys into one separate file
 final GlobalKey<NavigatorState> rootNavigatorHome = GlobalKey<NavigatorState>();
@@ -76,12 +75,7 @@ class AppRouting {
               StatefulShellBranch(
                   navigatorKey: rootNavigatorHome,
                   routes: <RouteBase>[
-                    GoRoute(
-                        name: RouteDefine.home,
-                        path: '/home',
-                        builder: (context, state) => const ArticleHome(
-                              title: 'Home',
-                            ))
+                   $homeRoute
                   ]),
               StatefulShellBranch(
                   restorationScopeId: 'chatRestorationScope',

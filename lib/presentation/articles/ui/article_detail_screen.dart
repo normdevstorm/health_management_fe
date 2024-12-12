@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
@@ -9,6 +10,7 @@ import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/widgets/comment_tree_widget.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final int articleId;
@@ -22,18 +24,14 @@ class ArticleDetailScreen extends StatefulWidget {
 class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   bool isCommenting = false;
   final TextEditingController _commentController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  final ValueNotifier<bool> _commentNotifier = ValueNotifier(false);
   late final article = "";
 
   @override
   void dispose() {
     _commentController.dispose();
     super.dispose();
-  }
-
-  void _toggleCommenting() {
-    setState(() {
-      isCommenting = !isCommenting;
-    });
   }
 
   void _sendComment() {
@@ -50,7 +48,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             .read<ArticleBloc>()
             .add(CommentArticleEvent(widget.articleId ?? 0, 2, commentEntity));
         _commentController.clear();
-        _toggleCommenting();
+        _commentNotifier.value = false;
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error sending comment: $e')),
@@ -61,6 +59,14 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         const SnackBar(content: Text('Comment cannot be empty!')),
       );
     }
+  }
+
+  void _scrollToEnd() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent + 30,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
   }
 
   @override
@@ -78,7 +84,6 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
             if (state.status == BlocStatus.success) {
               ToastManager.showToast(
                   message: "Article loaded successfully", context: context);
-              _toggleCommenting();
             } else if (state.status == BlocStatus.error) {
               ToastManager.showToast(
                   context: context,
@@ -119,9 +124,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                   body: Stack(
                     children: [
                       CustomScrollView(
+                        controller: _scrollController,
                         slivers: [
                           SliverPadding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.only(
+                                left: 16.0, right: 16.0, top: 16.0, bottom: 30),
                             sliver: SliverList(
                               delegate: SliverChildListDelegate([
                                 // Title and content of the article
@@ -189,7 +196,22 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                 const SizedBox(height: 8),
                                 const SizedBox(height: 8),
                                 data.media != null
-                                    ? Image.network(data.media!.first.url ?? "")
+                                    ? ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(20.r),
+                                        child: FadeInImage.memoryNetwork(
+                                          placeholder: kTransparentImage,
+                                          image: data.media!.first.url ??
+                                              "assets/images/placeholder.png",
+                                          fit: BoxFit.cover,
+                                          imageErrorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Image.asset(
+                                            'assets/images/placeholder.png',
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      )
                                     : const Placeholder(
                                         fallbackHeight: 200,
                                         fallbackWidth: double.infinity),
@@ -261,14 +283,13 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                     .length
                                                 : data?.commentCount;
 
-                                        return GestureDetector(
-                                          onTap: _toggleCommenting,
-                                          child: _stateWidget(
-                                            Icons.comment,
-                                            commentCount ?? 0,
-                                            context,
-                                            () {},
-                                          ),
+                                        return _stateWidget(
+                                          Icons.comment,
+                                          commentCount ?? 0,
+                                          context,
+                                          () {
+                                            _commentNotifier.value = true;
+                                          },
                                         );
                                       },
                                     ),
@@ -286,7 +307,17 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                 // Comment list
                                 if (data.comments != null &&
                                     data.comments!.isNotEmpty)
-                                  BlocBuilder<ArticleBloc, ArticleState>(
+                                  BlocConsumer<ArticleBloc, ArticleState>(
+                                    listener: (context, state) {
+                                      if (state.status == BlocStatus.success &&
+                                          state.data.runtimeType ==
+                                              List<ArticleCommentEntity>) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          _scrollToEnd();
+                                        });
+                                      }
+                                    },
                                     buildWhen: (previous, current) =>
                                         current.data.runtimeType ==
                                         List<ArticleCommentEntity>,
@@ -315,33 +346,39 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                         ],
                       ),
                       // Comment input field
-                      if (isCommenting)
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            color: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _commentController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Write a comment...',
-                                      border: OutlineInputBorder(),
+
+                      ValueListenableBuilder(
+                        valueListenable: _commentNotifier,
+                        builder: (context, showCommentBox, child) =>
+                            showCommentBox
+                                ? Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Container(
+                                      color: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              controller: _commentController,
+                                              decoration: const InputDecoration(
+                                                hintText: 'Write a comment...',
+                                                border: OutlineInputBorder(),
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.send),
+                                            onPressed: _sendComment,
+                                            color: Colors.blue,
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.send),
-                                  onPressed: _sendComment,
-                                  color: Colors.blue,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                                  )
+                                : const SizedBox(),
+                      ),
                     ],
                   ));
             }
