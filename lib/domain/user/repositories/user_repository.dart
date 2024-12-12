@@ -1,5 +1,6 @@
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
+import '../../../app/app.dart';
 import '../../../data/user/models/request/update_user_request.dart';
 
 abstract class UserRepository {
@@ -11,5 +12,7 @@ abstract class UserRepository {
       UpdateUserRequest updateUserRequest, int? userId);
   Future<UserEntity> getUserByEmail(String email);
   Future<List<DoctorEntity>> getTopRatedDoctors();
+  Future<List<String>> uploadImageToFirebase(
+      List<String> imgPath, UploadImageType ref);
   // Future<UserEntity> getUserById();
 }

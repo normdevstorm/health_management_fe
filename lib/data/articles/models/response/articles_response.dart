@@ -12,7 +12,7 @@ class ArticlesResponse {
   final String? title;
   final String? content;
   final int? userId;
-  final String? userName;
+  final String? username;
   final String? userAvatar;
   final int? upVoteCount;
   final int? downVoteCount;
@@ -29,7 +29,7 @@ class ArticlesResponse {
       this.title,
       this.content,
       this.userId,
-      this.userName,
+      this.username,
       this.userAvatar,
       this.upVoteCount,
       this.downVoteCount,
@@ -53,7 +53,7 @@ class ArticlesResponse {
         title: title,
         content: content,
         userId: userId,
-        userName: userName,
+        username: username,
         userAvatar: userAvatar,
         upVoteCount: upVoteCount,
         downVoteCount: downVoteCount,

@@ -36,7 +36,7 @@ class _CommentWidgetState extends State<CommentWidget> {
       final reply = ArticleCommentEntity(
           articleId: widget.comment.articleId,
           userId: widget.comment.userId,
-          userName: widget.comment.userName,
+          username: widget.comment.username,
           content: replyText,
           parentId: parentId);
 
@@ -72,7 +72,7 @@ class _CommentWidgetState extends State<CommentWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.comment.userName ?? "Unknown",
+                      widget.comment.username ?? "Unknown",
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
@@ -102,8 +102,8 @@ class _CommentWidgetState extends State<CommentWidget> {
                 const SizedBox(width: 16),
                 GestureDetector(
                   onTap: _toggleReplying,
-                  child: Row(
-                    children: const [
+                  child: const Row(
+                    children: [
                       Icon(Icons.reply, size: 18, color: Colors.grey),
                       SizedBox(width: 4),
                       Text(

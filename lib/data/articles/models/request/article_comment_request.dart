@@ -42,7 +42,7 @@ class ArticleCommentRequest {
         id: articleCommentEntity.id,
         articleId: articleCommentEntity.articleId,
         userId: articleCommentEntity.userId,
-        username: articleCommentEntity.userName,
+        username: articleCommentEntity.username,
         userAvatar: articleCommentEntity.userAvatar,
         parentId: articleCommentEntity.parentId,
         content: articleCommentEntity.content,

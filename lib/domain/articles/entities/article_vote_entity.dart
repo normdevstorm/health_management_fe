@@ -6,14 +6,14 @@ class ArticleVoteEntity {
   final int? id;
   final int? articleId;
   final int? userId;
-  final String? userName;
+  final String? username;
   final VoteType? type;
 
   const ArticleVoteEntity({
     this.id,
     this.articleId,
     this.userId,
-    this.userName,
+    this.username,
     this.type,
   });
 
@@ -33,7 +33,7 @@ class ArticleVoteEntity {
       id: id ?? this.id,
       articleId: articleId ?? this.articleId,
       userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
+      username: userName ?? username,
       type: type ?? this.type,
     );
   }

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
@@ -12,8 +9,6 @@ import 'package:health_management/presentation/articles/bloc/article_state.dart'
 import 'package:health_management/presentation/articles/ui/article_create_screen.dart';
 import 'package:health_management/presentation/articles/ui/article_detail_screen.dart';
 import 'package:health_management/presentation/articles/ui/article_update_screen.dart';
-
-import '../../../app/di/injection.dart';
 
 class ArticleScreen extends StatefulWidget {
   const ArticleScreen({super.key});
@@ -54,6 +49,11 @@ class _ArticleScreenState extends State<ArticleScreen> {
             List<ArticleEntity> articles;
             try {
               articles = state.data as List<ArticleEntity>;
+              articles.sort((a, b) =>
+                  a.title
+                      ?.toUpperCase()
+                      .compareTo(b.title?.toUpperCase() ?? "") ??
+                  0);
             } catch (e) {
               // TODO
               articles = [];
@@ -80,14 +80,25 @@ class _ArticleScreenState extends State<ArticleScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          elevation: 4,
                         ),
-                        child: const Text(
-                          "Create New Article",
-                          style: TextStyle(fontSize: 16),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.article, size: 20),
+                            SizedBox(width: 8),
+                            Text(
+                              "Create New Article",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -120,18 +131,19 @@ class ArticleItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Title and Category with menu button
+                // Author and Avatar
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Text(
-                        article.title.toString(),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                    CircleAvatar(
+                      backgroundImage:
+                          NetworkImage(article.userAvatar.toString()),
                     ),
+                    const SizedBox(width: 8),
+                    Text(
+                      article.username.toString(),
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const Spacer(),
                     if (article.userId == 2)
                       PopupMenuButton<String>(
                         onSelected: (value) {
@@ -157,15 +169,18 @@ class ArticleItem extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                // Author and Avatar
+                // Title and Category with menu button
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CircleAvatar(
-                      backgroundImage:
-                          NetworkImage(article.userAvatar.toString()),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(article.userName.toString()),
+                    Expanded(
+                      child: Text(
+                        article.title.toString(),
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    )
                   ],
                 ),
                 const SizedBox(height: 8),

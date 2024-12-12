@@ -92,7 +92,6 @@ class AuthenticationBloc
                   email: event.email,
                   password: event.password,
                   username: event.email,
-                  
                   role: Role.doctor);
             }
           }
@@ -124,8 +123,7 @@ class AuthenticationBloc
       bool isSignIn = await appChatUseCases.auth.isSignedIn();
       User? user = await appChatUseCases.auth.getCurrentUser();
 
-      if (loginEntity == null ||
-          isLogin == false
+      if (loginEntity == null || isLogin == false
           //  ||
           // user == null ||
           // !isSignIn

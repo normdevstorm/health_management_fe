@@ -32,6 +32,6 @@ class ArticlesVoteResponse {
       id: id,
       articleId: articleId,
       userId: userId,
-      userName: userName,
+      username: userName,
       type: type);
 }

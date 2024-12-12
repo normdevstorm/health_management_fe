@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
@@ -91,13 +92,26 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               return const Center(child: CircularProgressIndicator(value: 8));
             }
             if (state.status == BlocStatus.success) {
-              ArticleEntity data;
+              ArticleEntity? data;
               try {
-                data = state.data as ArticleEntity;
+                if (state.data is List<ArticleEntity>) {
+                  List<ArticleEntity> result =
+                      state.data as List<ArticleEntity>;
+                  data = result.firstWhere(
+                    (e) {
+                      return e.id! == widget.articleId;
+                    },
+                  );
+                } else if (state.data is ArticleEntity) {
+                  data = state.data as ArticleEntity;
+                } else {
+                  data = const ArticleEntity();
+                }
               } catch (e) {
                 data = const ArticleEntity();
-                // TODO
+                // TODO: Handle the error appropriately
               }
+              // Use the `data` variable as needed
               return Scaffold(
                   appBar: AppBar(
                     title: Text(data.title ?? "Article Detail"),
@@ -111,13 +125,75 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                             sliver: SliverList(
                               delegate: SliverChildListDelegate([
                                 // Title and content of the article
+
+                                FutureBuilder(
+                                    future: SharedPreferenceManager.getUser(),
+                                    builder: (context, snapshot) {
+                                      // final ava = snapshot.data?.avatarUrl;
+                                      // final username = snapshot.data?.firstName;
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.done &&
+                                          snapshot.data != null) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            _showUserPopup(
+                                                context, snapshot.data);
+                                          },
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 20,
+                                                    backgroundImage:
+                                                        NetworkImage(
+                                                      data?.userAvatar ?? "",
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                width: 8,
+                                              ),
+                                              Text(
+                                                data?.username ?? "Guest",
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      } else {
+                                        return const CircularProgressIndicator();
+                                      }
+                                    }),
+                                const SizedBox(
+                                  height: 10,
+                                ),
                                 Text(
                                   data.title ?? "Untitled",
-                                  style: Theme.of(context).textTheme.bodyMedium,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(data.content ?? "No content available."),
-                                const Divider(height: 32, thickness: 1),
+                                const SizedBox(height: 8),
+                                const SizedBox(height: 8),
+                                data.media != null
+                                    ? Image.network(data.media!.first.url ?? "")
+                                    : const Placeholder(
+                                        fallbackHeight: 200,
+                                        fallbackWidth: double.infinity),
+                                const Divider(height: 20, thickness: 1),
                                 // Stats and comment button
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment
@@ -132,7 +208,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                 is Map<String, int?>)
                                             ? (state.data
                                                 as Map<String, int?>)["up_vote"]
-                                            : data.upVoteCount;
+                                            : data?.upVoteCount;
 
                                         return _stateWidget(
                                           Icons.thumb_up,
@@ -156,7 +232,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                 is Map<String, int?>)
                                             ? (state.data as Map<String, int?>)[
                                                 "down_vote"]
-                                            : data.downVoteCount;
+                                            : data?.downVoteCount;
 
                                         return _stateWidget(
                                           Icons.thumb_down,
@@ -183,7 +259,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                 ? (state.data as List<
                                                         ArticleCommentEntity>)
                                                     .length
-                                                : data.commentCount;
+                                                : data?.commentCount;
 
                                         return GestureDetector(
                                           onTap: _toggleCommenting,
@@ -215,16 +291,19 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                         current.data.runtimeType ==
                                         List<ArticleCommentEntity>,
                                     builder: (context, state) {
-                                      final commentList =
+                                      final List<ArticleCommentEntity>?
+                                          commentList =
                                           (state.data.runtimeType ==
                                                   List<ArticleCommentEntity>)
                                               ? state.data
                                                   as List<ArticleCommentEntity>
-                                              : data.comments!;
+                                              : data?.comments;
+
                                       return CommentTree(
-                                        comments:
-                                            List<ArticleCommentEntity>.from(
-                                                commentList),
+                                        comments: commentList != null
+                                            ? List<ArticleCommentEntity>.from(
+                                                commentList)
+                                            : [],
                                       );
                                     },
                                   )
@@ -285,5 +364,111 @@ Widget _stateWidget(
         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
       ),
     ],
+  );
+}
+
+void _showUserPopup(BuildContext context, dynamic userData) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('User Information',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(userData.avatarUrl ?? ""),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userData.firstName + " " + userData.lastName ?? "Guest",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Role: ${userData.account.role}",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.email, size: 20, color: Colors.grey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    userData.account.email ?? "No email available",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.phone, size: 20, color: Colors.grey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    userData.account.phone ?? "No phone number available",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                userData.gender == "MALE"
+                    ? const Icon(Icons.male_outlined,
+                        size: 20, color: Colors.grey)
+                    : const Icon(Icons.female_outlined,
+                        size: 20, color: Colors.grey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    userData.gender ?? "Gender",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      );
+    },
   );
 }

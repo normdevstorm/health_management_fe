@@ -8,7 +8,7 @@ class ArticleEntity {
   final String? title;
   final String? content;
   final int? userId;
-  final String? userName;
+  final String? username;
   final String? userAvatar;
   final int? upVoteCount;
   final int? downVoteCount;
@@ -25,7 +25,7 @@ class ArticleEntity {
     this.title,
     this.content,
     this.userId,
-    this.userName,
+    this.username,
     this.userAvatar,
     this.upVoteCount,
     this.downVoteCount,
@@ -43,7 +43,7 @@ class ArticleEntity {
     String? title,
     String? content,
     int? userId,
-    String? userName,
+    String? username,
     String? userAvatar,
     int? upVoteCount,
     int? downVoteCount,
@@ -60,7 +60,7 @@ class ArticleEntity {
       title: title ?? this.title,
       content: content ?? this.content,
       userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
+      username: username ?? username,
       userAvatar: userAvatar ?? this.userAvatar,
       upVoteCount: upVoteCount ?? this.upVoteCount,
       downVoteCount: downVoteCount ?? this.downVoteCount,

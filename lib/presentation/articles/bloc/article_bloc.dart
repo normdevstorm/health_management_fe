@@ -1,10 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_management/app/app.dart';
+import 'package:health_management/app/di/injection.dart';
+import 'package:health_management/domain/articles/entities/article_media_entity.dart';
 import 'package:health_management/domain/articles/usecases/article_usecase.dart';
+import 'package:health_management/domain/user/usecases/user_usecase.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 
 class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
   final ArticleUsecase articleUsecase;
+  final usecase = getIt<UserUseCase>();
 
   ArticleBloc({required this.articleUsecase}) : super(ArticleState.initial()) {
     on<GetAllArticleByUserIdEvent>(
@@ -45,8 +50,15 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       CreateArticleEvent event, Emitter<ArticleState> emit) async {
     emit(ArticleState.loading());
     try {
-      final article =
-          await articleUsecase.createArticle(event.articleEntity, event.userId);
+      final List<String> urls = await usecase.uploadImageToFirebase(
+          event.imgPaths, UploadImageType.article);
+      final List<ArticleMediaEntity> listMedia = [];
+      for (var element in urls) {
+        listMedia.add(ArticleMediaEntity(url: element, type: MediaType.image));
+      }
+      final article = await articleUsecase.createArticle(
+          event.articleEntity.copyWith(media: listMedia), event.userId);
+
       emit(ArticleState.success(article));
     } catch (e) {
       emit(ArticleState.error(e.toString()));

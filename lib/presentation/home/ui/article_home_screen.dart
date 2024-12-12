@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
@@ -24,11 +25,12 @@ class _ArticleHomeSate extends State<ArticleHome> {
   @override
   void initState() {
     super.initState();
-    context.read<ArticleBloc>().add(GetAllArticleEvent());
-    context.read<HomeBloc>().add(GetAllDoctorTopRateEvent());
+    context.read<ArticleBloc>().add(const GetAllArticleEvent());
+    context.read<HomeBloc>().add(const GetAllDoctorTopRateEvent());
   }
 
   bool _showAllArticles = false;
+  final user = SharedPreferenceManager.getUser();
 
   @override
   Widget build(BuildContext context) {
@@ -43,58 +45,77 @@ class _ArticleHomeSate extends State<ArticleHome> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage(
-                          'https://via.placeholder.com/150',
-                        ),
-                      ),
-                      Stack(
-                        children: [
-                          Icon(Icons.notifications,
-                              color: Colors.white, size: 30),
-                          Positioned(
-                            right: 0,
-                            child: Container(
-                              height: 18,
-                              width: 18,
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "2",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
+                  FutureBuilder(
+                      future: SharedPreferenceManager.getUser(),
+                      builder: (context, snapshot) {
+                        final ava = snapshot.data?.avatarUrl;
+                        final username = snapshot.data?.firstName;
+                        if (snapshot.connectionState == ConnectionState.done &&
+                            snapshot.data != null) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: NetworkImage(
+                                      ava ?? "",
+                                    ),
                                   ),
+                                  Stack(
+                                    children: [
+                                      const Icon(Icons.notifications,
+                                          color: Colors.white, size: 30),
+                                      Positioned(
+                                        right: 0,
+                                        child: Container(
+                                          height: 18,
+                                          width: 18,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "2",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              // Greeting Text
+                              const Text(
+                                "Welcome back .....",
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              Text(
+                                username ?? "Guest",
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  // Greeting Text
-                  const Text(
-                    "Good Morning.....",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  const Text(
-                    "LAKSHAY",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                            ],
+                          );
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
+                      }),
+
                   const SizedBox(height: 20),
                   // Search Bar
                   Container(
@@ -202,6 +223,11 @@ class _ArticleHomeSate extends State<ArticleHome> {
                   // Hiển thị số lượng bài viết dựa trên trạng thái
                   final displayedArticles =
                       _showAllArticles ? articles : articles.take(5).toList();
+                  displayedArticles.sort((a, b) =>
+                      a.title
+                          ?.toUpperCase()
+                          .compareTo(b.title?.toUpperCase() ?? "") ??
+                      0);
 
                   return Column(
                     children: [
@@ -277,8 +303,8 @@ Widget _buildDoctorCard(String? title, String imageUrl, double rating) {
 Widget _buildBannerSlider() {
   final List<String> bannerUrls = [
     'https://isofhcare-backup.s3-ap-southeast-1.amazonaws.com/images/hinh-anh-benh-vien-da-khoa-vinmec-times-city-ivie_f94ff195_aacc_40e7_981e_99d7d3b8bd94.jpg',
+    'https://i.pinimg.com/736x/d0/49/8a/d0498a20f43cc8b6047925c23b27f495.jpg',
     'https://www.vinmec.com/static//uploads/05_12_2018_03_21_27_275433_jpg_081e7b384a.jpg',
-    'https://cdn.hellobacsi.com/wp-content/uploads/2018/07/Benh-vien-da-khoa-medlatec-e1532330580709.jpg?w=828&q=75',
   ];
 
   return SizedBox(

@@ -1,3 +1,4 @@
+import '../../../app/app.dart';
 import '../../../data/user/models/request/update_user_request.dart';
 import '../../doctor/entities/doctor_entity.dart';
 import '../entities/user_entity.dart';
@@ -40,4 +41,9 @@ class UserUseCase {
   // Future<UserEntity> getUserById() async {
   //   return await _repository.getUserById();
   // }
+
+  Future<List<String>> uploadImageToFirebase(
+      List<String> imgPath, UploadImageType ref) async {
+    return await _repository.uploadImageToFirebase(imgPath, ref);
+  }
 }

@@ -7,7 +7,7 @@ class ArticlesCommentResponse {
   final int? id;
   final int? articleId;
   final int? userId;
-  final String? userName;
+  final String? username;
   final String? userAvatar;
   final int? parentId;
   final String? content;
@@ -19,7 +19,7 @@ class ArticlesCommentResponse {
     this.id,
     this.articleId,
     this.userId,
-    this.userName,
+    this.username,
     this.userAvatar,
     this.parentId,
     this.content,
@@ -32,7 +32,7 @@ class ArticlesCommentResponse {
         id: id,
         articleId: articleId,
         userId: userId,
-        userName: userName,
+        username: username,
         userAvatar: userAvatar,
         parentId: parentId,
         content: content,

@@ -26,7 +26,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? selectedGender;
   String avatarUrl =
       'https://www.nylabone.com/-/media/project/oneweb/nylabone/images/dog101/10-intelligent-dog-breeds/golden-retriever-tongue-out.jpg';
-
   @override
   void initState() {
     super.initState();
@@ -71,12 +70,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: 16),
                     CircleAvatar(
                       radius: 40,
-                      backgroundImage: NetworkImage(
-                        avatarUrl,
+                      child: Image.network(
+                        "https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg",
                       ),
                     ),
                     TextButton(
-                        onPressed: () {}, child: const Text("Chỉnh sửa avatar")),
+                        onPressed: () {},
+                        child: const Text("Chỉnh sửa avatar")),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: firstNameController,
@@ -118,8 +118,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Container(
                             width: 60,
                             alignment: Alignment.centerLeft,
-                            child:
-                                const Text('Male', overflow: TextOverflow.ellipsis),
+                            child: const Text('Male',
+                                overflow: TextOverflow.ellipsis),
                           ),
                         ),
                         DropdownMenuItem(
@@ -127,8 +127,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: Container(
                             width: 80.w,
                             alignment: Alignment.centerLeft,
-                            child:
-                                const Text('Female', overflow: TextOverflow.ellipsis),
+                            child: const Text('Female',
+                                overflow: TextOverflow.ellipsis),
                           ),
                         ),
                       ],

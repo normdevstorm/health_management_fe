@@ -6,7 +6,7 @@ class ArticleCommentEntity {
   final int? id;
   final int? articleId;
   final int? userId;
-  final String? userName;
+  final String? username;
   final String? userAvatar;
   final int? parentId;
   final String? content;
@@ -18,7 +18,7 @@ class ArticleCommentEntity {
     this.id,
     this.articleId,
     this.userId,
-    this.userName,
+    this.username,
     this.userAvatar,
     this.parentId,
     this.content,
@@ -36,7 +36,7 @@ class ArticleCommentEntity {
     int? id,
     int? articleId,
     int? userId,
-    String? userName,
+    String? username,
     int? parentId,
     String? userAvatar,
     String? content,
@@ -48,7 +48,7 @@ class ArticleCommentEntity {
       id: id ?? this.id,
       articleId: articleId ?? this.articleId,
       userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
+      username: username ?? this.username,
       parentId: parentId ?? this.parentId,
       userAvatar: userAvatar ?? this.userAvatar,
       content: content ?? this.content,

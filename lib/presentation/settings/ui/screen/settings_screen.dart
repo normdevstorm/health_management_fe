@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 
@@ -36,30 +37,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             SizedBox(height: 25.h),
             // Profile Info
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 30.r,
-                  backgroundImage: const NetworkImage(
-                      'https://cdn.eva.vn/upload/3-2022/images/2022-08-12/image7-1660292089-178-width640height700.jpg'),
-                ),
-                SizedBox(width: 16.w),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Jack 97',
-                      style: TextStyle(
-                          fontSize: 20.sp, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'DOCTOR',
-                      style: TextStyle(color: Colors.grey, fontSize: 14.sp),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            FutureBuilder(
+                future: SharedPreferenceManager.getUser(),
+                builder: (context, snapshot) {
+                  final ava = snapshot.data?.avatarUrl ??
+                      "https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg";
+                  final username = snapshot.data?.firstName ?? "Guest";
+                  final role = snapshot.data?.account?.role?.name.toUpperCase();
+                  return Row(
+                    children: [
+                      CircleAvatar(
+                          radius: 30.r, backgroundImage: NetworkImage(ava)),
+                      SizedBox(width: 16.w),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            username,
+                            style: TextStyle(
+                                fontSize: 20.sp, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            role ?? "user",
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 14.sp),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }),
             SizedBox(height: 20.h),
             // // Tag List
             // const TagList(tags: [
@@ -83,6 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   buildMenuItem(context, 'Personal Data', Icons.person, () {
                     print('Personal Data clicked');
+                    context.pushNamed(RouteDefine.editProfile);
                   }),
                   buildMenuItem(context, 'Settings', Icons.settings, () {
                     print('Settings clicked');

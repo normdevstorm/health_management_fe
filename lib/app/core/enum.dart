@@ -126,3 +126,10 @@ enum MediaType {
   @JsonValue("AUDIO")
   audio
 }
+
+enum UploadImageType {
+  @JsonValue("PROFILE")
+  profile,
+  @JsonValue("ARTICLE")
+  article,
+}
