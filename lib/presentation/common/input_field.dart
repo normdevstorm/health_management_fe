@@ -40,6 +40,8 @@ class CommonTextFormField extends StatelessWidget {
         width: width,
         child: TextFormField(
           controller: controller,
+          textInputAction: TextInputAction.next,
+          autofocus: true,
           validator: validator,
           style: TextStyle(fontSize: fontSize.sp, color: fontColor),
           obscureText: obscureText,

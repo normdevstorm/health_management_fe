@@ -22,7 +22,7 @@ class ChatContactsCard extends StatelessWidget {
         return CustomListTile(
           onTap: () {
             context.pushNamed(RouteDefine.chatDetails,
-                extra: ChatPage(
+                extra: ChatPageData(
                   name: chat.name,
                   receiverId: chat.contactId,
                   profilePicture: chat.profileUrl,

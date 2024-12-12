@@ -155,3 +155,40 @@ class GetAppointmentDetailState extends AppointmentState {
     );
   }
 }
+
+
+class UpdatePrescriptionState extends AppointmentState {
+  const UpdatePrescriptionState._({
+    super.data,
+    required super.status,
+    super.errorMessage,
+  }) : super._();
+  factory UpdatePrescriptionState.initial() {
+    return const UpdatePrescriptionState._(
+      status: BlocStatus.initial,
+    );
+  }
+  factory UpdatePrescriptionState.loading() {
+    return const UpdatePrescriptionState._(
+      status: BlocStatus.loading,
+    );
+  }
+
+  factory UpdatePrescriptionState.success(
+      {required AppointmentRecordEntity appointmentRecordEntity}) {
+    return UpdatePrescriptionState._(
+      status: BlocStatus.success,
+      data: appointmentRecordEntity,
+    );
+  }
+
+  factory UpdatePrescriptionState.error(
+    String errorMessage,
+  ) {
+    return UpdatePrescriptionState._(
+      status: BlocStatus.error,
+      errorMessage: errorMessage,
+    );
+  }
+}
+

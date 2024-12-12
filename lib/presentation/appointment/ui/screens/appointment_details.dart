@@ -13,6 +13,7 @@ import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/common/shimmer_loading.dart';
 
+import '../../../../app/managers/local_storage.dart';
 import '../../../../app/route/route_define.dart';
 import '../../../../domain/health_provider/entities/health_provider_entity.dart';
 import '../../../../domain/prescription/entities/prescription_entity.dart';
@@ -21,10 +22,26 @@ import '../../../chat/ui/main/home/chat_screen/chat_page.dart';
 import '../../bloc/appointment/appointment_bloc.dart';
 import '../widgets/common_separator.dart';
 
-class AppointmentDetails extends StatelessWidget {
-  AppointmentDetails({super.key});
+class AppointmentDetails extends StatefulWidget {
+  const AppointmentDetails({required this.appointmentId, super.key});
+  final int appointmentId;
+
+  @override
+  State<AppointmentDetails> createState() => _AppointmentDetailsState();
+}
+
+class _AppointmentDetailsState extends State<AppointmentDetails> {
   AppointmentRecordEntity appointmentRecordEntity =
       const AppointmentRecordEntity();
+  var _isDoctor = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context
+        .read<AppointmentBloc>()
+        .add(GetAppointmentDetailEvent(appointmentId: widget.appointmentId));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +51,15 @@ class AppointmentDetails extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(10.0),
           child: BlocConsumer<AppointmentBloc, AppointmentState>(
-            listener: (context, state) {
+            listener: (context, state) async {
+              if (state.status == BlocStatus.loading) {
+                _isDoctor = (Role.doctor ==
+                    await SharedPreferenceManager.getUserRole());
+                return;
+              }
+
               if (state.status == BlocStatus.error) {
                 ToastManager.showToast(
                     context: context,
@@ -58,7 +81,7 @@ class AppointmentDetails extends StatelessWidget {
 
               return ShimmerWidget(
                 child: ShimmerLoading(
-                  isLoading: isLoading,
+                  isLoading: isLoading && appointmentRecordEntity.id == null,
                   child: Column(
                     children: [
                       _buildSection(
@@ -76,13 +99,17 @@ class AppointmentDetails extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       _buildSection(
-                        height: 150.h,
-                        context,
-                        child: _buildDoctorDetailsBox(
-                            doctor: appointmentRecordEntity.doctor,
-                            context: context),
-                      ),
-                      //TODO: Add responsiveness to note box
+                          height: 150.h,
+                          context,
+                          child: _isDoctor
+                              ? UserDetailsBox.patient(
+                                  appointmentId: widget.appointmentId,
+                                  patient: appointmentRecordEntity.user,
+                                )
+                              : UserDetailsBox.doctor(
+                                  appointmentId: widget.appointmentId,
+                                  doctor: appointmentRecordEntity.doctor,
+                                )),
                       _buildSection(
                         height: 150.h,
                         context,
@@ -259,152 +286,53 @@ class AppointmentDetails extends StatelessWidget {
           height: 1.sp,
           color: Colors.grey.shade400,
         ),
-        8.verticalSpace,
+        20.verticalSpace,
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Column(
-              children: [
-                Text("Distance"),
-                Text("1 KM AWAY"),
-              ],
-            ),
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.asset(
-                fit: BoxFit.fitWidth,
+                fit: BoxFit.fill,
                 'assets/images/placeholder.png',
-                width: 200.w,
-                height: 80.h,
+                height: 120.h,
+                width: 250.w,
               ),
             ),
           ],
         ),
-        15.verticalSpace,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            ElevatedButton(
-              style: ButtonStyle(
-                  // elevation: WidgetStateProperty.all(10.h),
-                  backgroundColor: WidgetStateProperty.all(
-                      ColorManager.buttonEnabledColorLight),
-                  fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
-              onPressed: () {},
-              child: const Text(
-                'Copy Direction',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-            ElevatedButton(
-              style: ButtonStyle(
-                  // elevation: WidgetStateProperty.all(10.h),
-                  backgroundColor: WidgetStateProperty.all(
-                      ColorManager.buttonEnabledColorLight),
-                  fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
-              onPressed: () {},
-              child: const Text(
-                'Open Maps',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-        10.verticalSpace,
+        // 15.verticalSpace,
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //   children: [
+        //     ElevatedButton(
+        //       style: ButtonStyle(
+        //           // elevation: WidgetStateProperty.all(10.h),
+        //           backgroundColor: WidgetStateProperty.all(
+        //               ColorManager.buttonEnabledColorLight),
+        //           fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
+        //       onPressed: () {},
+        //       child: const Text(
+        //         'Copy Direction',
+        //         style: TextStyle(color: Colors.white),
+        //       ),
+        //     ),
+        //     ElevatedButton(
+        //       style: ButtonStyle(
+        //           // elevation: WidgetStateProperty.all(10.h),
+        //           backgroundColor: WidgetStateProperty.all(
+        //               ColorManager.buttonEnabledColorLight),
+        //           fixedSize: WidgetStatePropertyAll(Size(140.w, 35.h))),
+        //       onPressed: () {},
+        //       child: const Text(
+        //         'Open Maps',
+        //         style: TextStyle(color: Colors.white),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // 10.verticalSpace,
       ],
-    );
-  }
-
-  Widget _buildDoctorDetailsBox(
-      {UserEntity? doctor, required BuildContext context}) {
-    UserChatModel? doctorChatModel;
-    return BlocBuilder<ContactsCubit, ContactsState>(
-      builder: (context, state) {
-        if (state is GetAllContactsSuccess) {
-          try {
-            doctorChatModel = state.contacts.firstWhere((element) =>
-                element.mainServiceId == doctor?.doctorProfile?.id);
-          } catch (e) {
-            doctorChatModel = null;
-          }
-        }
-        return Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.lightBlueAccent.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.blueAccent),
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.person,
-                    size: 50.r,
-                    color: Colors.blueAccent,
-                  ),
-                ),
-                15.horizontalSpace,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${doctor?.firstName} ${doctor?.lastName}',
-                        style: TextStyle(
-                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
-                    Text(
-                        doctor?.doctorProfile?.specialization?.name ??
-                            "Loading",
-                        style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: List.generate(5, (index) {
-                    return Icon(
-                      Icons.star,
-                      color: Colors.yellow,
-                      size: 18.r,
-                    );
-                  }),
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
-                  ),
-                  onPressed: () {
-                    if (doctorChatModel != null) {
-                      context.pushNamed(RouteDefine.chatDetails,
-                          extra: ChatPage(
-                            name: doctorChatModel!.userName,
-                            receiverId: doctorChatModel!.uid,
-                            profilePicture: doctorChatModel!.profileImage,
-                            isGroupChat: false,
-                          ),
-                          pathParameters: {
-                            'userId': doctorChatModel!.userName
-                          });
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Icon(Icons.chat, color: Colors.white),
-                      5.horizontalSpace,
-                      const Text('Chat', style: TextStyle(color: Colors.white)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -417,7 +345,6 @@ class AppointmentDetails extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.blueAccent),
           ),
           child: Row(
             children: [
@@ -431,7 +358,16 @@ class AppointmentDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(note ?? 'No notes pinned for this appointment',
+                    TextField(
+                        decoration: InputDecoration(
+                            border: InputBorder.none.copyWith(
+                                borderSide: BorderSide(
+                                    color: Colors.blue, width: 2.sp))),
+                        readOnly: true,
+                        maxLines: 3,
+                        controller: TextEditingController(
+                          text: note ?? 'No notes pinned for this appointment',
+                        ),
                         style: const TextStyle(fontSize: 16)),
                   ],
                 ),
@@ -449,7 +385,7 @@ class AppointmentDetails extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
             ),
             child: const Text(
-              'Note',
+              'Notes for doctor',
               style: TextStyle(color: Colors.white, fontSize: 12),
             ),
           ),
@@ -462,6 +398,8 @@ class AppointmentDetails extends StatelessWidget {
       {int? appointmentId,
       PrescriptionEntity? prescription,
       required BuildContext context}) {
+    var isPrescriptionDetailsAvailable =
+        (prescription?.details ?? []).isNotEmpty;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -491,7 +429,7 @@ class AppointmentDetails extends StatelessWidget {
                   15.verticalSpace,
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      minimumSize: Size(150.w, 40.h),
+                      minimumSize: Size(120.w, 40.h),
                       backgroundColor: Colors.blueAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -499,12 +437,14 @@ class AppointmentDetails extends StatelessWidget {
                     ),
                     onPressed: () {
                       // Add your onPressed code here!
-                      if (appointmentId != null) {
+                      if ((appointmentId != null &&
+                              isPrescriptionDetailsAvailable) ||
+                          _isDoctor) {
                         context.pushNamed(
                             RouteDefine.appointmentDetailsPrescription,
                             extra: prescription,
                             pathParameters: {
-                              'appointmentId': appointmentId.toString()
+                              'appointmentId': appointmentId.toString(),
                             });
                       }
                     },
@@ -517,15 +457,23 @@ class AppointmentDetails extends StatelessWidget {
                 top: 0,
                 right: 0,
                 child: Chip(
-                  label: const Text(
-                    'Available',
+                  labelPadding: const EdgeInsets.all(2),
+                  label: Text(
+                    isPrescriptionDetailsAvailable
+                        ? 'Available'
+                        : 'Unavailable',
                     style: TextStyle(
-                      color: Colors.green,
+                      color: isPrescriptionDetailsAvailable
+                          ? Colors.green
+                          : Colors.red,
                     ),
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(color: Colors.green),
+                    side: BorderSide(
+                        color: isPrescriptionDetailsAvailable
+                            ? Colors.green
+                            : Colors.red),
                   ),
                   backgroundColor: Colors.transparent,
                 ),
@@ -534,6 +482,150 @@ class AppointmentDetails extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class UserDetailsBox extends StatelessWidget {
+  final UserEntity? user;
+  final int appointmentId;
+  final Role role;
+
+  factory UserDetailsBox.doctor({
+    required int appointmentId,
+    UserEntity? doctor,
+  }) {
+    return UserDetailsBox._(
+      appointmentId: appointmentId,
+      user: doctor,
+      role: Role.doctor,
+    );
+  }
+
+  factory UserDetailsBox.patient({
+    required int appointmentId,
+    UserEntity? patient,
+  }) {
+    return UserDetailsBox._(
+      appointmentId: appointmentId,
+      user: patient,
+      role: Role.user,
+    );
+  }
+
+  const UserDetailsBox._(
+      {Key? key, this.user, required this.appointmentId, required this.role})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    UserChatModel? userChatModel;
+    return BlocBuilder<ContactsCubit, ContactsState>(
+      builder: (context, state) {
+        if (state is GetAllContactsSuccess) {
+          try {
+            if (role == Role.user) {
+              userChatModel = state.contacts.firstWhere((element) =>
+                  element.mainServiceId == user?.id &&
+                  element.role == Role.user);
+            } else {
+              userChatModel = state.contacts.firstWhere((element) =>
+                  element.mainServiceId == user?.doctorProfile?.id &&
+                  element.role == Role.doctor);
+            }
+          } catch (e) {
+            userChatModel = null;
+          }
+        }
+        return Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlueAccent.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  padding: const EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.person,
+                    size: 50.r,
+                    color: Colors.blueAccent,
+                  ),
+                ),
+                15.horizontalSpace,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${user?.firstName} ${user?.lastName}',
+                        style: TextStyle(
+                            fontSize: 16.sp, fontWeight: FontWeight.bold)),
+                    Text(
+                        (role == Role.doctor)
+                            ? user?.doctorProfile?.specialization?.name
+                                    .toUpperCase() ??
+                                "Loading"
+                            : user?.allergies
+                                    ?.map((e) =>
+                                        e.allergyType?.name.toUpperCase())
+                                    .toList()
+                                    .join(', ') ??
+                                "Patient",
+                        style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: role == Role.user
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.spaceBetween,
+              children: [
+                if (role == Role.doctor)
+                  Row(
+                    children: List.generate(5, (index) {
+                      return Icon(
+                        Icons.star,
+                        color: Colors.yellow,
+                        size: 18.r,
+                      );
+                    }),
+                  ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.blueAccent),
+                  ),
+                  onPressed: () {
+                    if (userChatModel != null) {
+                      context.pushNamed(RouteDefine.appointmentDetailsChat,
+                          extra: ChatPageData(
+                            name: userChatModel!.userName,
+                            receiverId: userChatModel!.uid,
+                            profilePicture: userChatModel!.profileImage,
+                            isGroupChat: false,
+                          ),
+                          pathParameters: {
+                            'userId': userChatModel!.userName,
+                            'appointmentId': appointmentId.toString(),
+                          });
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Icon(Icons.chat, color: Colors.white),
+                      5.horizontalSpace,
+                      const Text('Chat', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

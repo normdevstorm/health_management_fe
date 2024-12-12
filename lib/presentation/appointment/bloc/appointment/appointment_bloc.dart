@@ -36,15 +36,23 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
         (event, emit) => _onUpdateAppointmentRecordEvent(event, emit));
     on<DeleteAppointmentRecordEvent>(
         (event, emit) => _onDeleteAppointmentRecordEvent(event, emit));
+    on<UpdatePrescriptionEvent>(
+        (event, emit) => _onUpdatePrescriptionEvent(event, emit));
   }
 
   _onGetAllAppointmentRecordEvent(GetAllAppointmentRecordEvent event,
       Emitter<AppointmentState> emit) async {
     emit(AppointmentState.loading());
     try {
-      final user= await SharedPreferenceManager.getUser();
-      final appointmentRecords =
-          await appointmentUseCase.getAppointmentRecordByUserId(userId: user!.id!);
+      final user = await SharedPreferenceManager.getUser();
+      final List<AppointmentRecordEntity> appointmentRecords;
+      if (user!.account!.role == Role.doctor) {
+        appointmentRecords = await appointmentUseCase
+            .getAppointmentRecordByDoctorId(doctorId: user.doctorProfile!.id!);
+      } else {
+        appointmentRecords = await appointmentUseCase
+            .getAppointmentRecordByUserId(userId: user.id!);
+      }
       emit(AppointmentState.success(appointmentRecords));
     } on ApiException catch (e) {
       emit(AppointmentState.error(ApiException.getErrorMessage(e)));
@@ -110,8 +118,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     }
   }
 
-  _onCollectDataHealthProviderEvent(
-      CollectDataHealthProviderEvent event, Emitter<AppointmentState> emit) async{
+  _onCollectDataHealthProviderEvent(CollectDataHealthProviderEvent event,
+      Emitter<AppointmentState> emit) async {
     emit(CreateAppointmentRecordState.initial());
     final int? providerId = event.appointmentRecordEntity.healthProvider?.id;
     final int userId = (await SharedPreferenceManager.getUser())!.id!;
@@ -143,5 +151,18 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
                 scheduledAt: scheduledAt,
                 status: AppointmentStatus.scheduled,
                 note: note)));
+  }
+
+  Future<void> _onUpdatePrescriptionEvent(
+      UpdatePrescriptionEvent event, Emitter<AppointmentState> emit) async {
+    emit(UpdatePrescriptionState.loading());
+    try {
+      final updatedAppointment =
+          await appointmentUseCase.updateAppointmentRecord(event.appointment);
+      emit(UpdatePrescriptionState.success(
+          appointmentRecordEntity: updatedAppointment));
+    } on ApiException catch (e) {
+      emit(UpdatePrescriptionState.error(ApiException.getErrorMessage(e)));
+    }
   }
 }

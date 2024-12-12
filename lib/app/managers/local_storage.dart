@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:health_management/app/app.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,6 +66,14 @@ class SharedPreferenceManager {
       return UserEntity.fromJson(jsonDecode(userRes));
     }
     return null;
+  }
+
+  static Future<Role> getUserRole() async {
+    UserEntity? user = await getUser();
+    if (user != null) {
+      return user.account!.role!;
+    }
+    return Role.user;
   }
 
   static Future<void> saveFcmToken(String fcmToken) async {

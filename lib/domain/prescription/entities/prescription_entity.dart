@@ -5,7 +5,7 @@ part 'prescription_entity.g.dart';
 
 @JsonSerializable()
 class PrescriptionEntity {
-  final int id;
+  final int? id;
   final String? notes;
   final String? diagnosis;
   final List<PrescriptionDetails>? details;
@@ -17,7 +17,7 @@ class PrescriptionEntity {
   final String? updatedAt;
 
   PrescriptionEntity({
-    required this.id,
+    this.id,
     this.notes,
     this.diagnosis,
     this.details,
@@ -56,7 +56,7 @@ class PrescriptionEntity {
   }
 
   factory PrescriptionEntity.update({
-    required final int id,
+    final int? id,
     final String? notes,
     final String? diagnosis,
     final List<PrescriptionDetails>? details,

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_management/app/utils/constants/app_color.dart';
@@ -13,7 +12,7 @@ class BottomChatFieldIcon extends StatelessWidget {
   final String receiverId;
   final bool isGroupChat;
 
-  BottomChatFieldIcon(
+ BottomChatFieldIcon(
       {super.key, required this.receiverId, required this.isGroupChat});
 
   final TextEditingController messageController =
@@ -65,21 +64,7 @@ class BottomChatFieldIcon extends StatelessWidget {
                 ),
               )
             ],
-          ),
-
-          //onWillPop property is set to a callback function that handles the behavior when the back button is pressed. Inside the callback function,
-          // it first checks if the isShowEmojiContainer property  is true, which means that the emoji container is currently visible. If it is, it calls
-          // the hideEmojiContainer() method to hide the emoji container. Otherwise, it calls Navigator.pop(context) to navigate back to the previous screen.
-          onPopInvoked: (bool isShowEmojiContainer) {
-            if (isShowEmojiContainer) {
-              cubitRead.hideEmojiContainer();
-            } else {
-              Navigator.pop(context);
-            }
-            //the callback function returns a Future.value(false), which means that it prevents the back button press from leaving the current screen.
-            return;
-          },
-        );
+        ));
       },
     );
   }

@@ -31,7 +31,7 @@ class ChatContactList extends StatelessWidget {
                 return GestureDetector(
                     onTap: () {
                       context.pushNamed(RouteDefine.chatDetails,
-                          extra: ChatPage(
+                          extra: ChatPageData(
                             name: chatContactData.name,
                             receiverId: chatContactData.contactId,
                             profilePicture: chatContactData.profileUrl,

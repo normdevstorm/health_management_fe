@@ -7,12 +7,12 @@ part 'prescription_details.freezed.dart';
 class PrescriptionDetails with _$PrescriptionDetails {
   const PrescriptionDetails._();
   const factory PrescriptionDetails(
-      {required int id,
+      {int? id,
       Medication? medication,
       String? dosage,
       String? frequency,
       String? duration,
-      String? instruction}) = _PrescriptionDetails;
+      String? instructions}) = _PrescriptionDetails;
 
   factory PrescriptionDetails.fromJson(Map<String, dynamic> json) =>
       _$PrescriptionDetailsFromJson(json);

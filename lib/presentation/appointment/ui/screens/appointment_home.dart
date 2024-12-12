@@ -1,12 +1,13 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/utils/date_converter.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
-import 'package:health_management/presentation/appointment/ui/widgets/timeline_schedule.dart';
 import '../../../../app/managers/toast_manager.dart';
 import '../../../../app/route/route_define.dart';
 import '../../../../domain/prescription/entities/prescription_entity.dart';
@@ -24,10 +25,14 @@ class AppointmentHome extends StatefulWidget {
 class _AppointmentHomeState extends State<AppointmentHome> {
   final ScrollController _timeLineScrollController = ScrollController();
   final ScrollController _appointmentListScrollController = ScrollController();
+  final ValueNotifier<bool> _isDoctorNotifier = ValueNotifier(false);
+  final EventController _eventController = EventController();
+  final GlobalKey<DayViewState> _dayViewStateKey = GlobalKey<DayViewState>();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
     context.read<AppointmentBloc>().add(const GetAllAppointmentRecordEvent());
   }
 
@@ -44,134 +49,245 @@ class _AppointmentHomeState extends State<AppointmentHome> {
     super.dispose();
   }
 
+  void _updateEvents(List<AppointmentRecordEntity> activeAppointmentRecords) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      List<CalendarEventData<Object?>> events =
+          activeAppointmentRecords.map((e) {
+        return CalendarEventData(
+          date: e.scheduledAt!,
+          startTime: e.scheduledAt!,
+          endTime: e.scheduledAt!.add(const Duration(hours: 1)),
+          title: e.doctor?.firstName ?? 'Doctor Name',
+          description:
+              e.doctor?.doctorProfile?.specialization?.name.toUpperCase() ?? '',
+        );
+      }).toList();
+
+      _eventController.removeWhere((element) => !activeAppointmentRecords.any(
+          (e) =>
+              e.doctor?.firstName == element.title &&
+              e.scheduledAt == element.startTime));
+      _eventController.addAll(events);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          child: BlocListener<AppointmentBloc, AppointmentState>(
-              listenWhen: (previous, current) => previous != current,
-              listener: (context, state) {
-                if (state.status == BlocStatus.error) {
-                  ToastManager.showToast(
-                      context: context,
-                      message: state.errorMessage ?? 'An error occurred');
-                  return;
-                }
-                if ([CreateAppointmentRecordState, CancelAppointmentRecordState]
-                        .contains(state.runtimeType) &&
-                    state.status == BlocStatus.success) {
-                  context
-                      .read<AppointmentBloc>()
-                      .add(const GetAllAppointmentRecordEvent());
-                }
-              },
-              child: ShimmerWidget(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                        DateFormat(DateFormat.YEAR_MONTH_DAY)
-                            .format(DateTime.now()),
-                        style:
-                            const TextStyle(fontSize: 16, color: Colors.grey)),
-                    const SizedBox(height: 8),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Today',
-                              style: TextStyle(
-                                  fontSize: 24, fontWeight: FontWeight.bold)),
-                          AddButtonWidget(
-                            onPressed: () {
-                              context.pushNamed(
-                                  RouteDefine.createAppointmentChooseProvider);
-                            },
-                          )
-                        ]),
-                    const SizedBox(height: 16),
-                    WeekDaysRowWidget(
-                      enableSelection: false,
-                    ),
-                    const ShadowEdgeWidget(),
-                    NotificationListener<ScrollNotification>(
-                      //TODO: Hanle later, wrap in notification of scroll controller for now in order to avoid affect the appearance of bottom nav bar
-                      onNotification: (notification) {
-                        return true;
-                      },
-                      child: BlocBuilder<AppointmentBloc, AppointmentState>(
+      child: RefreshIndicator(
+        onRefresh: () async {
+          context
+              .read<AppointmentBloc>()
+              .add(const GetAllAppointmentRecordEvent());
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            child: BlocListener<AppointmentBloc, AppointmentState>(
+                listenWhen: (previous, current) => previous != current,
+                listener: (context, state) async {
+                  if (state.status == BlocStatus.loading) {
+                    _isDoctorNotifier.value = (Role.doctor ==
+                        await SharedPreferenceManager.getUserRole());
+                    return;
+                  }
+
+                  if (state.status == BlocStatus.error) {
+                    ToastManager.showToast(
+                        context: context,
+                        message: state.errorMessage ?? 'An error occurred');
+                    return;
+                  }
+                  if ([
+                        CreateAppointmentRecordState,
+                        CancelAppointmentRecordState
+                      ].contains(state.runtimeType) &&
+                      state.status == BlocStatus.success) {
+                    context
+                        .read<AppointmentBloc>()
+                        .add(const GetAllAppointmentRecordEvent());
+                  }
+                },
+                child: ShimmerWidget(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          DateFormat(DateFormat.YEAR_MONTH_DAY)
+                              .format(DateTime.now()),
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.grey)),
+                      const SizedBox(height: 8),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Today',
+                                style: TextStyle(
+                                    fontSize: 24, fontWeight: FontWeight.bold)),
+                            ValueListenableBuilder(
+                              valueListenable: _isDoctorNotifier,
+                              builder: (context, disabled, child) => disabled
+                                  ? const SizedBox()
+                                  : AddButtonWidget(
+                                      onPressed: () {
+                                        context.pushNamed(RouteDefine
+                                            .createAppointmentChooseProvider);
+                                      },
+                                    ),
+                            )
+                          ]),
+                      const SizedBox(height: 16),
+                      WeekDaysRowWidget(
+                        enableSelection: false,
+                      ),
+                      const ShadowEdgeWidget(),
+                      NotificationListener<ScrollNotification>(
+                        //TODO: Handle later, wrap in notification of scroll controller for now in order to avoid affect the appearance of bottom nav bar
+                        onNotification: (notification) {
+                          return true;
+                        },
+                        child: BlocBuilder<AppointmentBloc, AppointmentState>(
+                          buildWhen: (previous, current) =>
+                              previous.status != current.status &&
+                              ![
+                                CreateAppointmentRecordState,
+                                CancelAppointmentRecordState,
+                                GetAppointmentDetailState,
+                                UpdatePrescriptionState,
+                              ].contains(current.runtimeType),
+                          builder: (context, state) {
+                            List<AppointmentRecordEntity>
+                                activeAppointmentRecords = [];
+                            if (state.status == BlocStatus.success) {
+                              final appointmentRecords =
+                                  state.data as List<AppointmentRecordEntity>;
+                              activeAppointmentRecords =
+                                  appointmentRecords.where(
+                                (element) {
+                                  return element.status !=
+                                      AppointmentStatus.cancelled;
+                                },
+                              ).toList();
+                              _updateEvents(activeAppointmentRecords);
+                            }
+                            return SizedBox(
+                                height: 200.r,
+                                child: DayView(
+                                    scrollOffset:
+                                        DateTime.now().hour * 60 * 0.7,
+                                    scrollPhysics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    key: _dayViewStateKey,
+                                    showVerticalLine: false,
+                                    controller: _eventController,
+                                    liveTimeIndicatorSettings:
+                                        const LiveTimeIndicatorSettings(
+                                      color: Colors.red,
+                                    ),
+                                    keepScrollOffset: true,
+                                    headerStyle: const HeaderStyle(
+                                      headerTextStyle: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    heightPerMinute: 0.7.sp,
+                                    eventTileBuilder: (date, events, boundary,
+                                            startDuration, endDuration) =>
+                                        Container(
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 4),
+                                          padding:
+                                              const EdgeInsets.only(left: 8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.lightBlue,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                events.first.title,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12.sp),
+                                              ),
+                                              Text(
+                                                events.first.description ?? '',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 10.sp),
+                                              ),
+                                            ],
+                                          ),
+                                        )));
+                          },
+                        ),
+                      ),
+                      const ShadowEdgeWidget(),
+                      BlocConsumer<AppointmentBloc, AppointmentState>(
+                        listenWhen: (previous, current) =>
+                            previous.status != current.status &&
+                            ![
+                              CreateAppointmentRecordState,
+                              CancelAppointmentRecordState,
+                              GetAppointmentDetailState,
+                              UpdatePrescriptionState
+                            ].contains(current.runtimeType),
+                        listener: (context, state) {},
                         buildWhen: (previous, current) =>
                             previous.status != current.status &&
                             ![
                               CreateAppointmentRecordState,
                               CancelAppointmentRecordState,
-                              GetAppointmentDetailState
+                              GetAppointmentDetailState,
+                              UpdatePrescriptionState
                             ].contains(current.runtimeType),
                         builder: (context, state) {
-                          //todo: handle data for dis widget later on
-                          // List<AppointmentRecordEntity> appointmentRecords = [];
+                          List<AppointmentRecordEntity>
+                              activeAppointmentRecords = [];
                           bool isLoading = true;
                           if (state.status == BlocStatus.success) {
                             isLoading = false;
-                            // appointmentRecords =
-                            //     state.data as List<AppointmentRecordEntity>;
+                            final appointmentRecords =
+                                state.data as List<AppointmentRecordEntity>;
+                            activeAppointmentRecords = appointmentRecords.where(
+                              (element) {
+                                return element.status !=
+                                    AppointmentStatus.cancelled;
+                              },
+                            ).toList();
                           }
                           return ShimmerLoading(
-                              isLoading: isLoading,
-                              child: SizedBox(
-                                  height: 200.r,
-                                  child: TimelineSchedule(
-                                    scrollController: _timeLineScrollController,
-                                  )));
+                            isLoading: isLoading,
+                            child: ListView(
+                              controller: _appointmentListScrollController,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              children: [
+                                ListAppointmentRecordWidget(
+                                    isForPatient: !_isDoctorNotifier.value,
+                                    appointmentRecords: isLoading
+                                        ? List.generate(
+                                            3,
+                                            (index) =>
+                                                const AppointmentRecordEntity(),
+                                          )
+                                        : activeAppointmentRecords),
+                              ],
+                            ),
+                          );
                         },
-                      ),
-                    ),
-                    const ShadowEdgeWidget(),
-                    BlocBuilder<AppointmentBloc, AppointmentState>(
-                      buildWhen: (previous, current) =>
-                          previous.status != current.status &&
-                          ![
-                            CreateAppointmentRecordState,
-                            CancelAppointmentRecordState,
-                            GetAppointmentDetailState
-                          ].contains(current.runtimeType),
-                      builder: (context, state) {
-                        List<AppointmentRecordEntity> appointmentRecords = [];
-                        bool isLoading = true;
-                        if (state.status == BlocStatus.success) {
-                          isLoading = false;
-                          appointmentRecords =
-                              state.data as List<AppointmentRecordEntity>;
-                        }
-                        return ShimmerLoading(
-                          isLoading: isLoading,
-                          child: ListView(
-                            controller: _appointmentListScrollController,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            children: [
-                              ListAppointmentRecordWidget(
-                                  appointmentRecords: isLoading
-                                      ? List.generate(
-                                          3,
-                                          (index) =>
-                                              const AppointmentRecordEntity(),
-                                        )
-                                      : appointmentRecords.where(
-                                          (element) {
-                                            return element.status !=
-                                                AppointmentStatus.cancelled;
-                                          },
-                                        ).toList()),
-                            ],
-                          ),
-                        );
-                      },
-                    )
-                  ],
-                ),
-              )),
+                      )
+                    ],
+                  ),
+                )),
+          ),
         ),
       ),
     );
@@ -182,9 +298,11 @@ class ListAppointmentRecordWidget extends StatelessWidget {
   const ListAppointmentRecordWidget({
     super.key,
     required this.appointmentRecords,
+    required this.isForPatient,
   });
 
   final List<AppointmentRecordEntity> appointmentRecords;
+  final bool isForPatient;
 
   @override
   Widget build(BuildContext context) {
@@ -193,41 +311,68 @@ class ListAppointmentRecordWidget extends StatelessWidget {
         appointmentRecords.length,
         (index) => Padding(
           padding: const EdgeInsets.only(top: 10.0),
-          child: AppointmentCard(
-            id: appointmentRecords[index].id,
-            prescription: appointmentRecords[index].prescription,
-            onCancel: () {
-              if (appointmentRecords[index].id != null) {
-                context.read<AppointmentBloc>().add(
-                    DeleteAppointmentRecordEvent(
-                        appointmentId: appointmentRecords[index].id!));
-              }
-            },
-            doctorType: appointmentRecords[index]
-                .doctor
-                ?.doctorProfile
-                ?.specialization
-                ?.name
-                .toUpperCase(),
-            doctorRating: appointmentRecords[index]
-                .doctor
-                ?.doctorProfile
-                ?.rating
-                ?.toInt(),
-            doctorName: appointmentRecords[index].doctor?.firstName,
-            time: appointmentRecords[index].scheduledAt != null
-                ? DateConverter.convertToYearMonthDay(
-                    appointmentRecords[index].scheduledAt!,
-                  )
-                : null,
-            date: appointmentRecords[index].scheduledAt != null
-                ? DateConverter.convertToHourMinuteSecond(
-                    appointmentRecords[index].scheduledAt!,
-                  )
-                : null,
-            isCompleted:
-                appointmentRecords[index].status == AppointmentStatus.completed,
-          ),
+          child: isForPatient
+              ? AppointmentCard.doctor(
+                  id: appointmentRecords[index].id,
+                  prescription: appointmentRecords[index].prescription,
+                  onCancel: () {
+                    if (appointmentRecords[index].id != null) {
+                      context.read<AppointmentBloc>().add(
+                          DeleteAppointmentRecordEvent(
+                              appointmentId: appointmentRecords[index].id!));
+                    }
+                  },
+                  doctorType: appointmentRecords[index]
+                      .doctor
+                      ?.doctorProfile
+                      ?.specialization
+                      ?.name
+                      .toUpperCase(),
+                  doctorRating: appointmentRecords[index]
+                      .doctor
+                      ?.doctorProfile
+                      ?.rating
+                      ?.toInt(),
+                  doctorName: appointmentRecords[index].doctor?.firstName,
+                  time: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToYearMonthDay(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  date: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToHourMinuteSecond(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  isCompleted: appointmentRecords[index].status ==
+                      AppointmentStatus.completed,
+                )
+              : AppointmentCard.patient(
+                  id: appointmentRecords[index].id,
+                  prescription: appointmentRecords[index].prescription,
+                  onCancel: () {
+                    if (appointmentRecords[index].id != null) {
+                      context.read<AppointmentBloc>().add(
+                          DeleteAppointmentRecordEvent(
+                              appointmentId: appointmentRecords[index].id!));
+                    }
+                  },
+                  patientName: appointmentRecords[index].user?.firstName,
+                  patientCondition:
+                      appointmentRecords[index].user?.gender ?? "Patient",
+                  time: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToYearMonthDay(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  date: appointmentRecords[index].scheduledAt != null
+                      ? DateConverter.convertToHourMinuteSecond(
+                          appointmentRecords[index].scheduledAt!,
+                        )
+                      : null,
+                  isCompleted: appointmentRecords[index].status ==
+                      AppointmentStatus.completed,
+                ),
         ),
       ),
     );
@@ -379,22 +524,73 @@ class AddButtonWidget extends StatelessWidget {
 
 class AppointmentCard extends StatelessWidget {
   final int? id;
+  final Role? role;
   final String? doctorType;
   final int? doctorRating;
-  final String? doctorName;
+  final String? userName;
   final String? time;
   final String? date;
   final bool isCompleted;
   final VoidCallback? onCancel;
   final PrescriptionEntity? prescription;
 
-  const AppointmentCard({
+  factory AppointmentCard.doctor({
+    int? id,
+    String? doctorType,
+    int? doctorRating,
+    String? doctorName,
+    String? time,
+    String? date,
+    required bool isCompleted,
+    VoidCallback? onCancel,
+    PrescriptionEntity? prescription,
+  }) {
+    return AppointmentCard._(
+      id: id,
+      role: Role.doctor,
+      doctorType: doctorType,
+      doctorRating: doctorRating,
+      userName: doctorName,
+      time: time,
+      date: date,
+      isCompleted: isCompleted,
+      onCancel: onCancel,
+      prescription: prescription,
+    );
+  }
+
+  factory AppointmentCard.patient({
+    int? id,
+    String? patientName,
+    String? patientCondition,
+    String? time,
+    String? date,
+    required bool isCompleted,
+    VoidCallback? onCancel,
+    PrescriptionEntity? prescription,
+  }) {
+    return AppointmentCard._(
+      id: id,
+      doctorType: patientCondition,
+      role: Role.user,
+      doctorRating: null,
+      userName: patientName,
+      time: time,
+      date: date,
+      isCompleted: isCompleted,
+      onCancel: onCancel,
+      prescription: prescription,
+    );
+  }
+
+  const AppointmentCard._({
     super.key,
     this.id,
+    this.role,
     this.onCancel,
     this.doctorType,
     this.doctorRating,
-    this.doctorName,
+    this.userName,
     this.time,
     this.date,
     this.isCompleted = false,
@@ -435,22 +631,24 @@ class AppointmentCard extends StatelessWidget {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(
                     //todo: to localize this text later on
-                    doctorName ?? "Loading...",
+                    userName ?? "Loading...",
                     style: StyleManager.buttonText,
                   ),
                   const SizedBox(height: 8),
                   Text(doctorType ?? "Loading...",
                       style: StyleManager.buttonText),
-                  Row(
-                    children: List.generate(5, (index) {
-                      return Icon(
-                        index <= (doctorRating ?? 0)
-                            ? Icons.star
-                            : Icons.star_border,
-                        color: Colors.amber,
-                      );
-                    }),
-                  ),
+                  if (role == Role.doctor) ...[
+                    Row(
+                      children: List.generate(5, (index) {
+                        return Icon(
+                          index <= (doctorRating ?? 0)
+                              ? Icons.star
+                              : Icons.star_border,
+                          color: Colors.amber,
+                        );
+                      }),
+                    )
+                  ],
                   const SizedBox(height: 8),
                   Text(
                     time ?? "Loading...",
@@ -463,7 +661,7 @@ class AppointmentCard extends StatelessWidget {
                         children: [
                           const Icon(Icons.calendar_today,
                               color: Color(0xFFEFE8E9)),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 5),
                           Text(
                             date ?? "Loading...",
                             style: const TextStyle(
@@ -471,11 +669,12 @@ class AppointmentCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      16.horizontalSpace,
                       Row(
                         children: [
                           const Icon(Icons.access_time,
                               color: Color(0xFFEFE8E9)),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: 5),
                           Text(
                             time ?? "Loading...",
                             style: const TextStyle(
@@ -505,8 +704,17 @@ class AppointmentCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.red),
+                        side: WidgetStateProperty.all(
+                          const BorderSide(color: Colors.white),
+                        ),
+                      ),
                       onPressed: onCancel,
-                      child: const Text('Cancel'),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -522,79 +730,6 @@ class AppointmentCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class ScheduleTimeline extends StatefulWidget {
-  const ScheduleTimeline({super.key});
-
-  @override
-  State<ScheduleTimeline> createState() => _ScheduleTimelineState();
-}
-
-class _ScheduleTimelineState extends State<ScheduleTimeline> {
-  ScrollController? _scrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController = ScrollController();
-  }
-
-  @override
-  void dispose() {
-    _scrollController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Time line
-                    Timeline(
-                      scrollController: _scrollController,
-                      items: [
-                        TimelineItem(
-                          time: '09:00',
-                          content: Container(
-                            height: 40,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        const TimelineItem(
-                          time: '10:00',
-                          content: AppointmentCard(
-                            doctorType: 'Cardiologist',
-                            doctorName: 'Dan Johnson',
-                            time: '10:00-11:00',
-                            isCompleted: true,
-                          ),
-                        ),
-                        TimelineItem(
-                          time: '11:00',
-                          content: Container(
-                            height: 40,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          )),
     );
   }
 }

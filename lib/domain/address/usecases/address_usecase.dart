@@ -1,8 +1,8 @@
-import '../repositories/address_repository.dart';
+// import '../repositories/address_repository.dart';
 
-class AddressUseCase {
-  final AddressRepository _repository;
+// class AddressUseCase {
+//   final AddressRepository _repository;
 
-  AddressUseCase(this._repository);
-}
+//   AddressUseCase(this._repository);
+// }
 
