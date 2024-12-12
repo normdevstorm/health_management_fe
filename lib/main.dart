@@ -15,21 +15,17 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
-import 'package:health_management/domain/articles/usecases/article_usecase.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
 import 'package:health_management/firebase_options_chat.dart'
     as firebase_options_chat;
-import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 // import 'app/config/firebase_api.dart';
 import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/toast_manager.dart';
-import 'domain/doctor/usecases/doctor_usecase.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
-import 'presentation/home/bloc/home_bloc.dart';
 
 void main() async {
   //create before runApp method to wrap all the procedures
@@ -71,14 +67,6 @@ void main() async {
                   authenticationUsecase: getIt<AuthenticationUsecase>(),
                   verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
             ),
-            BlocProvider(
-              create: (context) => ArticleBloc(
-                articleUsecase: getIt<ArticleUsecase>(),
-              ),
-            ),
-                      BlocProvider(
-              create: (context) =>
-                  HomeBloc(doctorUseCase: getIt<DoctorUseCase>())),
           ],
           child: const BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: _authenticationListener,
@@ -100,7 +88,7 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   }
 
   if (state is LoginSuccess) {
-    GoRouter.of(currentContext).goNamed(RouteDefine.home);
+    GoRouter.of(currentContext).goNamed(RouteDefine.homeScreen);
     return;
   }
 

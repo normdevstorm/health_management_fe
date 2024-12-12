@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/article_create_screen.dart';
-import 'package:health_management/presentation/articles/ui/article_detail_screen.dart';
 import 'package:health_management/presentation/articles/ui/article_update_screen.dart';
 
 class ArticleScreen extends StatefulWidget {
@@ -287,15 +288,8 @@ class ArticleItem extends StatelessWidget {
   }
 
   void _navigateToArticleDetail(BuildContext context, int articleId) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BlocProvider<ArticleBloc>.value(
-          value: BlocProvider.of<ArticleBloc>(context)
-            ..add(GetArticleByIdEvent(articleId)),
-          child: ArticleDetailScreen(articleId: articleId),
-        ),
-      ),
-    );
+    context.pushNamed(RouteDefine.articleDetails, pathParameters: {
+      'articleId': articleId.toString(),
+    });
   }
 }
