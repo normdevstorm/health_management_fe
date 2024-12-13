@@ -6,7 +6,9 @@ import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/articles/ui/article_screen.dart';
 import 'package:health_management/presentation/edit_profile/ui/edit_profile_screen.dart';
 import 'package:health_management/presentation/settings/ui/screen/settings_screen.dart';
+import '../../domain/articles/usecases/article_usecase.dart';
 import '../../domain/user/usecases/user_usecase.dart';
+import '../articles/bloc/article_bloc.dart';
 import '../edit_profile/bloc/edit_profile_bloc.dart';
 part 'settings_route.g.dart';
 
@@ -31,6 +33,11 @@ class SettingsRoute extends ShellRouteData {
         BlocProvider(
           create: (context) => EditProfileBloc(
             userUseCase: getIt<UserUseCase>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ArticleBloc(
+          articleUsecase: getIt<ArticleUsecase>()
           ),
         ),
       ],
