@@ -34,19 +34,19 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
     super.dispose();
   }
 
-  void _sendComment() {
+  void _sendComment() async {
     final commentText = _commentController.text.trim();
+    final user = await SharedPreferenceManager.getUser();
     if (commentText.isNotEmpty) {
       try {
         final commentEntity = ArticleCommentEntity(
           articleId: widget.articleId,
-          userId: 2,
+          userId: user?.id,
           content: commentText,
         );
 
-        context
-            .read<ArticleBloc>()
-            .add(CommentArticleEvent(widget.articleId ?? 0, 2, commentEntity));
+        context.read<ArticleBloc>().add(CommentArticleEvent(
+            widget.articleId ?? 0, user?.id ?? 2, commentEntity));
         _commentController.clear();
         _commentNotifier.value = false;
       } catch (e) {
