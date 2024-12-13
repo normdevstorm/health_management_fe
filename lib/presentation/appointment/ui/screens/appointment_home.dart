@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/utils/date_converter.dart';
+import 'package:health_management/app/utils/local_notification/notification_service.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import '../../../../app/managers/toast_manager.dart';
 import '../../../../app/route/route_define.dart';
@@ -334,12 +336,12 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                       ?.rating
                       ?.toInt(),
                   doctorName: appointmentRecords[index].doctor?.firstName,
-                  time: appointmentRecords[index].scheduledAt != null
+                  date: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToYearMonthDay(
                           appointmentRecords[index].scheduledAt!,
                         )
                       : null,
-                  date: appointmentRecords[index].scheduledAt != null
+                  time: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToHourMinuteSecond(
                           appointmentRecords[index].scheduledAt!,
                         )
@@ -360,12 +362,12 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                   patientName: appointmentRecords[index].user?.firstName,
                   patientCondition:
                       appointmentRecords[index].user?.gender ?? "Patient",
-                  time: appointmentRecords[index].scheduledAt != null
+                  date: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToYearMonthDay(
                           appointmentRecords[index].scheduledAt!,
                         )
                       : null,
-                  date: appointmentRecords[index].scheduledAt != null
+                  time: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToHourMinuteSecond(
                           appointmentRecords[index].scheduledAt!,
                         )
@@ -601,7 +603,6 @@ class AppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        //TODO: re-navigate after the appointment details screen is created
         context.pushNamed(RouteDefine.appointmentDetails,
             extra: prescription,
             pathParameters: {'appointmentId': id.toString()});
@@ -651,7 +652,8 @@ class AppointmentCard extends StatelessWidget {
                   ],
                   const SizedBox(height: 8),
                   Text(
-                    time ?? "Loading...",
+                    DateConverter.getWeekdayString(
+                        DateTime.tryParse(date!) ?? DateTime.now()),
                     style: StyleManager.buttonText,
                   ),
                   Row(
@@ -720,8 +722,20 @@ class AppointmentCard extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Reschedule'),
+                      onPressed: () {
+                        if (date != null && time != null) {
+                          NotificationService.scheduleNotification(
+                            appointmentId: id!,
+                            title: 'Appointment Reminder',
+                            body:
+                                'You have an appointment with ${role == Role.user ? "Patient" : "Doctor"} ${userName ?? "Loading..."} at ${DateFormat.jm().format(DateFormat.Hm().parse(time!))}',
+                            scheduledTime:
+                                // DateTime.parse('${date!} ${time!}'),
+                                DateTime.now().add(const Duration(seconds: 10)),
+                          );
+                        }
+                      },
+                      child: const Text('Remind Me'),
                     ),
                   ),
                 ],
