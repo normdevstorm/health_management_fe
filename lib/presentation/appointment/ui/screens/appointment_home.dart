@@ -145,7 +145,6 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                       ),
                       const ShadowEdgeWidget(),
                       NotificationListener<ScrollNotification>(
-                        //TODO: Handle later, wrap in notification of scroll controller for now in order to avoid affect the appearance of bottom nav bar
                         onNotification: (notification) {
                           return true;
                         },
@@ -161,17 +160,21 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                           builder: (context, state) {
                             List<AppointmentRecordEntity>
                                 activeAppointmentRecords = [];
+                            List<AppointmentRecordEntity> appointmentRecords =
+                                [];
                             if (state.status == BlocStatus.success) {
-                              final appointmentRecords =
-                                  state.data as List<AppointmentRecordEntity>;
-                              activeAppointmentRecords =
-                                  appointmentRecords.where(
-                                (element) {
-                                  return element.status !=
-                                      AppointmentStatus.cancelled;
-                                },
-                              ).toList();
-                              _updateEvents(activeAppointmentRecords);
+                              if (state.data is List<AppointmentRecordEntity>) {
+                                appointmentRecords =
+                                    state.data as List<AppointmentRecordEntity>;
+                                activeAppointmentRecords =
+                                    appointmentRecords.where(
+                                  (element) {
+                                    return element.status !=
+                                        AppointmentStatus.cancelled;
+                                  },
+                                ).toList();
+                                _updateEvents(activeAppointmentRecords);
+                              }
                             }
                             return SizedBox(
                                 height: 200.r,
@@ -253,17 +256,21 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                         builder: (context, state) {
                           List<AppointmentRecordEntity>
                               activeAppointmentRecords = [];
+                          List<AppointmentRecordEntity> appointmentRecords = [];
                           bool isLoading = true;
                           if (state.status == BlocStatus.success) {
                             isLoading = false;
-                            final appointmentRecords =
-                                state.data as List<AppointmentRecordEntity>;
-                            activeAppointmentRecords = appointmentRecords.where(
-                              (element) {
-                                return element.status !=
-                                    AppointmentStatus.cancelled;
-                              },
-                            ).toList();
+                            if (state.data is List<AppointmentRecordEntity>) {
+                              appointmentRecords =
+                                  state.data as List<AppointmentRecordEntity>;
+                              activeAppointmentRecords =
+                                  appointmentRecords.where(
+                                (element) {
+                                  return element.status !=
+                                      AppointmentStatus.cancelled;
+                                },
+                              ).toList();
+                            }
                           }
                           return ShimmerLoading(
                             isLoading: isLoading,
@@ -653,7 +660,7 @@ class AppointmentCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     DateConverter.getWeekdayString(
-                        DateTime.tryParse(date!) ?? DateTime.now()),
+                        DateTime.tryParse(date?? DateTime.now().toString()) ?? DateTime.now()),
                     style: StyleManager.buttonText,
                   ),
                   Row(
@@ -731,7 +738,7 @@ class AppointmentCard extends StatelessWidget {
                                 'You have an appointment with ${role == Role.user ? "Patient" : "Doctor"} ${userName ?? "Loading..."} at ${DateFormat.jm().format(DateFormat.Hm().parse(time!))}',
                             scheduledTime:
                                 // DateTime.parse('${date!} ${time!}'),
-                                DateTime.now().add(const Duration(seconds: 10)),
+                                DateTime.now().add(const Duration(seconds: 5)),
                           );
                         }
                       },

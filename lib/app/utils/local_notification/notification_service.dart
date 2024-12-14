@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:async/async.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +7,35 @@ import 'package:health_management/app/route/app_routing.dart';
 import 'package:health_management/app/route/route_define.dart';
 // import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
+@pragma('vm:entry-point')
+void notificationTapBackground(
+    NotificationResponse notificationResponse) async {
+  // Initialize app essentials
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Create a completer to wait for context
+  final contextCompleter = Completer<BuildContext>();
+
+  // Setup timer to check for context
+  RestartableTimer? timer;
+  timer = RestartableTimer(const Duration(milliseconds: 100), () async {
+    if (globalRootNavigatorKey.currentContext != null) {
+      contextCompleter.complete(globalRootNavigatorKey.currentContext!);
+      timer?.cancel();
+    } else {
+      timer?.reset();
+    }
+  });
+
+  // Wait for context
+  final context = await contextCompleter.future;
+
+  // Handle notification routing
+  // Handle background notification
+  NotificationService.handleReceivingAppointmentNotification(
+      notificationResponse, context);
+}
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin
@@ -23,10 +54,8 @@ class NotificationService {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (details) {
-        _handleReceivingAppointmentNotification(details);
-      },
-      onDidReceiveBackgroundNotificationResponse: (details) => _handleReceivingAppointmentNotification(details),
+      onDidReceiveNotificationResponse: _handleForegroundNotification,
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
 
     // Create Notification Channel
@@ -35,13 +64,49 @@ class NotificationService {
     // onDidReceiveNotificationResponse and handle this on background
   }
 
-  static void _handleReceivingAppointmentNotification(NotificationResponse details) {
+  static Future<void> debugNotification() async {
+    await _flutterLocalNotificationsPlugin.show(
+      0,
+      'Debug Notification',
+      'Test notification while app is terminated',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+      ),
+      payload: '123', // Test appointment ID
+    );
+  }
+
+  static void _handleForegroundNotification(NotificationResponse response) {
+    if (response.payload != null) {
+      final context = globalRootNavigatorKey.currentState!.context;
+
+      handleReceivingAppointmentNotification(response, context);
+    }
+  }
+
+  static void handleReceivingAppointmentNotification(
+      NotificationResponse details, BuildContext? completeContext) async {
     try {
       int appointmentId = int.parse(details.payload!);
-      final BuildContext? context = globalRootNavigatorKey.currentContext;
-      if (context != null) {
-        GoRouter.of(context).pushNamed(RouteDefine.appointmentDetails,
-            pathParameters: {'appointmentId': appointmentId.toString()});
+      final navigator = globalRootNavigatorKey.currentState;
+      if (navigator != null) {
+        final router = GoRouter.of(navigator.context);
+        await router.pushReplacementNamed(RouteDefine.appointment,
+            queryParameters: {
+              "source": "notification",
+              "appointmentId": appointmentId.toString()
+            });
+      } else {
+        final router = GoRouter.of(completeContext!);
+        router.pushReplacementNamed(RouteDefine.appointment, queryParameters: {
+          "source": "notification",
+          "appointmentId": appointmentId.toString()
+        });
       }
     } catch (e) {
       debugPrint('Error handling notification tap: $e');

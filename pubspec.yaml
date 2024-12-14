@@ -97,6 +97,7 @@ dependencies:
   flutter_keyboard_visibility: ^6.0.0
   transparent_image: ^2.0.1
   timezone: ^0.10.0
+  async: ^2.11.0
   
 
 
