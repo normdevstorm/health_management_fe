@@ -11,8 +11,6 @@ import 'package:health_management/presentation/chat/ui/main/media/widget/preview
 import 'package:health_management/presentation/chat/ui/main/media/widget/preview/video_preview_page.dart';
 import 'package:health_management/presentation/chat/widgets/custom_timer_count_up.dart';
 
-late List<CameraDescription> cameras;
-
 class CameraPage extends StatefulWidget {
   static const routeName = "camera";
 
@@ -29,6 +27,7 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   // _cameraValue is to get camera isInitialized or not
+  late List<CameraDescription> cameras;
   late Future<void> _cameraValue;
   late CameraController _cameraController;
   bool isFlashOn = false;
@@ -40,8 +39,17 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
+    initializeCamera();
+
+    // _cameraController = CameraController(cameras[0], ResolutionPreset.high);
+    // _cameraValue = _cameraController.initialize();
+  }
+
+  void initializeCamera() async {
+    cameras = await availableCameras();
     _cameraController = CameraController(cameras[0], ResolutionPreset.high);
     _cameraValue = _cameraController.initialize();
+    setState(() {});
   }
 
   @override
@@ -164,13 +172,14 @@ class _CameraPageState extends State<CameraPage> {
     File? image = await pickImageFromGallery(context);
     //to avoid warning Don't use 'BuildContext's across async gaps.
     if (!mounted) return;
-    Navigator.pushNamed(context, ImagePreviewPage.routeName,
-        arguments: ImagePreviewPage(
-          imageFilePath: image?.path ?? '',
-          receiverId: widget.receiverId,
-          userData: widget.userData,
-          isGroupChat: widget.isGroupChat,
-        ));
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ImagePreviewPage(
+        imageFilePath: image?.path ?? '',
+        receiverId: widget.receiverId,
+        userData: widget.userData,
+        isGroupChat: widget.isGroupChat,
+      );
+    }));
   }
 
   //This function is responsible for flipping between the front and back camera of the device when called.
@@ -200,13 +209,14 @@ class _CameraPageState extends State<CameraPage> {
       XFile file = await _cameraController.takePicture();
       //to avoid warning Don't use 'BuildContext's across async gaps.
       if (!mounted) return;
-      Navigator.pushNamed(context, ImagePreviewPage.routeName,
-          arguments: ImagePreviewPage(
-            imageFilePath: file.path,
-            receiverId: widget.receiverId,
-            userData: widget.userData,
-            isGroupChat: widget.isGroupChat,
-          ));
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return ImagePreviewPage(
+          imageFilePath: file.path,
+          receiverId: widget.receiverId,
+          userData: widget.userData,
+          isGroupChat: widget.isGroupChat,
+        );
+      }));
     }
   }
 
@@ -225,13 +235,14 @@ class _CameraPageState extends State<CameraPage> {
       isRecording = false;
     });
     if (!mounted) return;
-    Navigator.pushNamed(context, VideoPreviewPage.routeName,
-        arguments: VideoPreviewPage(
-          receiverId: widget.receiverId,
-          videoFilePath: videoPath.path,
-          userData: widget.userData,
-          isGroupChat: widget.isGroupChat,
-        ));
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return VideoPreviewPage(
+        receiverId: widget.receiverId,
+        videoFilePath: videoPath.path,
+        userData: widget.userData,
+        isGroupChat: widget.isGroupChat,
+      );
+    }));
   }
 
   Widget cameraIcon() {
