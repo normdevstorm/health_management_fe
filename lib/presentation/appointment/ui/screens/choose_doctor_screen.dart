@@ -7,6 +7,7 @@ import 'package:health_management/app/managers/size_manager.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/appointment/appointment_bloc.dart';
+import 'package:health_management/presentation/common/custom_network_image.dart';
 
 class ChooseDoctorScreen extends StatelessWidget {
   final List<UserEntity> doctors;
@@ -38,7 +39,7 @@ class ChooseDoctorScreen extends StatelessWidget {
                       "",
               experience: doctor.doctorProfile?.experience.toString() ?? "",
               reviews: doctor.doctorProfile?.rating.toString() ?? "",
-              image: 'assets/images/placeholder.png',
+              image: doctor.avatarUrl ?? 'assets/images/placeholder.png',
             );
           },
         ),
@@ -102,12 +103,8 @@ class DoctorCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  image,
-                  width: 100.w,
-                  height: 100.h,
-                  fit: BoxFit.cover,
-                ),
+                child: CustomNetworkImage(
+                    avatarUrl: image, width: 100, height: 80),
               ),
             ),
             60.horizontalSpace,

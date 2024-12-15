@@ -145,12 +145,14 @@ class _ArticleHomeSate extends State<ArticleHome> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Top Doctors",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      const Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: Text(
+                          "Top Doctors",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      const SizedBox(height: 15),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(

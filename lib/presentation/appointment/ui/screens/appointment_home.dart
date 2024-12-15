@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/utils/date_converter.dart';
+import 'package:health_management/app/utils/local_notification/notification_service.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import '../../../../app/managers/toast_manager.dart';
 import '../../../../app/route/route_define.dart';
 import '../../../../domain/prescription/entities/prescription_entity.dart';
+import '../../../common/custom_network_image.dart';
 import '../../../common/shimmer_loading.dart';
 import '../../bloc/appointment/appointment_bloc.dart';
 import '../widgets/shadow_edge.dart';
@@ -143,7 +146,6 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                       ),
                       const ShadowEdgeWidget(),
                       NotificationListener<ScrollNotification>(
-                        //TODO: Handle later, wrap in notification of scroll controller for now in order to avoid affect the appearance of bottom nav bar
                         onNotification: (notification) {
                           return true;
                         },
@@ -159,17 +161,21 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                           builder: (context, state) {
                             List<AppointmentRecordEntity>
                                 activeAppointmentRecords = [];
+                            List<AppointmentRecordEntity> appointmentRecords =
+                                [];
                             if (state.status == BlocStatus.success) {
-                              final appointmentRecords =
-                                  state.data as List<AppointmentRecordEntity>;
-                              activeAppointmentRecords =
-                                  appointmentRecords.where(
-                                (element) {
-                                  return element.status !=
-                                      AppointmentStatus.cancelled;
-                                },
-                              ).toList();
-                              _updateEvents(activeAppointmentRecords);
+                              if (state.data is List<AppointmentRecordEntity>) {
+                                appointmentRecords =
+                                    state.data as List<AppointmentRecordEntity>;
+                                activeAppointmentRecords =
+                                    appointmentRecords.where(
+                                  (element) {
+                                    return element.status !=
+                                        AppointmentStatus.cancelled;
+                                  },
+                                ).toList();
+                                _updateEvents(activeAppointmentRecords);
+                              }
                             }
                             return SizedBox(
                                 height: 200.r,
@@ -251,17 +257,21 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                         builder: (context, state) {
                           List<AppointmentRecordEntity>
                               activeAppointmentRecords = [];
+                          List<AppointmentRecordEntity> appointmentRecords = [];
                           bool isLoading = true;
                           if (state.status == BlocStatus.success) {
                             isLoading = false;
-                            final appointmentRecords =
-                                state.data as List<AppointmentRecordEntity>;
-                            activeAppointmentRecords = appointmentRecords.where(
-                              (element) {
-                                return element.status !=
-                                    AppointmentStatus.cancelled;
-                              },
-                            ).toList();
+                            if (state.data is List<AppointmentRecordEntity>) {
+                              appointmentRecords =
+                                  state.data as List<AppointmentRecordEntity>;
+                              activeAppointmentRecords =
+                                  appointmentRecords.where(
+                                (element) {
+                                  return element.status !=
+                                      AppointmentStatus.cancelled;
+                                },
+                              ).toList();
+                            }
                           }
                           return ShimmerLoading(
                             isLoading: isLoading,
@@ -334,18 +344,19 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                       ?.rating
                       ?.toInt(),
                   doctorName: appointmentRecords[index].doctor?.firstName,
-                  time: appointmentRecords[index].scheduledAt != null
+                  date: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToYearMonthDay(
                           appointmentRecords[index].scheduledAt!,
                         )
                       : null,
-                  date: appointmentRecords[index].scheduledAt != null
+                  time: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToHourMinuteSecond(
                           appointmentRecords[index].scheduledAt!,
                         )
                       : null,
                   isCompleted: appointmentRecords[index].status ==
                       AppointmentStatus.completed,
+                  avatarUrl: appointmentRecords[index].doctor?.avatarUrl,
                 )
               : AppointmentCard.patient(
                   id: appointmentRecords[index].id,
@@ -360,18 +371,19 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                   patientName: appointmentRecords[index].user?.firstName,
                   patientCondition:
                       appointmentRecords[index].user?.gender ?? "Patient",
-                  time: appointmentRecords[index].scheduledAt != null
+                  date: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToYearMonthDay(
                           appointmentRecords[index].scheduledAt!,
                         )
                       : null,
-                  date: appointmentRecords[index].scheduledAt != null
+                  time: appointmentRecords[index].scheduledAt != null
                       ? DateConverter.convertToHourMinuteSecond(
                           appointmentRecords[index].scheduledAt!,
                         )
                       : null,
                   isCompleted: appointmentRecords[index].status ==
                       AppointmentStatus.completed,
+                  avatarUrl: appointmentRecords[index].user?.avatarUrl,
                 ),
         ),
       ),
@@ -528,6 +540,7 @@ class AppointmentCard extends StatelessWidget {
   final String? doctorType;
   final int? doctorRating;
   final String? userName;
+  final String? avatarUrl;
   final String? time;
   final String? date;
   final bool isCompleted;
@@ -539,6 +552,7 @@ class AppointmentCard extends StatelessWidget {
     String? doctorType,
     int? doctorRating,
     String? doctorName,
+    String? avatarUrl,
     String? time,
     String? date,
     required bool isCompleted,
@@ -551,6 +565,7 @@ class AppointmentCard extends StatelessWidget {
       doctorType: doctorType,
       doctorRating: doctorRating,
       userName: doctorName,
+      avatarUrl: avatarUrl,
       time: time,
       date: date,
       isCompleted: isCompleted,
@@ -562,6 +577,7 @@ class AppointmentCard extends StatelessWidget {
   factory AppointmentCard.patient({
     int? id,
     String? patientName,
+    String? avatarUrl,
     String? patientCondition,
     String? time,
     String? date,
@@ -575,6 +591,7 @@ class AppointmentCard extends StatelessWidget {
       role: Role.user,
       doctorRating: null,
       userName: patientName,
+      avatarUrl: avatarUrl,
       time: time,
       date: date,
       isCompleted: isCompleted,
@@ -591,6 +608,7 @@ class AppointmentCard extends StatelessWidget {
     this.doctorType,
     this.doctorRating,
     this.userName,
+    this.avatarUrl,
     this.time,
     this.date,
     this.isCompleted = false,
@@ -601,7 +619,6 @@ class AppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        //TODO: re-navigate after the appointment details screen is created
         context.pushNamed(RouteDefine.appointmentDetails,
             extra: prescription,
             pathParameters: {'appointmentId': id.toString()});
@@ -651,7 +668,8 @@ class AppointmentCard extends StatelessWidget {
                   ],
                   const SizedBox(height: 8),
                   Text(
-                    time ?? "Loading...",
+                    DateConverter.getWeekdayString(
+                        DateTime.tryParse(date?? DateTime.now().toString()) ?? DateTime.now()),
                     style: StyleManager.buttonText,
                   ),
                   Row(
@@ -688,12 +706,8 @@ class AppointmentCard extends StatelessWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10.r),
-                    child: Image.asset(
-                      'assets/images/placeholder.png',
-                      width: 100.w,
-                      height: 80.h,
-                      fit: BoxFit.cover,
-                    ),
+                    //TODO: to refractor this to a common widget
+                    child: CustomNetworkImage(avatarUrl: avatarUrl),
                   ),
                 ),
               ],
@@ -720,8 +734,20 @@ class AppointmentCard extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Reschedule'),
+                      onPressed: () {
+                        if (date != null && time != null) {
+                          NotificationService.scheduleNotification(
+                            appointmentId: id!,
+                            title: 'Appointment Reminder',
+                            body:
+                                'You have an appointment with ${role == Role.user ? "Patient" : "Doctor"} ${userName ?? "Loading..."} at ${DateFormat.jm().format(DateFormat.Hm().parse(time!))}',
+                            scheduledTime:
+                                // DateTime.parse('${date!} ${time!}'),
+                                DateTime.now().add(const Duration(seconds: 5)),
+                          );
+                        }
+                      },
+                      child: const Text('Remind Me'),
                     ),
                   ),
                 ],

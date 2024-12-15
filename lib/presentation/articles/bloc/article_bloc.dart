@@ -83,8 +83,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       UpdateArticleEvent event, Emitter<ArticleState> emit) async {
     emit(ArticleState.loading());
     try {
-      final articleUpdate =
-          await articleUsecase.updateArticle(event.articleEntity, event.userId);
+      await articleUsecase.updateArticle(event.articleEntity, event.userId);
       final articles = await articleUsecase.getAllArticleByUserId(event.userId);
       emit(ArticleState.success(articles));
       // Phát sự kiện để lấy lại danh sách bài viết
@@ -135,7 +134,7 @@ class ArticleBloc extends Bloc<ArticleEvent, ArticleState> {
       VoteArticleEvent event, Emitter<ArticleState> emit) async {
     emit(ArticleState.loading());
     try {
-      final response = await articleUsecase.voteArticle(
+      await articleUsecase.voteArticle(
           event.articleId, event.userId, event.voteType);
       final article = await articleUsecase.getArticleById(event.articleId);
       final voteData = <String, int?>{

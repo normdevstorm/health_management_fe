@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -30,7 +31,10 @@ part 'appointment_route.g.dart';
 @TypedShellRoute<AppointmentRoute>(
   routes: [
     TypedGoRoute<AppointmentHomeRoute>(
-        path: "/appointment/home", name: RouteDefine.appointment, routes: []),
+      path: "/appointment/home",
+      name: RouteDefine.appointment,
+      routes: [],
+    ),
     TypedGoRoute<AppointmentDetailsRoute>(
         path: "/appointment/details/:appointmentId",
         name: RouteDefine.appointmentDetails,
@@ -146,6 +150,16 @@ class AppointmentHomeRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const AppointmentHome();
+  }
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {
+    final routeQueryData = state.uri.queryParameters;
+    if (routeQueryData['source'] == 'notification') {
+      final appointmentId = int.parse(routeQueryData['appointmentId'] ?? '0');
+      return "/appointment/details/$appointmentId";
+    }
+    return null;
   }
 }
 

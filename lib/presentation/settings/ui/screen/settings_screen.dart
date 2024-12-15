@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/route/route_define.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_event.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_state.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,6 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     // context.read<AuthenticationBloc>().add(LogOutEvent());
+    context.read<EditProfileBloc>().add(const GetInformationUser());
     controller = PageController(initialPage: 1);
   }
 
@@ -37,38 +43,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             SizedBox(height: 25.h),
             // Profile Info
-            FutureBuilder(
-                future: SharedPreferenceManager.getUser(),
-                builder: (context, snapshot) {
-                  final ava = snapshot.data?.avatarUrl ??
+            BlocBuilder<EditProfileBloc, EditProfileState>(
+              builder: (context, state) {
+                if (state.status == BlocStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state.status == BlocStatus.success) {
+                  final user = state.data as UserEntity;
+                  final ava = user.avatarUrl ??
                       "https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg";
-                  final username = snapshot.data?.firstName ?? "Guest";
-                  final role = snapshot.data?.account?.role?.name.toUpperCase();
-                  return Row(
-                    children: [
-                      CircleAvatar(
-                          radius: 30.r, backgroundImage: NetworkImage(ava)),
-                      SizedBox(width: 16.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            username,
-                            style: TextStyle(
-                                fontSize: 20.sp, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            role ?? "user",
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 14.sp),
-                          ),
-                        ],
-                      ),
-                    ],
+                  final username = user.firstName ?? "Guest";
+                  final role = user.account?.role?.name.toUpperCase();
+
+                  return Padding(
+                    padding: EdgeInsets.only(
+                        top: 20.h, left: 15.h), // Tạo khoảng cách từ trên xuống
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 30.r,
+                          backgroundImage: NetworkImage(ava),
+                        ),
+                        SizedBox(width: 16.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              username,
+                              style: TextStyle(
+                                  fontSize: 20.sp, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              role ?? "user",
+                              style: TextStyle(
+                                  color: Colors.grey, fontSize: 14.sp),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   );
-                }),
-            SizedBox(height: 20.h),
-            SizedBox(height: 20.h),
+                } else {
+                  return const CircularProgressIndicator();
+                }
+              },
+            ),
+            SizedBox(height: 25.h),
             // Menu List
             Expanded(
               child: ListView(

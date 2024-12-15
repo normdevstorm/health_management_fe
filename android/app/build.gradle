@@ -29,7 +29,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace = "com.example.health_management"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -46,9 +46,11 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = 23
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 33
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        multiDexEnabled true
+
     }
 
     buildTypes {
@@ -95,6 +97,8 @@ android {
 // Add your dependencies here
 dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    implementation 'androidx.window:window:1.0.0'
+    implementation 'androidx.window:window-java:1.0.0'
     implementation 'com.google.firebase:firebase-firestore:24.0.0' // Use the latest version
     implementation 'com.google.android.gms:play-services-base:18.1.0' // Use the latest version
     implementation 'com.google.firebase:firebase-analytics:21.0.0' // or the latest version

@@ -25,7 +25,9 @@ import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/toast_manager.dart';
+import 'app/utils/local_notification/notification_service.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
   //create before runApp method to wrap all the procedures
@@ -43,6 +45,8 @@ void main() async {
     //TODO: UNCOMMENT THIS LINE TO RUN ON MOBILE DEVICES
     name: 'chatApp',
   );
+  tz.initializeTimeZones();
+  await NotificationService.initializeNotification();
 
   runApp(CalendarControllerProvider(
     controller: EventController(),
@@ -166,6 +170,7 @@ class MyApp extends StatelessWidget {
       routerConfig: AppRouting.shellRouteConfig,
       debugShowCheckedModeBanner: false,
     );
+
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       useInheritedMediaQuery: true,

@@ -21,7 +21,7 @@ class ContactsCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                name,
+                name.split('@').first,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 12,

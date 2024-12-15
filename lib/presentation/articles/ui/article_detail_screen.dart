@@ -28,6 +28,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _commentNotifier = ValueNotifier(false);
   late final article = "";
+  List<int> upvoteList = [];
+  List<int> downvoteList = [];
 
   @override
   void dispose() {
@@ -117,6 +119,17 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                 data = const ArticleEntity();
                 // TODO: Handle the error appropriately
               }
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                data?.votes?.map(
+                  (e) {
+                    if (e.type == VoteType.upvote) {
+                      upvoteList.add(e.userId!);
+                    } else {
+                      downvoteList.add(e.userId!);
+                    }
+                  },
+                );
+              });
               // Use the `data` variable as needed
               return Scaffold(
                   appBar: AppBar(
@@ -196,26 +209,22 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                 Text(data.content ?? "No content available."),
                                 const SizedBox(height: 8),
                                 const SizedBox(height: 8),
-                                data.media != null
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(20.r),
-                                        child: FadeInImage.memoryNetwork(
-                                          placeholder: kTransparentImage,
-                                          image: data.media!.first.url ??
-                                              "assets/images/placeholder.png",
-                                          fit: BoxFit.cover,
-                                          imageErrorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  Image.asset(
-                                            'assets/images/placeholder.png',
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      )
-                                    : const Placeholder(
-                                        fallbackHeight: 200,
-                                        fallbackWidth: double.infinity),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  child: FadeInImage.memoryNetwork(
+                                    placeholder: kTransparentImage,
+                                    image: data.media!.first.url ??
+                                        "assets/images/placeholder.png",
+                                    fit: BoxFit.cover,
+                                    imageErrorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Image.asset(
+                                      'assets/images/placeholder.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                                    height: 400,
+                                  ),
+                                ),
                                 const Divider(height: 20, thickness: 1),
                                 // Stats and comment button
                                 Row(
@@ -260,6 +269,9 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                             return _stateWidget(
                                               Icons.thumb_up,
                                               upVoteCount ?? 0,
+                                              colorSelected: Colors.blue,
+                                              isSelected:
+                                                  upvoteList.contains(userId),
                                               context,
                                               () => context
                                                   .read<ArticleBloc>()
@@ -310,8 +322,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                             }
 
                                             return _stateWidget(
-                                              Icons.thumb_up,
+                                              Icons.thumb_down,
                                               downvoteCount ?? 0,
+                                              colorSelected: Colors.red,
+                                              isSelected:
+                                                  downvoteList.contains(userId),
                                               context,
                                               () => context
                                                   .read<ArticleBloc>()
@@ -446,12 +461,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 }
 
 Widget _stateWidget(
-    IconData icon, int count, BuildContext context, VoidCallback? onTap) {
+    IconData icon, int count, BuildContext context, VoidCallback? onTap,
+    {bool isSelected = false, Color? colorSelected}) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       GestureDetector(
-          onTap: onTap, child: Icon(icon, size: 24, color: Colors.black)),
+          onTap: onTap,
+          child: Icon(icon,
+              size: 24, color: isSelected ? colorSelected : Colors.black)),
       const SizedBox(height: 4),
       Text(
         count.toString(),

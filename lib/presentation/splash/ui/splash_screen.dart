@@ -14,12 +14,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     context.read<AuthenticationBloc>().add(const CheckLoginStatusEvent());
-    _navigateToHome();
+    // _navigateToHome();
   }
 
-  _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 3), () {});
-  }
+  // _navigateToHome() async {
+  //   await Future.delayed(const Duration(seconds: 3), () {});
+  // }
 
   @override
   Widget build(BuildContext context) {

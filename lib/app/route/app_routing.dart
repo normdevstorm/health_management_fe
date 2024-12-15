@@ -52,6 +52,14 @@ class AppRouting {
           parentNavigatorKey: globalRootNavigatorKey,
           path: '/',
           builder: (context, state) => const SplashScreen(),
+          redirect: (context, state) {
+            if (state.uri.queryParameters["source"] == "notification") {
+              final appointmentId =
+                  int.parse(state.uri.queryParameters['appointmentId'] ?? '0');
+              return "/appointment/details/$appointmentId";
+            }
+            return null;
+          },
         ),
         StatefulShellRoute.indexedStack(
           parentNavigatorKey: globalRootNavigatorKey,
@@ -74,17 +82,18 @@ class AppRouting {
             branches: <StatefulShellBranch>[
               StatefulShellBranch(
                   navigatorKey: rootNavigatorHome,
-                  routes: <RouteBase>[
-                   $homeRoute
-                  ]),
+                  routes: <RouteBase>[$homeRoute]),
               StatefulShellBranch(
                   restorationScopeId: 'chatRestorationScope',
                   navigatorKey: rootNavigatorChat,
-                  routes: <RouteBase>[$chatRoute]),
+                  routes: <RouteBase>[$chatRoute],
+                  preload: true),
               StatefulShellBranch(
-                  observers: [appointmentRouteObserver],
-                  navigatorKey: rootNavigatorAppointment,
-                  routes: <RouteBase>[$appointmentRoute]),
+                observers: [appointmentRouteObserver],
+                navigatorKey: rootNavigatorAppointment,
+                routes: <RouteBase>[$appointmentRoute],
+                preload: true,
+              ),
               StatefulShellBranch(
                   navigatorKey: rootNavigatorProfile,
                   routes: <RouteBase>[$settingsRoute])

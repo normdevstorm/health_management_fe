@@ -12,7 +12,6 @@ import 'package:health_management/domain/appointment/entities/appointment_record
 import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/common/shimmer_loading.dart';
-
 import '../../../../app/managers/local_storage.dart';
 import '../../../../app/route/route_define.dart';
 import '../../../../domain/health_provider/entities/health_provider_entity.dart';
@@ -34,102 +33,123 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
   AppointmentRecordEntity appointmentRecordEntity =
       const AppointmentRecordEntity();
   var _isDoctor = false;
+  final ValueNotifier<int> _popCountNotifier = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
-    context
-        .read<AppointmentBloc>()
-        .add(GetAppointmentDetailEvent(appointmentId: widget.appointmentId));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context
+          .read<AppointmentBloc>()
+          .add(GetAppointmentDetailEvent(appointmentId: widget.appointmentId));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Appointment Details'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: BlocConsumer<AppointmentBloc, AppointmentState>(
-            listener: (context, state) async {
-              if (state.status == BlocStatus.loading) {
-                _isDoctor = (Role.doctor ==
-                    await SharedPreferenceManager.getUserRole());
-                return;
-              }
-
-              if (state.status == BlocStatus.error) {
-                ToastManager.showToast(
-                    context: context,
-                    message: state.errorMessage ?? "Something went wrong!!!");
-              }
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        print('PopScope: didPop: $didPop, result: $result');
+        if (_popCountNotifier.value > 0) {
+          _handleNotidicationRedirect(context);
+        }
+        _popCountNotifier.value++;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Appointment Details'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              _handleNotidicationRedirect(context);
             },
-            listenWhen: (previous, current) =>
-                previous != current && current is GetAppointmentDetailState,
-            buildWhen: (previous, current) =>
-                previous.status != current.status &&
-                current is GetAppointmentDetailState,
-            builder: (context, state) {
-              bool isLoading = [BlocStatus.loading, BlocStatus.initial]
-                  .contains(state.status);
-              if (state.status == BlocStatus.success &&
-                  state.data is AppointmentRecordEntity) {
-                appointmentRecordEntity = state.data as AppointmentRecordEntity;
-              }
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: BlocConsumer<AppointmentBloc, AppointmentState>(
+              listener: (context, state) async {
+                if (state.status == BlocStatus.loading) {
+                  _isDoctor = (Role.doctor ==
+                      await SharedPreferenceManager.getUserRole());
+                  return;
+                }
 
-              return ShimmerWidget(
-                child: ShimmerLoading(
-                  isLoading: isLoading && appointmentRecordEntity.id == null,
-                  child: Column(
-                    children: [
-                      _buildSection(
-                        height: 120.h,
-                        context,
-                        child: _buildDateTimeBox(
-                            dateTime: appointmentRecordEntity.scheduledAt),
-                      ),
-                      _buildSection(
-                        height: 280.h,
-                        context,
-                        child: _buildHealthProviderBox(
-                            healthProvider:
-                                appointmentRecordEntity.healthProvider),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildSection(
+                if (state.status == BlocStatus.error) {
+                  ToastManager.showToast(
+                      context: context,
+                      message: state.errorMessage ?? "Something went wrong!!!");
+                }
+              },
+              listenWhen: (previous, current) =>
+                  previous != current && current is GetAppointmentDetailState,
+              buildWhen: (previous, current) =>
+                  previous.status != current.status &&
+                  current is GetAppointmentDetailState,
+              builder: (context, state) {
+                bool isLoading = [BlocStatus.loading, BlocStatus.initial]
+                    .contains(state.status);
+                if (state.status == BlocStatus.success &&
+                    state.data is AppointmentRecordEntity) {
+                  appointmentRecordEntity =
+                      state.data as AppointmentRecordEntity;
+                }
+
+                return ShimmerWidget(
+                  child: ShimmerLoading(
+                    isLoading: isLoading && appointmentRecordEntity.id == null,
+                    child: Column(
+                      children: [
+                        _buildSection(
+                          height: 120.h,
+                          context,
+                          child: _buildDateTimeBox(
+                              dateTime: appointmentRecordEntity.scheduledAt),
+                        ),
+                        _buildSection(
+                          height: 280.h,
+                          context,
+                          child: _buildHealthProviderBox(
+                              healthProvider:
+                                  appointmentRecordEntity.healthProvider),
+                        ),
+                        const SizedBox(width: 8),
+                        _buildSection(
+                            height: 150.h,
+                            context,
+                            child: _isDoctor
+                                ? UserDetailsBox.patient(
+                                    appointmentId: widget.appointmentId,
+                                    patient: appointmentRecordEntity.user,
+                                  )
+                                : UserDetailsBox.doctor(
+                                    appointmentId: widget.appointmentId,
+                                    doctor: appointmentRecordEntity.doctor,
+                                  )),
+                        _buildSection(
                           height: 150.h,
                           context,
-                          child: _isDoctor
-                              ? UserDetailsBox.patient(
-                                  appointmentId: widget.appointmentId,
-                                  patient: appointmentRecordEntity.user,
-                                )
-                              : UserDetailsBox.doctor(
-                                  appointmentId: widget.appointmentId,
-                                  doctor: appointmentRecordEntity.doctor,
-                                )),
-                      _buildSection(
-                        height: 150.h,
-                        context,
-                        child:
-                            _buildNotesBox(note: appointmentRecordEntity.note),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildSection(
-                        height: 100.h,
-                        context,
-                        child: _buildPrescriptionBox(
-                            appointmentId: appointmentRecordEntity.id,
-                            prescription: appointmentRecordEntity.prescription,
-                            context: context),
-                      ),
-                    ],
+                          child: _buildNotesBox(
+                              note: appointmentRecordEntity.note),
+                        ),
+                        const SizedBox(width: 8),
+                        _buildSection(
+                          height: 100.h,
+                          context,
+                          child: _buildPrescriptionBox(
+                              appointmentId: appointmentRecordEntity.id,
+                              prescription:
+                                  appointmentRecordEntity.prescription,
+                              context: context),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -484,6 +504,10 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
       ],
     );
   }
+}
+
+void _handleNotidicationRedirect(BuildContext context) {
+  context.goNamed(RouteDefine.appointment);
 }
 
 class UserDetailsBox extends StatelessWidget {

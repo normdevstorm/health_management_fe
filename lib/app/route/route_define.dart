@@ -27,4 +27,6 @@ class RouteDefine {
   static const String article = 'articles';
   static const String homeArticles = 'home-articles';
   static const String profile = 'profile';
+
+  static const String avatarPreview = 'avatar-preview';
 }
