@@ -6,6 +6,7 @@ import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
@@ -14,8 +15,8 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final int articleId;
-
-  const ArticleDetailScreen({super.key, required this.articleId});
+  final int? userId;
+  const ArticleDetailScreen({super.key, required this.articleId, this.userId});
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
@@ -232,16 +233,44 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                 as Map<String, int?>)["up_vote"]
                                             : data?.upVoteCount;
 
-                                        return _stateWidget(
-                                          Icons.thumb_up,
-                                          upVoteCount ?? 0,
-                                          context,
-                                          () => context.read<ArticleBloc>().add(
-                                                VoteArticleEvent(
-                                                    widget.articleId,
-                                                    2,
-                                                    VoteType.upvote),
-                                              ),
+                                        return FutureBuilder<UserEntity?>(
+                                          future:
+                                              SharedPreferenceManager.getUser(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            }
+
+                                            if (snapshot.hasError ||
+                                                !snapshot.hasData) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Lỗi khi lấy thông tin người dùng!"));
+                                            }
+
+                                            final userId = snapshot.data
+                                                ?.id; // Lấy ID người dùng từ UserEntity
+                                            if (userId == null) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Không tìm thấy thông tin người dùng!"));
+                                            }
+
+                                            return _stateWidget(
+                                              Icons.thumb_up,
+                                              upVoteCount ?? 0,
+                                              context,
+                                              () => context
+                                                  .read<ArticleBloc>()
+                                                  .add(
+                                                    VoteArticleEvent(
+                                                        widget.articleId,
+                                                        userId,
+                                                        VoteType.upvote),
+                                                  ),
+                                            );
+                                          },
                                         );
                                       },
                                     ),
@@ -250,22 +279,50 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                       buildWhen: (previous, current) =>
                                           current.data is Map<String, int?>,
                                       builder: (context, state) {
-                                        final downVoteCount = (state.data
+                                        final downvoteCount = (state.data
                                                 is Map<String, int?>)
                                             ? (state.data as Map<String, int?>)[
                                                 "down_vote"]
                                             : data?.downVoteCount;
 
-                                        return _stateWidget(
-                                          Icons.thumb_down,
-                                          downVoteCount ?? 0,
-                                          context,
-                                          () => context.read<ArticleBloc>().add(
-                                                VoteArticleEvent(
-                                                    widget.articleId,
-                                                    2,
-                                                    VoteType.downvote),
-                                              ),
+                                        return FutureBuilder<UserEntity?>(
+                                          future:
+                                              SharedPreferenceManager.getUser(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            }
+
+                                            if (snapshot.hasError ||
+                                                !snapshot.hasData) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Lỗi khi lấy thông tin người dùng!"));
+                                            }
+
+                                            final userId = snapshot.data
+                                                ?.id; // Lấy ID người dùng từ UserEntity
+                                            if (userId == null) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Không tìm thấy thông tin người dùng!"));
+                                            }
+
+                                            return _stateWidget(
+                                              Icons.thumb_up,
+                                              downvoteCount ?? 0,
+                                              context,
+                                              () => context
+                                                  .read<ArticleBloc>()
+                                                  .add(
+                                                    VoteArticleEvent(
+                                                        widget.articleId,
+                                                        userId,
+                                                        VoteType.downvote),
+                                                  ),
+                                            );
+                                          },
                                         );
                                       },
                                     ),

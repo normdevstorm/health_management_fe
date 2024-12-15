@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
@@ -19,12 +20,36 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
+  late int? userId; // Biến để lưu userId
   @override
   void initState() {
     super.initState();
-    context
-        .read<ArticleBloc>()
-        .add(const GetAllArticleByUserIdEvent(userId: 2));
+    fetchUser();
+  }
+
+  Future<void> fetchUser() async {
+    try {
+      final user =
+          await SharedPreferenceManager.getUser(); // Lấy thông tin user
+      if (user != null) {
+        setState(() {
+          userId = user.id; // Gán userId vào biến state
+        });
+        context
+            .read<ArticleBloc>()
+            .add(GetAllArticleByUserIdEvent(userId: userId!));
+      } else {
+        // Xử lý khi không có thông tin user
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No user data found!')),
+        );
+      }
+    } catch (e) {
+      // Xử lý lỗi
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching user: $e')),
+      );
+    }
   }
 
   @override
@@ -39,7 +64,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
             (current.data.runtimeType == List<ArticleEntity>),
         builder: (context, state) {
           if (state.status == BlocStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(
+              value: 25,
+            ));
           }
 
           if (state.status == BlocStatus.error) {
@@ -105,7 +133,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
                     ),
                   );
                 }
-                return ArticleItem(article: articles[index - 1]);
+                return ArticleItem(
+                  article: articles[index - 1],
+                  userId: userId,
+                );
               },
             );
           }
@@ -119,8 +150,9 @@ class _ArticleScreenState extends State<ArticleScreen> {
 
 class ArticleItem extends StatelessWidget {
   final ArticleEntity article;
+  final int? userId; // Thêm userId
 
-  const ArticleItem({super.key, required this.article});
+  const ArticleItem({super.key, required this.article, this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +177,7 @@ class ArticleItem extends StatelessWidget {
                       style: const TextStyle(fontSize: 14),
                     ),
                     const Spacer(),
-                    if (article.userId == 2)
+                    if (article.userId == userId)
                       PopupMenuButton<String>(
                         onSelected: (value) {
                           if (value == 'update') {
@@ -256,7 +288,7 @@ class ArticleItem extends StatelessWidget {
         ),
         onTap: () {
           if (article.id != null) {
-            _navigateToArticleDetail(context, article.id!);
+            _navigateToArticleDetail(context, article.id!, userId ?? 0);
           }
           return;
         });
@@ -287,9 +319,12 @@ class ArticleItem extends StatelessWidget {
         .add(GetAllArticleByUserIdEvent(userId: article.userId!));
   }
 
-  void _navigateToArticleDetail(BuildContext context, int articleId) {
-    context.pushNamed(RouteDefine.articleDetails, pathParameters: {
-      'articleId': articleId.toString(),
-    });
+  void _navigateToArticleDetail(
+      BuildContext context, int articleId, int userId) {
+    context.pushNamed(RouteDefine.articleDetails,
+        pathParameters: {
+          'articleId': articleId.toString(),
+        },
+        extra: userId);
   }
 }

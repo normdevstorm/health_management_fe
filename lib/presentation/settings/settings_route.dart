@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/route/route_define.dart';
+import 'package:health_management/domain/articles/usecases/article_usecase.dart';
+import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/ui/article_screen.dart';
 import 'package:health_management/presentation/edit_profile/ui/edit_profile_screen.dart';
 import 'package:health_management/presentation/settings/ui/screen/settings_screen.dart';
@@ -31,6 +33,11 @@ class SettingsRoute extends ShellRouteData {
         BlocProvider(
           create: (context) => EditProfileBloc(
             userUseCase: getIt<UserUseCase>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ArticleBloc(
+            articleUsecase: getIt<ArticleUsecase>(),
           ),
         ),
       ],

@@ -121,31 +121,6 @@ class _ArticleHomeSate extends State<ArticleHome> {
                       }),
 
                   const SizedBox(height: 20),
-                  // Search Bar
-                  Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.yellow,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 15),
-                        const Expanded(
-                          child: TextField(
-                            decoration: InputDecoration(
-                              hintText: "Search......",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.search),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -166,6 +141,7 @@ class _ArticleHomeSate extends State<ArticleHome> {
                 }
                 if (state.status == BlocStatus.success) {
                   final listDoctor = state.data as List<DoctorEntity>;
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -243,14 +219,27 @@ class _ArticleHomeSate extends State<ArticleHome> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: displayedArticles.length,
-                        itemBuilder: (context, index) {
-                          return ArticleItem(article: displayedArticles[index]);
-                        },
-                      ),
+                      FutureBuilder(
+                          future: SharedPreferenceManager.getUser(),
+                          builder: (context, snapshot) {
+                            final userId = snapshot.data?.id;
+                            if (snapshot.connectionState ==
+                                    ConnectionState.done &&
+                                snapshot.data != null) {
+                              return ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: displayedArticles.length,
+                                itemBuilder: (context, index) {
+                                  return ArticleItem(
+                                      article: displayedArticles[index],
+                                      userId: userId);
+                                },
+                              );
+                            } else {
+                              return const CircularProgressIndicator();
+                            }
+                          }),
                       if (articles.length > 5)
                         TextButton(
                           onPressed: () {
