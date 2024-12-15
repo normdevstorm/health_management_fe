@@ -40,7 +40,11 @@ class _ArticleHomeSate extends State<ArticleHome> {
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              color: Colors.blue,
+              decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(15),
+                      bottomRight: Radius.circular(15))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -122,7 +126,7 @@ class _ArticleHomeSate extends State<ArticleHome> {
                     height: 50,
                     decoration: BoxDecoration(
                       color: Colors.yellow,
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [

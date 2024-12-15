@@ -59,11 +59,13 @@ class CustomAttachmentPopUp extends StatelessWidget {
                   color: Colors.redAccent,
                   icon: Icons.camera_alt,
                   onPress: () {
-                    Navigator.pushNamed(context, CameraPage.routeName,
-                        arguments: CameraPage(
-                          receiverId: receiverId,
-                          isGroupChat: isGroupChat,
-                        ));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return CameraPage(
+                        receiverId: receiverId,
+                        isGroupChat: isGroupChat,
+                      );
+                    }));
                   },
                 ),
                 AttachmentCardItem(
@@ -128,12 +130,13 @@ class CustomAttachmentPopUp extends StatelessWidget {
   void selectImageFromGallery(BuildContext context) async {
     File? image = await pickImageFromGallery(context);
     // ignore: use_build_context_synchronously
-    Navigator.pushNamed(context, ImagePreviewPage.routeName,
-        arguments: ImagePreviewPage(
-          imageFilePath: image?.path ??'',
-          receiverId: receiverId,
-          isGroupChat: isGroupChat,
-        ));
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return ImagePreviewPage(
+        imageFilePath: image?.path ?? '',
+        receiverId: receiverId,
+        isGroupChat: isGroupChat,
+      );
+    }));
   }
 
   void selectVideoFromGallery(BuildContext context) async {
@@ -144,12 +147,13 @@ class CustomAttachmentPopUp extends StatelessWidget {
       String videoPath = pickedFile.path;
       if (videoPath.isNotEmpty) {
         // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, VideoPreviewPage.routeName,
-            arguments: VideoPreviewPage(
-              videoFilePath: videoPath,
-              receiverId: receiverId,
-              isGroupChat: isGroupChat,
-            ));
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return VideoPreviewPage(
+            videoFilePath: videoPath,
+            receiverId: receiverId,
+            isGroupChat: isGroupChat,
+          );
+        }));
       }
     }
   }

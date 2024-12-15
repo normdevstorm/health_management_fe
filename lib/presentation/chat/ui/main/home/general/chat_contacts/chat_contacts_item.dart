@@ -34,7 +34,7 @@ class ChatContactsCard extends StatelessWidget {
           },
           roleTag: chat.role == Role.doctor ? "Doctor" : "Patient",
           leading: Hero(
-            tag: chat.name,
+            tag: chat.name.split('@').first,
             child: InkWell(
                 // onTap: () => showContactProfileDialog(context,chatContactData),
                 child: CircleAvatar(
@@ -42,7 +42,7 @@ class ChatContactsCard extends StatelessWidget {
               backgroundImage: NetworkImage(chat.profileUrl),
             )),
           ),
-          title: chat.name,
+          title: chat.name.split('@').first,
           subTitle: chat.lastMessage,
           time: chat.lastMessageTime!.getChatContactTime,
           numOfMessageNotSeen: snapshot.data ?? 0,

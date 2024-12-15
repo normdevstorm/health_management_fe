@@ -110,9 +110,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget buildMenuItem(BuildContext context, String title, IconData icon,
       VoidCallback onClicked) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blue),
+      leading: Icon(
+        icon,
+        color: Colors.blue,
+      ),
       title: Text(title, style: TextStyle(fontSize: 16.sp)),
-      trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        color: Colors.grey,
+        size: 16,
+      ),
       onTap: onClicked,
     );
   }
