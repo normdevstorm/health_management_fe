@@ -3,7 +3,7 @@ part of '../app.dart';
 class ConstantManager {
   static const int defaultRequestTiemoutInSeconds = 60;
   static const int defaultRecordNumber = 10;
-  static const String defaultHardcodedFirebseUserUid = "YMl6SwRipMUmWagF53GcQvtyd9y2";
+  static const String defaultProfileAvatar = "https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg";
   static const List<Map<String, String>> defaultDoctorWorkingShifts = [
     {'7:00 AM': 'Morning'},
     {'8:00 AM': 'Morning'},
