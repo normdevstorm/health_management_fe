@@ -195,26 +195,22 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                 Text(data.content ?? "No content available."),
                                 const SizedBox(height: 8),
                                 const SizedBox(height: 8),
-                                data.media != null
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(20.r),
-                                        child: FadeInImage.memoryNetwork(
-                                          placeholder: kTransparentImage,
-                                          image: data.media!.first.url ??
-                                              "assets/images/placeholder.png",
-                                          fit: BoxFit.cover,
-                                          imageErrorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  Image.asset(
-                                            'assets/images/placeholder.png',
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      )
-                                    : const Placeholder(
-                                        fallbackHeight: 200,
-                                        fallbackWidth: double.infinity),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.r),
+                                  child: FadeInImage.memoryNetwork(
+                                    placeholder: kTransparentImage,
+                                    image: data.media!.first.url ??
+                                        "assets/images/placeholder.png",
+                                    fit: BoxFit.cover,
+                                    imageErrorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Image.asset(
+                                      'assets/images/placeholder.png',
+                                      fit: BoxFit.cover,
+                                    ),
+                                    height: 400,
+                                  ),
+                                ),
                                 const Divider(height: 20, thickness: 1),
                                 // Stats and comment button
                                 Row(

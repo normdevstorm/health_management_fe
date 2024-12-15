@@ -11,6 +11,7 @@ import 'package:health_management/domain/appointment/entities/appointment_record
 import '../../../../app/managers/toast_manager.dart';
 import '../../../../app/route/route_define.dart';
 import '../../../../domain/prescription/entities/prescription_entity.dart';
+import '../../../common/custom_network_image.dart';
 import '../../../common/shimmer_loading.dart';
 import '../../bloc/appointment/appointment_bloc.dart';
 import '../widgets/shadow_edge.dart';
@@ -346,6 +347,7 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                       : null,
                   isCompleted: appointmentRecords[index].status ==
                       AppointmentStatus.completed,
+                  avatarUrl: appointmentRecords[index].doctor?.avatarUrl,
                 )
               : AppointmentCard.patient(
                   id: appointmentRecords[index].id,
@@ -372,6 +374,7 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                       : null,
                   isCompleted: appointmentRecords[index].status ==
                       AppointmentStatus.completed,
+                  avatarUrl: appointmentRecords[index].user?.avatarUrl,
                 ),
         ),
       ),
@@ -528,6 +531,7 @@ class AppointmentCard extends StatelessWidget {
   final String? doctorType;
   final int? doctorRating;
   final String? userName;
+  final String? avatarUrl;
   final String? time;
   final String? date;
   final bool isCompleted;
@@ -539,6 +543,7 @@ class AppointmentCard extends StatelessWidget {
     String? doctorType,
     int? doctorRating,
     String? doctorName,
+    String? avatarUrl,
     String? time,
     String? date,
     required bool isCompleted,
@@ -551,6 +556,7 @@ class AppointmentCard extends StatelessWidget {
       doctorType: doctorType,
       doctorRating: doctorRating,
       userName: doctorName,
+      avatarUrl: avatarUrl,
       time: time,
       date: date,
       isCompleted: isCompleted,
@@ -562,6 +568,7 @@ class AppointmentCard extends StatelessWidget {
   factory AppointmentCard.patient({
     int? id,
     String? patientName,
+    String? avatarUrl,
     String? patientCondition,
     String? time,
     String? date,
@@ -575,6 +582,7 @@ class AppointmentCard extends StatelessWidget {
       role: Role.user,
       doctorRating: null,
       userName: patientName,
+      avatarUrl: avatarUrl,
       time: time,
       date: date,
       isCompleted: isCompleted,
@@ -591,6 +599,7 @@ class AppointmentCard extends StatelessWidget {
     this.doctorType,
     this.doctorRating,
     this.userName,
+    this.avatarUrl,
     this.time,
     this.date,
     this.isCompleted = false,
@@ -688,12 +697,8 @@ class AppointmentCard extends StatelessWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10.r),
-                    child: Image.asset(
-                      'assets/images/placeholder.png',
-                      width: 100.w,
-                      height: 80.h,
-                      fit: BoxFit.cover,
-                    ),
+                    //TODO: to refractor this to a common widget
+                    child: CustomNetworkImage(avatarUrl: avatarUrl),
                   ),
                 ),
               ],
