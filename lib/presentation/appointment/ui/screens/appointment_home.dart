@@ -53,25 +53,22 @@ class _AppointmentHomeState extends State<AppointmentHome> {
   }
 
   void _updateEvents(List<AppointmentRecordEntity> activeAppointmentRecords) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      List<CalendarEventData<Object?>> events =
-          activeAppointmentRecords.map((e) {
-        return CalendarEventData(
-          date: e.scheduledAt!,
-          startTime: e.scheduledAt!,
-          endTime: e.scheduledAt!.add(const Duration(hours: 1)),
-          title: e.doctor?.firstName ?? 'Doctor Name',
-          description:
-              e.doctor?.doctorProfile?.specialization?.name.toUpperCase() ?? '',
-        );
-      }).toList();
+    List<CalendarEventData<Object?>> events = activeAppointmentRecords.map((e) {
+      return CalendarEventData(
+        date: e.scheduledAt!,
+        startTime: e.scheduledAt!,
+        endTime: e.scheduledAt!.add(const Duration(hours: 1)),
+        title: e.doctor?.firstName ?? 'Doctor Name',
+        description:
+            e.doctor?.doctorProfile?.specialization?.name.toUpperCase() ?? '',
+      );
+    }).toList();
 
-      _eventController.removeWhere((element) => !activeAppointmentRecords.any(
-          (e) =>
-              e.doctor?.firstName == element.title &&
-              e.scheduledAt == element.startTime));
-      _eventController.addAll(events);
-    });
+    _eventController.removeWhere((element) => !activeAppointmentRecords.any(
+        (e) =>
+            e.doctor?.firstName == element.title &&
+            e.scheduledAt == element.startTime));
+    _eventController.addAll(events);
   }
 
   @override

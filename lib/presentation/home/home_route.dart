@@ -58,11 +58,13 @@ class ArticleDetailsRoute extends GoRouteData {
   Widget build(BuildContext context, GoRouterState state) {
     final int articleId =
         int.tryParse(state.pathParameters['articleId'] ?? '0') ?? 0;
+    final int userId = state.extra as int;
     return BlocProvider<ArticleBloc>.value(
       value: BlocProvider.of<ArticleBloc>(context)
         ..add(GetArticleByIdEvent(articleId)),
       child: ArticleDetailScreen(
         articleId: articleId,
+        userId: userId,
       ),
     );
   }

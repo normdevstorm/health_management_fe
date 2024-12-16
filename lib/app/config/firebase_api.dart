@@ -44,7 +44,6 @@ class FirebaseMessageService {
 }
 
 Future<void> _handlerBackgorundMessage(RemoteMessage message) async {
-  //TODO: TO HANDLE THE MESSAGE DATA 401 LATER ON
   await Firebase.initializeApp();
   getIt<Logger>().i("onBackgroundMessage: $message");
 }

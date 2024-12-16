@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
@@ -30,20 +31,21 @@ class _CommentWidgetState extends State<CommentWidget> {
     });
   }
 
-  void _sendReply(int parentId) {
+  void _sendReply(int commentId) async {
+    final user = await SharedPreferenceManager.getUser();
     final replyText = _replyController.text.trim();
     if (replyText.isNotEmpty) {
       final reply = ArticleCommentEntity(
           articleId: widget.comment.articleId,
-          userId: widget.comment.userId,
-          username: widget.comment.username,
+          userId: user?.id,
+          username: user?.firstName,
           content: replyText,
-          parentId: parentId);
+          parentId: commentId);
 
       // Gửi sự kiện đến Bloc
       context.read<ArticleBloc>().add(
             ReplyCommentArticleEvent(
-                widget.comment.articleId!, widget.comment.userId!, reply),
+                widget.comment.articleId!, user?.id ?? 0, reply),
           );
       // Dọn dẹp UI
       _replyController.clear();

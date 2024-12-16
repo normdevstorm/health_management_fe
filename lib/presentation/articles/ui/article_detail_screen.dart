@@ -6,6 +6,7 @@ import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
@@ -14,8 +15,8 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ArticleDetailScreen extends StatefulWidget {
   final int articleId;
-
-  const ArticleDetailScreen({super.key, required this.articleId});
+  final int? userId;
+  const ArticleDetailScreen({super.key, required this.articleId, this.userId});
 
   @override
   State<ArticleDetailScreen> createState() => _ArticleDetailScreenState();
@@ -27,6 +28,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _commentNotifier = ValueNotifier(false);
   late final article = "";
+  var upvoteList = <int>[];
+  var downvoteList = <int>[];
 
   @override
   void dispose() {
@@ -115,7 +118,16 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               } catch (e) {
                 data = const ArticleEntity();
                 // TODO: Handle the error appropriately
+              } finally {
+                data?.votes?.forEach((element) {
+                  if (element.type == VoteType.upvote) {
+                    upvoteList.add(element.userId!);
+                  } else {
+                    downvoteList.add(element.userId!);
+                  }
+                });
               }
+
               // Use the `data` variable as needed
               return Scaffold(
                   appBar: AppBar(
@@ -228,16 +240,52 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                 as Map<String, int?>)["up_vote"]
                                             : data?.upVoteCount;
 
-                                        return _stateWidget(
-                                          Icons.thumb_up,
-                                          upVoteCount ?? 0,
-                                          context,
-                                          () => context.read<ArticleBloc>().add(
-                                                VoteArticleEvent(
-                                                    widget.articleId,
-                                                    2,
-                                                    VoteType.upvote),
-                                              ),
+                                        return FutureBuilder<UserEntity?>(
+                                          future:
+                                              SharedPreferenceManager.getUser(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            }
+
+                                            if (snapshot.hasError ||
+                                                !snapshot.hasData) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Lỗi khi lấy thông tin người dùng!"));
+                                            }
+
+                                            final userId = snapshot.data
+                                                ?.id; // Lấy ID người dùng từ UserEntity
+                                            if (userId == null) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Không tìm thấy thông tin người dùng!"));
+                                            }
+
+                                            var isUserUpvoted =
+                                                upvoteList.contains(userId);
+                                            return _stateWidget(
+                                                Icons.thumb_up,
+                                                upVoteCount ?? 0,
+                                                colorSelected: Colors.blue,
+                                                isSelected: isUserUpvoted,
+                                                context, () {
+                                              if (isUserUpvoted) {
+                                                upvoteList.remove(userId);
+                                              } else {
+                                                downvoteList.remove(userId);
+                                                upvoteList.add(userId);
+                                              }
+                                              context.read<ArticleBloc>().add(
+                                                    VoteArticleEvent(
+                                                        widget.articleId,
+                                                        userId,
+                                                        VoteType.upvote),
+                                                  );
+                                            });
+                                          },
                                         );
                                       },
                                     ),
@@ -246,22 +294,58 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                       buildWhen: (previous, current) =>
                                           current.data is Map<String, int?>,
                                       builder: (context, state) {
-                                        final downVoteCount = (state.data
+                                        final downvoteCount = (state.data
                                                 is Map<String, int?>)
                                             ? (state.data as Map<String, int?>)[
                                                 "down_vote"]
                                             : data?.downVoteCount;
 
-                                        return _stateWidget(
-                                          Icons.thumb_down,
-                                          downVoteCount ?? 0,
-                                          context,
-                                          () => context.read<ArticleBloc>().add(
-                                                VoteArticleEvent(
-                                                    widget.articleId,
-                                                    2,
-                                                    VoteType.downvote),
-                                              ),
+                                        return FutureBuilder<UserEntity?>(
+                                          future:
+                                              SharedPreferenceManager.getUser(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const CircularProgressIndicator();
+                                            }
+
+                                            if (snapshot.hasError ||
+                                                !snapshot.hasData) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Lỗi khi lấy thông tin người dùng!"));
+                                            }
+
+                                            final userId = snapshot.data
+                                                ?.id; // Lấy ID người dùng từ UserEntity
+                                            if (userId == null) {
+                                              return const Center(
+                                                  child: Text(
+                                                      "Không tìm thấy thông tin người dùng!"));
+                                            }
+
+                                            var isUserDownvoted =
+                                                downvoteList.contains(userId);
+                                            return _stateWidget(
+                                                Icons.thumb_down,
+                                                downvoteCount ?? 0,
+                                                colorSelected: Colors.red,
+                                                isSelected: isUserDownvoted,
+                                                context, () {
+                                              if (isUserDownvoted) {
+                                                downvoteList.remove(userId);
+                                              } else {
+                                                upvoteList.remove(userId);
+                                                downvoteList.add(userId);
+                                              }
+                                              context.read<ArticleBloc>().add(
+                                                    VoteArticleEvent(
+                                                        widget.articleId,
+                                                        userId,
+                                                        VoteType.downvote),
+                                                  );
+                                            });
+                                          },
                                         );
                                       },
                                     ),
@@ -385,12 +469,15 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 }
 
 Widget _stateWidget(
-    IconData icon, int count, BuildContext context, VoidCallback? onTap) {
+    IconData icon, int count, BuildContext context, VoidCallback? onTap,
+    {bool isSelected = false, Color? colorSelected}) {
   return Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       GestureDetector(
-          onTap: onTap, child: Icon(icon, size: 24, color: Colors.black)),
+          onTap: onTap,
+          child: Icon(icon,
+              size: 24, color: isSelected ? colorSelected : Colors.black)),
       const SizedBox(height: 4),
       Text(
         count.toString(),
