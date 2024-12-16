@@ -385,41 +385,41 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
 
                                 const Divider(height: 32, thickness: 1),
                                 // Comment list
-                                if (data.comments != null &&
-                                    data.comments!.isNotEmpty)
-                                  BlocConsumer<ArticleBloc, ArticleState>(
-                                    listener: (context, state) {
-                                      if (state.status == BlocStatus.success &&
-                                          state.data.runtimeType ==
-                                              List<ArticleCommentEntity>) {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          _scrollToEnd();
-                                        });
-                                      }
-                                    },
-                                    buildWhen: (previous, current) =>
-                                        current.data.runtimeType ==
-                                        List<ArticleCommentEntity>,
-                                    builder: (context, state) {
-                                      final List<ArticleCommentEntity>?
-                                          commentList =
-                                          (state.data.runtimeType ==
-                                                  List<ArticleCommentEntity>)
-                                              ? state.data
-                                                  as List<ArticleCommentEntity>
-                                              : data?.comments;
+                                // if (data.comments != null &&
+                                //     data.comments!.isNotEmpty)
+                                BlocConsumer<ArticleBloc, ArticleState>(
+                                  listener: (context, state) {
+                                    if (state.status == BlocStatus.success &&
+                                        state.data.runtimeType ==
+                                            List<ArticleCommentEntity>) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        _scrollToEnd();
+                                      });
+                                    }
+                                  },
+                                  buildWhen: (previous, current) =>
+                                      (current.data.runtimeType ==
+                                          List<ArticleCommentEntity>) &&
+                                      previous.status != current.status,
+                                  builder: (context, state) {
+                                    final List<ArticleCommentEntity>?
+                                        commentList = (state.data.runtimeType ==
+                                                List<ArticleCommentEntity>)
+                                            ? state.data
+                                                as List<ArticleCommentEntity>
+                                            : data?.comments;
 
-                                      return CommentTree(
-                                        comments: commentList != null
-                                            ? List<ArticleCommentEntity>.from(
-                                                commentList)
-                                            : [],
-                                      );
-                                    },
-                                  )
-                                else
-                                  const Center(child: Text("No comments yet")),
+                                    return CommentTree(
+                                      comments: commentList != null
+                                          ? List<ArticleCommentEntity>.from(
+                                              commentList)
+                                          : [],
+                                    );
+                                  },
+                                )
+                                // else
+                                //   const Center(child: Text("No comments yet")),
                               ]),
                             ),
                           ),
