@@ -1,5 +1,4 @@
 import 'package:health_management/app/config/api_exception.dart';
-import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:logger/logger.dart';
 
 import '../../../domain/doctor/repositories/doctor_repository.dart';

@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 
 import 'package:health_management/data/common/api_response_model.dart';
-import 'package:health_management/data/doctor/models/response/doctor_response.dart';
 import 'package:health_management/data/user/models/response/user_response.dart';
 import 'package:retrofit/retrofit.dart';
 
