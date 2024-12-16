@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
-import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
@@ -93,28 +92,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: ListView(
                 children: [
                   buildMenuItem(context, 'Personal Data', Icons.person, () {
-                    print('Personal Data clicked');
                     context.pushNamed(RouteDefine.editProfile);
                   }),
                   buildMenuItem(context, 'Settings', Icons.settings, () {
-                    print('Settings clicked');
                   }),
                   buildMenuItem(context, 'My Articles', Icons.receipt_long, () {
-                    print('Articles clicked');
                     context.goNamed(RouteDefine.article);
                   }),
                   buildMenuItem(context, 'Referral Code', Icons.card_giftcard,
                       () {
-                    print('Referral Code clicked');
                   }),
                   buildMenuItem(context, 'FAQs', Icons.help_outline, () {
-                    print('FAQs clicked');
                   }),
                   buildMenuItem(context, 'Our Handbook', Icons.book, () {
-                    print('Our Handbook clicked');
                   }),
                   buildMenuItem(context, 'Logout', Icons.logout, () {
-                    print('Logout clicked');
                     context.read<AuthenticationBloc>().add(const LogOutEvent());
                   }),
                 ],

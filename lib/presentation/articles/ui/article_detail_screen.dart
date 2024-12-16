@@ -28,8 +28,8 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<bool> _commentNotifier = ValueNotifier(false);
   late final article = "";
-  List<int> upvoteList = [];
-  List<int> downvoteList = [];
+  var upvoteList = <int>[];
+  var downvoteList = <int>[];
 
   @override
   void dispose() {
@@ -118,18 +118,16 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               } catch (e) {
                 data = const ArticleEntity();
                 // TODO: Handle the error appropriately
+              } finally {
+                data?.votes?.forEach((element) {
+                  if (element.type == VoteType.upvote) {
+                    upvoteList.add(element.userId!);
+                  } else {
+                    downvoteList.add(element.userId!);
+                  }
+                });
               }
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                data?.votes?.map(
-                  (e) {
-                    if (e.type == VoteType.upvote) {
-                      upvoteList.add(e.userId!);
-                    } else {
-                      downvoteList.add(e.userId!);
-                    }
-                  },
-                );
-              });
+
               // Use the `data` variable as needed
               return Scaffold(
                   appBar: AppBar(
@@ -266,22 +264,27 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                       "Không tìm thấy thông tin người dùng!"));
                                             }
 
+                                            var isUserUpvoted =
+                                                upvoteList.contains(userId);
                                             return _stateWidget(
-                                              Icons.thumb_up,
-                                              upVoteCount ?? 0,
-                                              colorSelected: Colors.blue,
-                                              isSelected:
-                                                  upvoteList.contains(userId),
-                                              context,
-                                              () => context
-                                                  .read<ArticleBloc>()
-                                                  .add(
+                                                Icons.thumb_up,
+                                                upVoteCount ?? 0,
+                                                colorSelected: Colors.blue,
+                                                isSelected: isUserUpvoted,
+                                                context, () {
+                                              if (isUserUpvoted) {
+                                                upvoteList.remove(userId);
+                                              } else {
+                                                downvoteList.remove(userId);
+                                                upvoteList.add(userId);
+                                              }
+                                              context.read<ArticleBloc>().add(
                                                     VoteArticleEvent(
                                                         widget.articleId,
                                                         userId,
                                                         VoteType.upvote),
-                                                  ),
-                                            );
+                                                  );
+                                            });
                                           },
                                         );
                                       },
@@ -321,22 +324,27 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                       "Không tìm thấy thông tin người dùng!"));
                                             }
 
+                                            var isUserDownvoted =
+                                                downvoteList.contains(userId);
                                             return _stateWidget(
-                                              Icons.thumb_down,
-                                              downvoteCount ?? 0,
-                                              colorSelected: Colors.red,
-                                              isSelected:
-                                                  downvoteList.contains(userId),
-                                              context,
-                                              () => context
-                                                  .read<ArticleBloc>()
-                                                  .add(
+                                                Icons.thumb_down,
+                                                downvoteCount ?? 0,
+                                                colorSelected: Colors.red,
+                                                isSelected: isUserDownvoted,
+                                                context, () {
+                                              if (isUserDownvoted) {
+                                                downvoteList.remove(userId);
+                                              } else {
+                                                upvoteList.remove(userId);
+                                                downvoteList.add(userId);
+                                              }
+                                              context.read<ArticleBloc>().add(
                                                     VoteArticleEvent(
                                                         widget.articleId,
                                                         userId,
                                                         VoteType.downvote),
-                                                  ),
-                                            );
+                                                  );
+                                            });
                                           },
                                         );
                                       },
