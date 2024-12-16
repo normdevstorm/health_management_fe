@@ -20,6 +20,7 @@ class RouteDefine {
 
   static const String settings = 'settings';
   static const String editProfile = 'edit-profile';
+  static const String articleSetting = "article-detail-setting";
   static const String login = 'login';
   static const String register = 'register';
   static const String verifyCode = 'verify-code';

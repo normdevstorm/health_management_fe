@@ -321,7 +321,10 @@ class ArticleItem extends StatelessWidget {
 
   void _navigateToArticleDetail(
       BuildContext context, int articleId, int userId) {
-    context.pushNamed(RouteDefine.articleDetails,
+    bool isFromHome =
+        GoRouter.of(context).state?.matchedLocation.startsWith('/home') ?? true;
+    context.pushNamed(
+        isFromHome ? RouteDefine.articleDetails : RouteDefine.articleSetting,
         pathParameters: {
           'articleId': articleId.toString(),
         },

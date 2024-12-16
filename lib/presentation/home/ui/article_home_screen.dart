@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_management/app/app.dart';
-import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
+import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/article_screen.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_event.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_state.dart';
 import 'package:health_management/presentation/home/bloc/home_bloc.dart';
 import 'package:health_management/presentation/home/bloc/home_event.dart';
 import 'package:health_management/presentation/home/bloc/home_state.dart';
@@ -25,12 +28,13 @@ class _ArticleHomeSate extends State<ArticleHome> {
   @override
   void initState() {
     super.initState();
+    context.read<EditProfileBloc>().add(const GetInformationUser());
     context.read<ArticleBloc>().add(const GetAllArticleEvent());
     context.read<HomeBloc>().add(const GetAllDoctorTopRateEvent());
   }
 
+  int? userId;
   bool _showAllArticles = false;
-  final user = SharedPreferenceManager.getUser();
 
   @override
   Widget build(BuildContext context) {
@@ -54,79 +58,84 @@ class _ArticleHomeSate extends State<ArticleHome> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
-                    FutureBuilder(
-                        future: SharedPreferenceManager.getUser(),
-                        builder: (context, snapshot) {
-                          final ava = snapshot.data?.avatarUrl;
-                          final username = snapshot.data?.firstName;
-                          if (snapshot.connectionState ==
-                                  ConnectionState.done &&
-                              snapshot.data != null) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage: NetworkImage(
-                                        ava ?? "",
-                                      ),
+                    BlocBuilder<EditProfileBloc, EditProfileState>(
+                      builder: (context, state) {
+                        if (state.status == BlocStatus.loading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state.status == BlocStatus.success) {
+                          final user = state.data as UserEntity;
+                          userId = user.id;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: NetworkImage(
+                                      user.avatarUrl ??
+                                          "", // Hiển thị ảnh đại diện
                                     ),
-                                    Stack(
-                                      children: [
-                                        const Icon(Icons.notifications,
-                                            color: Colors.white, size: 30),
-                                        Positioned(
-                                          right: 0,
-                                          child: Container(
-                                            height: 18,
-                                            width: 18,
-                                            decoration: const BoxDecoration(
-                                              color: Colors.red,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Center(
-                                              child: Text(
-                                                "2",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                  ),
+                                  Stack(
+                                    children: [
+                                      const Icon(Icons.notifications,
+                                          color: Colors.white, size: 30),
+                                      Positioned(
+                                        right: 0,
+                                        child: Container(
+                                          height: 18,
+                                          width: 18,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.red,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "2",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                // Greeting Text
-                                const Text(
-                                  "Welcome back .....",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                ),
-                                Text(
-                                  username ?? "Guest",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
+                                      ),
+                                    ],
                                   ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              // Greeting Text
+                              Text(
+                                'Hi, ${user.firstName ?? "Guest"} ', // Hiển thị tên người dùng
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 16),
+                              ),
+                              const Text(
+                                'Welcome back to Health App',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            );
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        }),
-
+                              ),
+                            ],
+                          );
+                        } else if (state.status == BlocStatus.error) {
+                          return Text(
+                            'Error: ${state.errorMessage}', // Hiển thị thông báo lỗi
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        } else {
+                          return const CircularProgressIndicator(); // Trạng thái mặc định
+                        }
+                      },
+                    ),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -213,6 +222,7 @@ class _ArticleHomeSate extends State<ArticleHome> {
                     // Hiển thị số lượng bài viết dựa trên trạng thái
                     final displayedArticles =
                         _showAllArticles ? articles : articles.take(5).toList();
+
                     displayedArticles.sort((a, b) =>
                         a.title
                             ?.toUpperCase()
@@ -229,42 +239,42 @@ class _ArticleHomeSate extends State<ArticleHome> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        FutureBuilder(
-                            future: SharedPreferenceManager.getUser(),
-                            builder: (context, snapshot) {
-                              final userId = snapshot.data?.id;
-                              if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.data != null) {
-                                return ListView.builder(
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: displayedArticles.length,
-                                  itemBuilder: (context, index) {
-                                    return ArticleItem(
-                                        article: displayedArticles[index],
-                                        userId: userId);
-                                  },
+                        Column(
+                          children: [
+                            // Dùng ListView.builder để hiển thị toàn bộ danh sách
+                            ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: displayedArticles.length,
+                              itemBuilder: (context, index) {
+                                // Chỉ hiển thị mục cần thiết dựa trên trạng thái _showAllArticles
+                                return Visibility(
+                                  visible: _showAllArticles || index < 5,
+                                  child: ArticleItem(
+                                    article: displayedArticles[index],
+                                    userId: userId,
+                                  ),
                                 );
-                              } else {
-                                return const CircularProgressIndicator();
-                              }
-                            }),
-                        if (articles.length > 5)
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _showAllArticles = !_showAllArticles;
-                              });
-                            },
-                            child: Text(
-                              _showAllArticles ? "Show less" : "Show more",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              },
                             ),
-                          ),
+                            // Hiển thị nút Show more nếu có nhiều hơn 5 mục
+                            if (articles.length > 5)
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _showAllArticles = !_showAllArticles;
+                                  });
+                                },
+                                child: Text(
+                                  _showAllArticles ? "Show less" : "Show more",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ],
                     );
                   }

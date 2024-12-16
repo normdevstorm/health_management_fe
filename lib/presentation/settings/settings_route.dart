@@ -9,11 +9,11 @@ import 'package:health_management/presentation/articles/ui/article_screen.dart';
 import 'package:health_management/presentation/edit_profile/ui/edit_profile_screen.dart';
 import 'package:health_management/presentation/settings/ui/screen/settings_screen.dart';
 import '../../domain/articles/usecases/article_usecase.dart';
-import '../../domain/user/usecases/user_usecase.dart';
 import '../articles/bloc/article_bloc.dart';
+import '../articles/bloc/article_event.dart';
+import '../articles/ui/article_detail_screen.dart';
 import '../chat/bloc/profile/profile_cubit.dart';
 import '../chat/bloc/user/user_cubit.dart';
-import '../edit_profile/bloc/edit_profile_bloc.dart';
 import '../edit_profile/ui/avatar_preview_screen.dart';
 part 'settings_route.g.dart';
 
@@ -32,9 +32,14 @@ part 'settings_route.g.dart';
               )
             ]),
         TypedGoRoute<SettingArticleRoute>(
-          path: "/article",
-          name: RouteDefine.article,
-        ),
+            path: "/article",
+            name: RouteDefine.article,
+            routes: [
+              TypedGoRoute<SettingArticleDetailRoute>(
+                  path: "/article-details/:articleId",
+                  name: RouteDefine.articleSetting,
+                  routes: []),
+            ]),
       ]),
 ])
 class SettingsRoute extends ShellRouteData {
@@ -42,11 +47,6 @@ class SettingsRoute extends ShellRouteData {
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => EditProfileBloc(
-            userUseCase: getIt<UserUseCase>(),
-          ),
-        ),
         BlocProvider(
           create: (context) =>
               ArticleBloc(articleUsecase: getIt<ArticleUsecase>()),
@@ -87,5 +87,24 @@ class SettingArticleRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const ArticleScreen();
+  }
+}
+
+class SettingArticleDetailRoute extends GoRouteData {
+  final String articleId;
+  SettingArticleDetailRoute({required this.articleId});
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    final int articleId =
+        int.tryParse(state.pathParameters['articleId'] ?? '0') ?? 0;
+    final int userId = state.extra as int;
+    return BlocProvider<ArticleBloc>.value(
+      value: BlocProvider.of<ArticleBloc>(context)
+        ..add(GetArticleByIdEvent(articleId)),
+      child: ArticleDetailScreen(
+        articleId: articleId,
+        userId: userId,
+      ),
+    );
   }
 }
