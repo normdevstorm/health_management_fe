@@ -410,12 +410,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                                 as List<ArticleCommentEntity>
                                             : data?.comments;
 
-                                    return CommentTree(
-                                      comments: commentList != null
-                                          ? List<ArticleCommentEntity>.from(
-                                              commentList)
-                                          : [],
-                                    );
+                                    return (commentList != null &&
+                                            commentList.isNotEmpty)
+                                        ? CommentTree(comments: commentList)
+                                        : const Center(
+                                            child: Text("No comments yet"));
                                   },
                                 )
                                 // else
