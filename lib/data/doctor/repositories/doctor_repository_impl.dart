@@ -3,6 +3,7 @@ import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:logger/logger.dart';
 
 import '../../../domain/doctor/repositories/doctor_repository.dart';
+import '../../../domain/user/entities/user_entity.dart';
 import '../api/doctor_api.dart';
 
 class DoctorRepositoryImpl implements DoctorRepository {
@@ -15,7 +16,7 @@ class DoctorRepositoryImpl implements DoctorRepository {
   // Future<List<DoctorEntity>> getAllDoctor() {}
 
   @override
-  Future<List<DoctorEntity>> getAllDoctorTopRated() async {
+  Future<List<UserEntity>> getAllDoctorTopRated() async {
     try {
       final response = await api.getAllDoctorTopRated();
       return (response.data ?? []).map((e) => e.toEntity()).toList();
