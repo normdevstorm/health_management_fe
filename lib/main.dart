@@ -17,10 +17,12 @@ import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
+import 'package:health_management/domain/user/usecases/user_usecase.dart';
 import 'package:health_management/firebase_options_chat.dart'
     as firebase_options_chat;
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
 // import 'app/config/firebase_api.dart';
 import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
@@ -71,6 +73,10 @@ void main() async {
                   authenticationUsecase: getIt<AuthenticationUsecase>(),
                   verifyCodeUseCase: getIt<VerifyCodeUseCase>()),
             ),
+            BlocProvider(
+              create: (context) =>
+                  EditProfileBloc(userUseCase: getIt<UserUseCase>()),
+            )
           ],
           child: const BlocListener<AuthenticationBloc, AuthenticationState>(
             listener: _authenticationListener,

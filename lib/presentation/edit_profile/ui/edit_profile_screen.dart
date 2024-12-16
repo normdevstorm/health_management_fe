@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,7 +59,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 // Cập nhật giá trị cho TextEditingController sau khi tải dữ liệu thành công
                 firstNameController.text = data.firstName ?? '';
                 lastNameController.text = data.lastName ?? '';
-                dateOfBirthController.text = data.dateOfBirth.toString();
+                dateOfBirthController.text = data.dateOfBirth != null
+                    ? DateFormat('yyyy/MM/dd').format(data.dateOfBirth!)
+                    : '';
                 emailController.text = data.account?.email ?? '';
                 phoneController.text = data.account?.phone ?? '';
                 selectedGender = data.gender;
@@ -192,16 +195,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     10.verticalSpace,
                     TextFormField(
                       controller: dateOfBirthController,
+                      readOnly: true,
                       decoration: InputDecoration(
                         labelText: 'Ngày sinh',
                         hintText: 'YYYY/MM/DD',
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            dateOfBirthController.selection = TextSelection(
-                              baseOffset: 0,
-                              extentOffset: dateOfBirthController.text.length,
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime.now(),
                             );
+                            if (pickedDate != null) {
+                              dateOfBirthController.text =
+                                  DateFormat('yyyy/MM/dd').format(pickedDate);
+                            }
                           },
                         ),
                       ),
@@ -250,7 +260,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         textStyle: const TextStyle(fontSize: 18),
                       ),
-                      child: const Text("Lưu"),
+                      child: const Text("Save Profile"),
                     ),
                   ],
                 ),
@@ -279,6 +289,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       lastName: lastNameController.text,
       gender: selectedGender,
       avatarUrl: profileImage,
+      dateOfBirth: DateFormat('yyyy/MM/dd').parse(dateOfBirthController.text),
     );
 
     final accountEntity = AccountEntity(

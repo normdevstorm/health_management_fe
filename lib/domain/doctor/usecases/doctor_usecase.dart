@@ -1,4 +1,5 @@
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 
 import '../repositories/doctor_repository.dart';
 
@@ -11,7 +12,7 @@ class DoctorUseCase {
   //   return _repository.getAllDoctor();
   // }
 
-  Future<List<DoctorEntity>> getAllDoctorTopRated() async {
+  Future<List<UserEntity>> getAllDoctorTopRated() async {
     return _repository.getAllDoctorTopRated();
   }
 }

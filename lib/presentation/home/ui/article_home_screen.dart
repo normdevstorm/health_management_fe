@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_management/app/app.dart';
-import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
 import 'package:health_management/presentation/articles/ui/article_screen.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_event.dart';
+import 'package:health_management/presentation/edit_profile/bloc/edit_profile_state.dart';
 import 'package:health_management/presentation/home/bloc/home_bloc.dart';
 import 'package:health_management/presentation/home/bloc/home_event.dart';
 import 'package:health_management/presentation/home/bloc/home_state.dart';
@@ -25,37 +28,44 @@ class _ArticleHomeSate extends State<ArticleHome> {
   @override
   void initState() {
     super.initState();
+    context.read<EditProfileBloc>().add(const GetInformationUser());
     context.read<ArticleBloc>().add(const GetAllArticleEvent());
     context.read<HomeBloc>().add(const GetAllDoctorTopRateEvent());
   }
 
+  int? userId;
   bool _showAllArticles = false;
-  final user = SharedPreferenceManager.getUser();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(15),
-                      bottomRight: Radius.circular(15))),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  FutureBuilder(
-                      future: SharedPreferenceManager.getUser(),
-                      builder: (context, snapshot) {
-                        final ava = snapshot.data?.avatarUrl;
-                        final username = snapshot.data?.firstName;
-                        if (snapshot.connectionState == ConnectionState.done &&
-                            snapshot.data != null) {
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<ArticleBloc>().add(const GetAllArticleEvent());
+          context.read<HomeBloc>().add(const GetAllDoctorTopRateEvent());
+        },
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(15),
+                        bottomRight: Radius.circular(15))),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BlocBuilder<EditProfileBloc, EditProfileState>(
+                      builder: (context, state) {
+                        if (state.status == BlocStatus.loading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (state.status == BlocStatus.success) {
+                          final user = state.data as UserEntity;
+                          userId = user.id;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -66,7 +76,8 @@ class _ArticleHomeSate extends State<ArticleHome> {
                                   CircleAvatar(
                                     radius: 30,
                                     backgroundImage: NetworkImage(
-                                      ava ?? "",
+                                      user.avatarUrl ??
+                                          "", // Hiển thị ảnh đại diện
                                     ),
                                   ),
                                   Stack(
@@ -100,172 +111,180 @@ class _ArticleHomeSate extends State<ArticleHome> {
                               ),
                               const SizedBox(height: 20),
                               // Greeting Text
-                              const Text(
-                                "Welcome back .....",
-                                style: TextStyle(
+                              Text(
+                                'Hi, ${user.firstName ?? "Guest"} ', // Hiển thị tên người dùng
+                                style: const TextStyle(
                                     color: Colors.white, fontSize: 16),
                               ),
-                              Text(
-                                username ?? "Guest",
-                                style: const TextStyle(
+                              const Text(
+                                'Welcome back to Health App',
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 22,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           );
+                        } else if (state.status == BlocStatus.error) {
+                          return Text(
+                            'Error: ${state.errorMessage}', // Hiển thị thông báo lỗi
+                            style: const TextStyle(color: Colors.red),
+                          );
                         } else {
-                          return const CircularProgressIndicator();
+                          return const CircularProgressIndicator(); // Trạng thái mặc định
                         }
-                      }),
-
-                  const SizedBox(height: 20),
-                ],
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: BlocBuilder<HomeBloc, HomeState>(
-              builder: (context, state) {
-                if (state.status == BlocStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (state.status == BlocStatus.error) {
-                  return Center(child: Text(state.errorMessage.toString()));
-                }
-                final doctors = state.data ?? [];
-                if (doctors.isEmpty) {
-                  return const Center(
-                      child: Text("No top-rated doctors found."));
-                }
-                if (state.status == BlocStatus.success) {
-                  final listDoctor = state.data as List<DoctorEntity>;
+            SliverToBoxAdapter(
+              child: BlocBuilder<HomeBloc, HomeState>(
+                builder: (context, state) {
+                  if (state.status == BlocStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state.status == BlocStatus.error) {
+                    return Center(child: Text(state.errorMessage.toString()));
+                  }
+                  final doctors = state.data ?? [];
+                  if (doctors.isEmpty) {
+                    return const Center(
+                        child: Text("No top-rated doctors found."));
+                  }
+                  if (state.status == BlocStatus.success) {
+                    final listDoctor = state.data as List<UserEntity>;
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: Text(
-                          "Top Doctors",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: listDoctor
-                              .map(
-                                (doctor) => _buildDoctorCard(
-                                  doctor.specialization?.name.toUpperCase(),
-                                  'https://via.placeholder.com/100',
-                                  doctor.rating ?? 0,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      // Banner Slider
-                      const Text(
-                        "Promotional Banners",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 15),
-                      _buildBannerSlider(),
-                      const SizedBox(height: 15),
-                    ],
-                  );
-                }
-                return const Center(child: Text('No doctor found'));
-              },
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: BlocBuilder<ArticleBloc, ArticleState>(
-              buildWhen: (previous, current) =>
-                  previous.status != current.status &&
-                  (current.data.runtimeType == List<ArticleEntity>),
-              builder: (context, state) {
-                if (state.status == BlocStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (state.status == BlocStatus.error) {
-                  return Center(child: Text(state.errorMessage.toString()));
-                }
-
-                if (state.status == BlocStatus.success) {
-                  final articles = state.data as List<ArticleEntity>;
-                  // Hiển thị số lượng bài viết dựa trên trạng thái
-                  final displayedArticles =
-                      _showAllArticles ? articles : articles.take(5).toList();
-                  displayedArticles.sort((a, b) =>
-                      a.title
-                          ?.toUpperCase()
-                          .compareTo(b.title?.toUpperCase() ?? "") ??
-                      0);
-
-                  return Column(
-                    children: [
-                      const Text(
-                        "Articles",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      FutureBuilder(
-                          future: SharedPreferenceManager.getUser(),
-                          builder: (context, snapshot) {
-                            final userId = snapshot.data?.id;
-                            if (snapshot.connectionState ==
-                                    ConnectionState.done &&
-                                snapshot.data != null) {
-                              return ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: displayedArticles.length,
-                                itemBuilder: (context, index) {
-                                  return ArticleItem(
-                                      article: displayedArticles[index],
-                                      userId: userId);
-                                },
-                              );
-                            } else {
-                              return const CircularProgressIndicator();
-                            }
-                          }),
-                      if (articles.length > 5)
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _showAllArticles = !_showAllArticles;
-                            });
-                          },
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(15.0),
                           child: Text(
-                            _showAllArticles ? "Show less" : "Show more",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            "Top Doctors",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
-                    ],
-                  );
-                }
-
-                return const Center(child: Text('No articles found'));
-              },
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: listDoctor
+                                .map(
+                                  (doctor) => _buildDoctorCard(
+                                    doctor.firstName,
+                                    doctor.avatarUrl ??
+                                        'https://via.placeholder.com/100',
+                                    doctor.doctorProfile?.rating ?? 0,
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        // Banner Slider
+                        const Text(
+                          "Promotional Banners",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        _buildBannerSlider(),
+                        const SizedBox(height: 15),
+                      ],
+                    );
+                  }
+                  return const Center(child: Text('No doctor found'));
+                },
+              ),
             ),
-          ),
-        ],
+            SliverToBoxAdapter(
+              child: BlocBuilder<ArticleBloc, ArticleState>(
+                buildWhen: (previous, current) =>
+                    previous.status != current.status &&
+                    (current.data.runtimeType == List<ArticleEntity>),
+                builder: (context, state) {
+                  if (state.status == BlocStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (state.status == BlocStatus.error) {
+                    return Center(child: Text(state.errorMessage.toString()));
+                  }
+
+                  if (state.status == BlocStatus.success) {
+                    final articles = state.data as List<ArticleEntity>;
+                    // Hiển thị số lượng bài viết dựa trên trạng thái
+                    final displayedArticles =
+                        _showAllArticles ? articles : articles.take(5).toList();
+
+                    displayedArticles.sort((a, b) =>
+                        a.title
+                            ?.toUpperCase()
+                            .compareTo(b.title?.toUpperCase() ?? "") ??
+                        0);
+
+                    return Column(
+                      children: [
+                        const Text(
+                          "Articles",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Column(
+                          children: [
+                            // Dùng ListView.builder để hiển thị toàn bộ danh sách
+                            ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: displayedArticles.length,
+                              itemBuilder: (context, index) {
+                                // Chỉ hiển thị mục cần thiết dựa trên trạng thái _showAllArticles
+                                return Visibility(
+                                  visible: _showAllArticles || index < 5,
+                                  child: ArticleItem(
+                                    article: displayedArticles[index],
+                                    userId: userId,
+                                  ),
+                                );
+                              },
+                            ),
+                            // Hiển thị nút Show more nếu có nhiều hơn 5 mục
+                            if (articles.length > 5)
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _showAllArticles = !_showAllArticles;
+                                  });
+                                },
+                                child: Text(
+                                  _showAllArticles ? "Show less" : "Show more",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+
+                  return const Center(child: Text('No articles found'));
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
