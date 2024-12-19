@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -19,7 +21,7 @@ class FirebaseMessageService {
     );
     final firebaseMessaging = FirebaseMessaging.instance;
     final firebaseInAppMessaging = FirebaseInAppMessaging.instance;
-      if (!kIsWeb) {
+      if (!kIsWeb && Platform.isAndroid) {
   final fcmToken = await firebaseMessaging.getToken();
   if(fcmToken != null) {
     await SharedPreferenceManager.saveFcmToken(fcmToken);
