@@ -50,9 +50,11 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        print('PopScope: didPop: $didPop, result: $result');
         if (_popCountNotifier.value > 0) {
-          _handleNotidicationRedirect(context);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+            _handleNotidicationRedirect(context);
+            });
+
         }
         _popCountNotifier.value++;
       },

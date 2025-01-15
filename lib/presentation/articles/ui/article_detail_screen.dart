@@ -211,8 +211,10 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                                   borderRadius: BorderRadius.circular(20.r),
                                   child: FadeInImage.memoryNetwork(
                                     placeholder: kTransparentImage,
-                                    image: data.media!.first.url ??
-                                        "assets/images/placeholder.png",
+                                    image: ((data.media ?? []).isEmpty ||
+                                            data.media!.first.url == null)
+                                        ? "assets/images/placeholder.png"
+                                        : data.media!.first.url!,
                                     fit: BoxFit.cover,
                                     imageErrorBuilder:
                                         (context, error, stackTrace) =>
@@ -508,7 +510,8 @@ void _showUserPopup(BuildContext context, dynamic userData) {
               children: [
                 CircleAvatar(
                   radius: 25,
-                  backgroundImage: NetworkImage(userData.avatarUrl ?? ""),
+                  backgroundImage: NetworkImage(
+                      userData.avatarUrl ?? "/assets/images/placeholder.png"),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

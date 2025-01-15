@@ -19,31 +19,36 @@ class ChatContactList extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else {
           if (snapshot.data != null) {
-            return ListView.builder(
-              padding: const EdgeInsets.only(top: 5, left: 2, right: 2),
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: snapshot.data!.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                print('chat contact list snapshot.data: ${snapshot.data}');
-                print('count: ${snapshot.data!.length}');
-                var chatContactData = snapshot.data![index];
-                return GestureDetector(
-                    onTap: () {
-                      context.pushNamed(RouteDefine.chatDetails,
-                          extra: ChatPageData(
-                            name: chatContactData.name,
-                            receiverId: chatContactData.contactId,
-                            profilePicture: chatContactData.profileUrl,
-                            isGroupChat: false,
-                          ),
-                          pathParameters: {'userId': chatContactData.name});
-                      //update unread message to 0
-                      // context.push();
+            return snapshot.data!.isNotEmpty
+                ? ListView.builder(
+                    padding: const EdgeInsets.only(top: 5, left: 2, right: 2),
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: snapshot.data!.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      print(
+                          'chat contact list snapshot.data: ${snapshot.data}');
+                      print('count: ${snapshot.data!.length}');
+                      var chatContactData = snapshot.data![index];
+                      return GestureDetector(
+                          onTap: () {
+                            context.pushNamed(RouteDefine.chatDetails,
+                                extra: ChatPageData(
+                                  name: chatContactData.name,
+                                  receiverId: chatContactData.contactId,
+                                  profilePicture: chatContactData.profileUrl,
+                                  isGroupChat: false,
+                                ),
+                                pathParameters: {
+                                  'userId': chatContactData.name
+                                });
+                            //update unread message to 0
+                            // context.push();
+                          },
+                          child: ChatContactsCard(chat: chatContactData));
                     },
-                    child: ChatContactsCard(chat: chatContactData));
-              },
-            );
+                  )
+                : const Center(child: Text('No contacts'));
           } else {
             return const Center(
               child: Text('No contacts'),

@@ -1,8 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/utils/functions/image_griphy_picker.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/domain/articles/entities/article_media_entity.dart';
@@ -18,12 +18,14 @@ class ArticleCreateScreen extends StatefulWidget {
 }
 
 class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
+  
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
   ArticleCategory _selectedCategory = ArticleCategory.fitness;
   final List<ArticleMediaEntity> _mediaList = [];
   final List<String> imagePicked = [];
+  late int userId;
 
   @override
   void dispose() {
@@ -47,11 +49,10 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
         commentCount: 0,
         viewCount: 0,
       );
-
-      const userId = 2;
-      // context.read<ArticleBloc>().add(
-      //       CreateArticleEvent(articleEntity, userId, _mediaList ),
-      //     );
+      //TODO: Upload image to firebase later
+        context.read<ArticleBloc>().add(
+            CreateArticleEvent(articleEntity, const []),
+          );
     }
   }
 
@@ -169,10 +170,10 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
                             ElevatedButton.icon(
                               onPressed: () {
                                 // Add media handling logic here
-
-                                setState(() async {
-                                  await _pickImage(context);
-                                });
+                                //TODO: Add media handling logic here later
+                                // setState(() async {
+                                //   await _pickImage(context);
+                                // });
                               },
                               icon: const Icon(Icons.add_photo_alternate),
                               label: const Text('Add Media'),

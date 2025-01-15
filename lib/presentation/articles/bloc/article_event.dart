@@ -27,13 +27,12 @@ final class GetAllArticleByUserIdEvent extends ArticleEvent {
 
 final class CreateArticleEvent extends ArticleEvent {
   final ArticleEntity articleEntity;
-  final int userId;
   final List<String> imgPaths;
 
-  const CreateArticleEvent(this.articleEntity, this.userId, this.imgPaths);
+  const CreateArticleEvent(this.articleEntity, this.imgPaths);
 
   @override
-  List<Object?> get props => [articleEntity, userId, imgPaths];
+  List<Object?> get props => [articleEntity, imgPaths];
 }
 
 final class UpdateArticleEvent extends ArticleEvent {
