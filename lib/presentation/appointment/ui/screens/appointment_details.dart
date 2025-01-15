@@ -11,6 +11,7 @@ import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
+import 'package:health_management/presentation/common/custom_network_image.dart';
 import 'package:health_management/presentation/common/shimmer_loading.dart';
 import '../../../../app/managers/local_storage.dart';
 import '../../../../app/route/route_define.dart';
@@ -51,10 +52,9 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (_popCountNotifier.value > 0) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
             _handleNotidicationRedirect(context);
-            });
-
+          });
         }
         _popCountNotifier.value++;
       },
@@ -313,14 +313,13 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                fit: BoxFit.fill,
-                'assets/images/placeholder.png',
-                height: 120.h,
-                width: 250.w,
-              ),
-            ),
+                borderRadius: BorderRadius.circular(10),
+                child:  CustomNetworkImage(
+                  avatarUrl:
+               healthProvider?.name == "Heart Center" ?       "https://congchungnguyenvietcuong.com/Uploaded/Images/Original/2023/12/14/Thong_tin_dia_chi_Benh_vien_da_khoa_quoc_te_Vinmec,_TP._HCM_1412165503.jpg" : "https://tamanhhospital.vn/wp-content/uploads/2020/12/benh-vien-da-khoa-tam-anh.jpg",
+                  height: 120,
+                  width: 250,
+                )),
           ],
         ),
         // 15.verticalSpace,

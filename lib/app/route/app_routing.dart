@@ -87,7 +87,7 @@ class AppRouting {
                   restorationScopeId: 'chatRestorationScope',
                   navigatorKey: rootNavigatorChat,
                   routes: <RouteBase>[$chatRoute],
-                  preload: true),
+                  ),
               StatefulShellBranch(
                 observers: [appointmentRouteObserver],
                 navigatorKey: rootNavigatorAppointment,

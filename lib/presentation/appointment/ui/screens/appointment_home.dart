@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/utils/date_converter.dart';
@@ -268,6 +267,10 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                                       AppointmentStatus.cancelled;
                                 },
                               ).toList();
+                              activeAppointmentRecords.sort((a, b) {
+                                return 0 -
+                                    a.scheduledAt!.compareTo(b.scheduledAt!);
+                              });
                             }
                           }
                           return ShimmerLoading(
@@ -424,7 +427,6 @@ class WeekDaysRowWidget extends StatelessWidget {
 }
 
 class WeekDayBox extends StatelessWidget {
-  //todo: to create 2 factories for home and choose date time screen
   const WeekDayBox({
     super.key,
     required this.index,
@@ -666,7 +668,8 @@ class AppointmentCard extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     DateConverter.getWeekdayString(
-                        DateTime.tryParse(date?? DateTime.now().toString()) ?? DateTime.now()),
+                        DateTime.tryParse(date ?? DateTime.now().toString()) ??
+                            DateTime.now()),
                     style: StyleManager.buttonText,
                   ),
                   Row(
@@ -722,31 +725,34 @@ class AppointmentCard extends StatelessWidget {
                         ),
                       ),
                       onPressed: onCancel,
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(color: Colors.white),
+                      child: Text(
+                        isInThePast() ? 'Delete' : 'Cancel',
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (date != null && time != null) {
-                          NotificationService.scheduleNotification(
-                            appointmentId: id!,
-                            title: 'Appointment Reminder',
-                            body:
-                                'You have an appointment with ${role == Role.user ? "Patient" : "Doctor"} ${userName ?? "Loading..."} at ${DateFormat.jm().format(DateFormat.Hm().parse(time!))}',
-                            scheduledTime:
-                                // DateTime.parse('${date!} ${time!}'),
-                                DateTime.now().add(const Duration(seconds: 5)),
-                          );
-                        }
-                      },
-                      child: const Text('Remind Me'),
+                  if (!isInThePast()) ...[
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (date != null && time != null) {
+                            NotificationService.scheduleNotification(
+                              appointmentId: id!,
+                              title: 'Appointment Reminder',
+                              body:
+                                  'You have an appointment with ${role == Role.user ? "Patient" : "Doctor"} ${userName ?? "Loading..."} at ${DateFormat.jm().format(DateFormat.Hm().parse(time!))}',
+                              scheduledTime:
+                                  // DateTime.parse('${date!} ${time!}'),
+                                  DateTime.now()
+                                      .add(const Duration(seconds: 5)),
+                            );
+                          }
+                        },
+                        child: const Text('Remind Me'),
+                      ),
                     ),
-                  ),
+                  ]
                 ],
               ),
             ],
@@ -754,6 +760,10 @@ class AppointmentCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool isInThePast() {
+    return (DateTime.parse('${date!} ${time!}')).isBefore(DateTime.now());
   }
 }
 

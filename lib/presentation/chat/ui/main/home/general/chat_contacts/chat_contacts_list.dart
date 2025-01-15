@@ -7,8 +7,21 @@ import 'package:health_management/presentation/chat/bloc/chat/chat_contacts/chat
 import 'package:health_management/presentation/chat/ui/main/home/chat_screen/chat_page.dart';
 import 'package:health_management/presentation/chat/ui/main/home/general/chat_contacts/chat_contacts_item.dart';
 
-class ChatContactList extends StatelessWidget {
+class ChatContactList extends StatefulWidget {
   const ChatContactList({super.key});
+
+  @override
+  State<ChatContactList> createState() => _ChatContactListState();
+}
+
+class _ChatContactListState extends State<ChatContactList> {
+  @override
+  initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChatCubit>().getAllChatContacts();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +42,7 @@ class ChatContactList extends StatelessWidget {
                       print(
                           'chat contact list snapshot.data: ${snapshot.data}');
                       print('count: ${snapshot.data!.length}');
-                      var chatContactData = snapshot.data![index];
+                     var chatContactData = snapshot.data![index];
                       return GestureDetector(
                           onTap: () {
                             context.pushNamed(RouteDefine.chatDetails,
