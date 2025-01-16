@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
@@ -80,9 +81,8 @@ class _UpdateArticleDialogState extends State<UpdateArticleDialog> {
             context.read<ArticleBloc>().add(
                 UpdateArticleEvent(updatedArticle, widget.article.userId ?? 0));
             Navigator.pop(context); // Đóng dialog
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Article updated successfully')),
-            );
+            ToastManager.showToast(
+                context: context, message: "Article updated successfully");
           },
           child: const Text("Update"),
         ),

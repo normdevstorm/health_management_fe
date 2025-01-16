@@ -1,13 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/utils/functions/image_griphy_picker.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
 import 'package:health_management/domain/articles/entities/article_media_entity.dart';
+import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/articles/bloc/article_bloc.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';
 import 'package:health_management/presentation/articles/bloc/article_state.dart';
+import 'package:health_management/presentation/common/debounce_button.dart';
+
+import '../../../app/managers/local_storage.dart';
 
 class ArticleCreateScreen extends StatefulWidget {
   const ArticleCreateScreen({super.key});
@@ -17,7 +22,18 @@ class ArticleCreateScreen extends StatefulWidget {
 }
 
 class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
-  
+  @override
+  initState() {
+    super.initState();
+    getUserEntity();
+  }
+
+  Future<void> getUserEntity() async {
+    user = await SharedPreferenceManager.getUser();
+    return;
+  }
+
+  late final UserEntity? user;
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
@@ -41,15 +57,15 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
         category: _selectedCategory,
         media: _mediaList,
         id: 0,
-        userId: 0,
-        username: '',
-        userAvatar: '',
+        userId: user?.id ?? 0,
+        username: user?.account?.username ?? '',
+        userAvatar: user?.avatarUrl ?? '',
         upVoteCount: 0,
         commentCount: 0,
         viewCount: 0,
       );
       //TODO: Upload image to firebase later
-        context.read<ArticleBloc>().add(
+      context.read<ArticleBloc>().add(
             CreateArticleEvent(articleEntity, const []),
           );
     }
@@ -63,7 +79,7 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
           // Nếu tạo thành công, fetch lại data và pop màn hình
           context
               .read<ArticleBloc>()
-              .add(const GetAllArticleByUserIdEvent(userId: 2));
+              .add(GetAllArticleByUserIdEvent(userId: user?.id ?? 2));
           Navigator.pop(context);
         } else if (state.status == BlocStatus.error) {
           // Show error message
@@ -79,9 +95,20 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
         appBar: AppBar(
           title: const Text('Create Article'),
           actions: [
-            IconButton(
-              onPressed: _submitArticle,
-              icon: const Icon(Icons.check),
+            Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              ),
+              child: DebouncedButton(
+                onPressed: _submitArticle,
+                debounceTimeMs: 1000,
+                button: IgnorePointer(
+                  child: IconButton(
+                    icon: const Icon(Icons.check),
+                    onPressed: () {},
+                  ),
+                ),
+              ),
             ),
           ],
         ),

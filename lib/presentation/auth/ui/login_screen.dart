@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/presentation/common/button.dart';
+import 'package:health_management/presentation/common/debounce_button.dart';
 import 'package:health_management/presentation/common/input_field.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 
@@ -78,10 +79,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 5.verticalSpace,
-                Button(
-                  width: 327.w,
-                  height: 60.h,
-                  text: 'Login',
+                DebouncedButton(
+                  debounceTimeMs: 1000,
                   onPressed: () {
                     // Handle login logic here
                     if (_emailFormKey.currentState!.validate()) {
@@ -92,6 +91,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       // context.pushNamed(RouteDefine.register);
                     }
                   },
+                  button: Button(
+                    width: 327.w,
+                    height: 60.h,
+                    text: 'Login',
+                  ),
                 ),
                 5.verticalSpace,
                 Row(

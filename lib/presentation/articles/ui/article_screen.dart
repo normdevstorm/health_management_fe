@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
+import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/app/route/route_define.dart';
 import 'package:health_management/domain/articles/entities/article_comment_entity.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
@@ -40,15 +41,13 @@ class _ArticleScreenState extends State<ArticleScreen> {
             .add(GetAllArticleByUserIdEvent(userId: userId!));
       } else {
         // Xử lý khi không có thông tin user
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No user data found!')),
-        );
+        ToastManager.showToast(
+            context: context, message: 'Error fetching user: User not found');
       }
     } catch (e) {
       // Xử lý lỗi
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching user: $e')),
-      );
+      ToastManager.showToast(
+          context: context, message: 'Error fetching user: $e');
     }
   }
 
@@ -297,9 +296,12 @@ class ArticleItem extends StatelessWidget {
   void _navigateToUpdateArticle(BuildContext context, ArticleEntity article) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext buildContext) {
         // Tạo Popup Dialog
-        return UpdateArticleDialog(article: article);
+        return BlocProvider<ArticleBloc>.value(
+          value: context.read<ArticleBloc>(),
+          child: UpdateArticleDialog(article: article),
+        );
       },
     );
 
@@ -311,9 +313,7 @@ class ArticleItem extends StatelessWidget {
 
   void _deleteArticle(BuildContext context, int articleId, int userId) {
     context.read<ArticleBloc>().add(DeleteArticleEvent(articleId, userId));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Article deleted successfully')),
-    );
+    ToastManager.showToast(context: context, message: 'Article deleted!');
     context
         .read<ArticleBloc>()
         .add(GetAllArticleByUserIdEvent(userId: article.userId!));
