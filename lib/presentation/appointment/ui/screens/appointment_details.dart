@@ -51,12 +51,12 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        if (_popCountNotifier.value > 0) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _handleNotidicationRedirect(context);
-          });
-        }
-        _popCountNotifier.value++;
+        // if (_popCountNotifier.value > 0) {
+        //   WidgetsBinding.instance.addPostFrameCallback((_) {
+        //     _handleNotidicationRedirect(context);
+        //   });
+        // }
+        // _popCountNotifier.value++;
       },
       child: Scaffold(
         appBar: AppBar(
