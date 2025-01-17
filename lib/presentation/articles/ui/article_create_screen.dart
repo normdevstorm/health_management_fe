@@ -25,7 +25,9 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
   @override
   initState() {
     super.initState();
-    getUserEntity();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getUserEntity();
+    });
   }
 
   Future<void> getUserEntity() async {
@@ -75,9 +77,9 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ArticleBloc, ArticleState>(
       listener: (context, state) {
-        if (state.status == BlocStatus.success) {
+        if (state.status == BlocStatus.success && state.data is ArticleEntity) {
           // Nếu tạo thành công, fetch lại data và pop màn hình
-          context
+           context
               .read<ArticleBloc>()
               .add(GetAllArticleByUserIdEvent(userId: user?.id ?? 2));
           Navigator.pop(context);

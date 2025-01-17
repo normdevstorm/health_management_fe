@@ -25,7 +25,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
   @override
   void initState() {
     super.initState();
-    fetchUser();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchUser();
+    });
+
   }
 
   Future<void> fetchUser() async {

@@ -91,6 +91,19 @@ void main() async {
 void _authenticationListener(BuildContext context, AuthenticationState state) {
   BuildContext currentContext =
       globalRootNavigatorKey.currentContext ?? context;
+  if (state is AuthenticationLoading) {
+    showDialog(
+        barrierColor: Colors.transparent,
+        context: currentContext,
+        useRootNavigator: true,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ));
+    return;
+  } else {
+     currentContext.canPop() ? currentContext.pop() : null;
+  }
 
   if (state is AuthenticationInitial) {
     GoRouter.of(currentContext).goNamed(RouteDefine.login);
@@ -103,11 +116,15 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   }
 
   if (state is RegisterSuccess) {
+    ToastManager.showToast(
+        context: currentContext, message: 'Register successfully');
     GoRouter.of(currentContext).goNamed(RouteDefine.login);
     return;
   }
 
   if (state is VerifyCodeSuccess) {
+    ToastManager.showToast(
+        context: currentContext, message: 'Verify code successfully');
     context.read<AuthenticationBloc>().add(state.registerSubmitEvent);
     return;
   }
@@ -184,7 +201,7 @@ class MyApp extends StatelessWidget {
         textDirection: ui.TextDirection.ltr,
         child: Stack(children: [
           mainApp,
-          Positioned(bottom: 5.sp, right: 5.sp, child: const ChuckerLogButton())
+          // Positioned(bottom: 5.sp, right: 5.sp, child: const ChuckerLogButton())
         ]),
       ),
       child: mainApp,

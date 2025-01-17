@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
           children: <Widget>[
             FlutterLogo(size: 100),
             SizedBox(height: 20),
-            CircularProgressIndicator(),
+            // CircularProgressIndicator(),
           ],
         ),
       ),

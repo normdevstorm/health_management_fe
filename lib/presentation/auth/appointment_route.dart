@@ -70,9 +70,21 @@ part 'appointment_route.g.dart';
 class AppointmentRoute extends ShellRouteData {
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
-    return BlocProvider(
-      create: (context) => AppointmentBloc(
-          appointmentUseCase: getIt(), healthProviderUseCase: getIt()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AppointmentBloc(
+              appointmentUseCase: getIt(), healthProviderUseCase: getIt()),
+        ),
+        BlocProvider(create: (context) => ChatCubit()),
+        BlocProvider(create: (context) => InChatCubit()),
+        BlocProvider(create: (context) => UserCubit()),
+        BlocProvider(create: (context) => StatusCubit()),
+        BlocProvider(create: (context) => ContactsCubit()),
+        BlocProvider(create: (context) => CallCubit()),
+        BlocProvider(create: (context) => BottomChatCubit()),
+        BlocProvider(create: (context) => BackgroundCubit())
+      ],
       child: navigator,
     );
   }
@@ -111,7 +123,7 @@ class AppointmentDetailsRoute extends GoRouteData {
         int.tryParse(state.pathParameters['appointmentId'] ?? '0') ?? 0;
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => ContactsCubit()..getAllContacts()),
+        BlocProvider<ContactsCubit>.value(value: context.read<ContactsCubit>()..getAllContacts()),
       ],
       child: AppointmentDetails(appointmentId: appointmentId),
     );
@@ -125,23 +137,11 @@ class AppointmentDetailsChatRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     ChatPageData chatContactData = state.extra as ChatPageData;
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => ChatCubit()),
-        BlocProvider(create: (context) => InChatCubit()),
-        BlocProvider(create: (context) => UserCubit()),
-        BlocProvider(create: (context) => StatusCubit()),
-        BlocProvider(create: (context) => ContactsCubit()),
-        BlocProvider(create: (context) => CallCubit()),
-        BlocProvider(create: (context) => BottomChatCubit()),
-        BlocProvider(create: (context) => BackgroundCubit())
-      ],
-      child: ChatPage(
-        name: chatContactData.name,
-        receiverId: chatContactData.receiverId,
-        profilePicture: chatContactData.profilePicture,
-        isGroupChat: false,
-      ),
+    return ChatPage(
+      name: chatContactData.name,
+      receiverId: chatContactData.receiverId,
+      profilePicture: chatContactData.profilePicture,
+      isGroupChat: false,
     );
   }
 }
