@@ -84,11 +84,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     // Handle login logic here
                     if (_emailFormKey.currentState!.validate()) {
-                      context.read<AuthenticationBloc>().add(LoginSubmitEvent(
-                            _emailController.text,
-                            _passwordController.text,
-                          ));
-                      // context.pushNamed(RouteDefine.register);
+                      GoRouter.of(context).goNamed(RouteDefine.homeScreen);
+                      //TODO: UNCOMMENT THIS AFTER FIXING BUGS
+                      // context.read<AuthenticationBloc>().add(LoginSubmitEvent(
+                      //       _emailController.text,
+                      //       _passwordController.text,
+                      //     ));
                     }
                   },
                   button: Button(

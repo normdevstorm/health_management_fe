@@ -22,6 +22,7 @@ import 'package:health_management/data/doctor/api/doctor_api.dart';
 import 'package:health_management/data/doctor/repositories/doctor_repository_impl.dart';
 import 'package:health_management/data/health_provider/api/health_provider_api.dart';
 import 'package:health_management/data/health_provider/repositories/health_provider_repository_impl.dart';
+import 'package:health_management/data/payment/api/zalopay_api.dart';
 import 'package:health_management/data/prescription/repositories/prescription_repository_impl.dart';
 import 'package:health_management/data/verify_code/api/verify_code_api.dart';
 import 'package:health_management/domain/appointment/repositories/appointment_repository.dart';
@@ -132,6 +133,9 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => ArticlesApi(dio));
   getIt.registerLazySingleton(() => DoctorScheduleApi(dio));
   getIt.registerLazySingleton(() => DoctorApi(dio));
+
+  getIt.registerLazySingleton(
+      () => ZalopayApi(dio, baseUrl: "https://sb-openapi.zalopay.vn/v2"));
 }
 
 void setUpAppComponent() async {

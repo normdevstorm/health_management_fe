@@ -1,5 +1,5 @@
 plugins {
-    id "com.android.application"
+    id 'com.android.application'
     // START: FlutterFire Configuration
     id 'com.google.gms.google-services'
     // END: FlutterFire Configuration
@@ -50,7 +50,6 @@ android {
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
         multiDexEnabled true
-
     }
 
     buildTypes {
@@ -77,7 +76,7 @@ android {
                 dimension "default"
                 resValue "string", "app_name", "Health Management Dev"
                 applicationIdSuffix ".dev"
-                // buildConfigField "String", "BASE_URL", '"https://dev.api.myapp.com"'
+                // buildConfapply plugin: 'com.android.application'igField "String", "BASE_URL", '"https://dev.api.myapp.com"'
             }
             staging {
                 dimension "default"
@@ -88,6 +87,8 @@ android {
             production {
                 dimension "default"
                 resValue "string", "app_name", "Health Management"
+                applicationIdSuffix ".prod"
+
                 // buildConfigField "String", "BASE_URL", '"https://api.myapp.com"'
             }
         }
@@ -105,4 +106,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.0.0' // or the latest version
     implementation 'com.google.android.gms:play-services-auth:20.0.0' // or the latest version
     // Add other Firebase dependencies as needed
+    implementation 'com.android.support:multidex:2.0.1'
+    implementation(name:'zpdk-release-v3.1', ext:'aar')
 }

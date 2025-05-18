@@ -8,9 +8,14 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/utils/date_converter.dart';
 import 'package:health_management/app/utils/local_notification/notification_service.dart';
+import 'package:health_management/data/payment/api/zalopay_service.dart';
+import 'package:health_management/data/payment/models/zalopay_oder_response.dart';
+import 'package:health_management/data/payment/models/zalopay_order_request.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
+import '../../../../app/di/injection.dart';
 import '../../../../app/managers/toast_manager.dart';
 import '../../../../app/route/route_define.dart';
+import '../../../../data/payment/api/zalopay_api.dart';
 import '../../../../domain/prescription/entities/prescription_entity.dart';
 import '../../../common/custom_network_image.dart';
 import '../../../common/shimmer_loading.dart';
@@ -129,9 +134,53 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                               builder: (context, disabled, child) => disabled
                                   ? const SizedBox()
                                   : AddButtonWidget(
-                                      onPressed: () {
-                                        context.pushNamed(RouteDefine
-                                            .createAppointmentChooseProvider);
+                                      onPressed: () async {
+                                        //TODO: TEMPORARILY USED FOR PAYMENT FUNCTIONALITY
+                                        ZaloPayOrderRequest zaloPayRequest =
+                                            ZaloPayOrderRequest(
+                                          amount: 50000,
+                                          appId: 2553,
+                                          appUser: 'Android_Demo',
+                                          appTime: DateTime.now()
+                                              .millisecondsSinceEpoch,
+                                          embedData: '{}',
+                                          item: '[]',
+                                          bankCode: 'zalopayapp',
+                                          description: 'Thanh toán đơn hàng',
+                                          // callbackUrl:
+                                          //     'health_management_zalopay.dev://app',
+                                        );
+                                        Map<String, String> hMacAndTransId =
+                                            await ZalopayService
+                                                .getHMacAndTransId(
+                                          amount:
+                                              zaloPayRequest.amount.toString(),
+                                          appId:
+                                              zaloPayRequest.appId.toString(),
+                                          appUser: zaloPayRequest.appUser,
+                                          appTime:
+                                              zaloPayRequest.appTime.toString(),
+                                          embedData: zaloPayRequest.embedData,
+                                          items: zaloPayRequest.item,
+                                          appTransId: zaloPayRequest.appTransId,
+                                        );
+
+                                        ZaloPayOrderResponse
+                                            zaloPayOrderResponse =
+                                            await getIt<ZalopayApi>().createOrder(
+                                                zaloPayRequest.copyWith(
+                                                    mac: hMacAndTransId['mac'],
+                                                    appTransId: hMacAndTransId[
+                                                        'app_trans_id']));
+
+                                        // context.pushNamed(RouteDefine                                        // context.pushNamed(RouteDefine
+                                        //     .createAppointmentChooseProvider);
+
+                                        String result =
+                                            await ZalopayService.payOrder(
+                                                    zaloPayOrderResponse) ??
+                                                "Payment failed";
+                                        print(result);
                                       },
                                     ),
                             )

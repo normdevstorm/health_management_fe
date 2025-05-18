@@ -102,11 +102,11 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
             ));
     return;
   } else {
-     currentContext.canPop() ? currentContext.pop() : null;
+    currentContext.canPop() ? currentContext.pop() : null;
   }
 
   if (state is AuthenticationInitial) {
-    GoRouter.of(currentContext).goNamed(RouteDefine.login);
+    GoRouter.of(currentContext).goNamed(RouteDefine.homeScreen);
     return;
   }
 
@@ -134,7 +134,7 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
     //todo: localize this message
     ToastManager.showToast(context: currentContext, message: errorMessage);
     if (state.runtimeType == CheckLoginStatusErrorState) {
-      GoRouter.of(currentContext).goNamed(RouteDefine.login);
+      GoRouter.of(currentContext).goNamed(RouteDefine.homeScreen);
     }
     return;
   }
@@ -201,7 +201,7 @@ class MyApp extends StatelessWidget {
         textDirection: ui.TextDirection.ltr,
         child: Stack(children: [
           mainApp,
-          // Positioned(bottom: 5.sp, right: 5.sp, child: const ChuckerLogButton())
+          Positioned(bottom: 5.sp, right: 5.sp, child: const ChuckerLogButton())
         ]),
       ),
       child: mainApp,

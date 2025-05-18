@@ -24,7 +24,7 @@ class ConfigManager {
   );
 
   static ConfigManager productionConfig = ConfigManager._(
-    apiBaseUrl: 'https://your_production_api',
+    apiBaseUrl: 'https://api.duynguyendev.xyz/api/v1/core',
     appFlavor: FlavorManager.production,
   );
 
