@@ -138,7 +138,7 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                                         //TODO: TEMPORARILY USED FOR PAYMENT FUNCTIONALITY
                                         ZaloPayOrderRequest zaloPayRequest =
                                             ZaloPayOrderRequest(
-                                          amount: 50000,
+                                          amount: 200000,
                                           appId: 2553,
                                           appUser: 'Android_Demo',
                                           appTime: DateTime.now()

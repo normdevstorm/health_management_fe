@@ -2,9 +2,12 @@
 import 'dart:io';
 import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
+import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/config/refresh_token_interceptor.dart';
 import 'package:health_management/app/config/request_interceptor.dart';
+import 'package:health_management/app/utils/local_notification/notification_service.dart';
 import 'package:health_management/data/appointment/api/appointment_api.dart';
 import 'package:health_management/data/appointment/repositories/appointment_repository_impl.dart';
 import 'package:health_management/data/articles/api/articles_api.dart';
@@ -83,6 +86,7 @@ import '../../domain/verify_code/repositories/verify_code_repository.dart';
 import '../app.dart';
 import '../managers/local_storage.dart';
 import 'injection.config.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 final getIt = GetIt.instance;
 
@@ -93,10 +97,33 @@ final getIt = GetIt.instance;
   // TODO: refine generated dir later on
   // generateForDir:
 )
-void configureDependencies(FlavorManager flavor) {
+Future<void> configureDependencies(FlavorManager flavor) async {
   getIt.init();
   setUpNetworkComponent(flavor);
-  setUpAppComponent();
+  await setUpAppUtilitis(flavor);
+  setUpAppComponent(flavor);
+}
+
+Future<void> setUpAppUtilitis(FlavorManager flavor) async {
+  //SharedPreference
+  await SharedPreferenceManager.init();
+
+  //Logger
+  getIt.registerSingleton<Logger>(Logger(
+    printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
+  ));
+
+  // Initialize Firebase project
+  await Firebase.initializeApp(
+      options:
+          ConfigManager.getInstance(flavorName: flavor.name).firebaseOptions);
+
+  // Initialize Firebase Messaging
+  await FirebaseMessageService().initNotificaiton();
+
+  // Initialize Notification Service
+  tz.initializeTimeZones();
+  await NotificationService.initializeNotification();
 }
 
 void setUpNetworkComponent(FlavorManager flavor) {
@@ -138,14 +165,7 @@ void setUpNetworkComponent(FlavorManager flavor) {
       () => ZalopayApi(dio, baseUrl: "https://sb-openapi.zalopay.vn/v2"));
 }
 
-void setUpAppComponent() async {
-  //SharedPreference
-  await SharedPreferenceManager.init();
-
-  //Logger
-  getIt.registerSingleton<Logger>(Logger(
-    printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
-  ));
+setUpAppComponent(FlavorManager flavor) {
   //Inject repositories
   getIt.registerLazySingleton<AuthenticationRepository>(
       () => AuthenticationRepositoryImpl(getIt(), getIt()));

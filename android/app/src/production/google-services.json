@@ -1,22 +1,21 @@
 {
   "project_info": {
-    "project_number": "155656307072",
-    "firebase_url": "https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "chat-app-5d601",
-    "storage_bucket": "chat-app-5d601.appspot.com"
+    "project_number": "266512718933",
+    "project_id": "health-mn-prod",
+    "storage_bucket": "health-mn-prod.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:155656307072:android:a0eefb7abc3bb3eb044165",
+        "mobilesdk_app_id": "1:266512718933:android:f9491b2b8b2debe21b88dc",
         "android_client_info": {
-          "package_name": "com.app.health_management_chat"
+          "package_name": "com.example.health_management"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
+          "current_key": "AIzaSyBrj8P1C7YclP_Shkz_PG6rEGCkLEojJC0"
         }
       ],
       "services": {
@@ -27,15 +26,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:155656307072:android:1694286354f70c80044165",
+        "mobilesdk_app_id": "1:266512718933:android:59124d5553363b541b88dc",
         "android_client_info": {
-          "package_name": "com.example.chat_app_flutter"
+          "package_name": "com.example.health_management.prod"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
+          "current_key": "AIzaSyBrj8P1C7YclP_Shkz_PG6rEGCkLEojJC0"
         }
       ],
       "services": {

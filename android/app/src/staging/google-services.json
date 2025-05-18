@@ -1,41 +1,21 @@
 {
   "project_info": {
-    "project_number": "155656307072",
-    "firebase_url": "https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "chat-app-5d601",
-    "storage_bucket": "chat-app-5d601.appspot.com"
+    "project_number": "412909355967",
+    "project_id": "health-mn-staging",
+    "storage_bucket": "health-mn-staging.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:155656307072:android:a0eefb7abc3bb3eb044165",
+        "mobilesdk_app_id": "1:412909355967:android:08f8eb629e52b4957d970a",
         "android_client_info": {
-          "package_name": "com.app.health_management_chat"
+          "package_name": "com.example.health_management.stg"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:155656307072:android:1694286354f70c80044165",
-        "android_client_info": {
-          "package_name": "com.example.chat_app_flutter"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyANr3MNTGaGfhfrPt6uohyp26gZQ-_ilcU"
+          "current_key": "AIzaSyBSEfST66K3mlkWQ8M7Trvg73h7_xVAhEI"
         }
       ],
       "services": {

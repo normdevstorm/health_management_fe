@@ -5,7 +5,7 @@
         "name": "dev",
         "request": "launch",
         "type": "dart",
-        "args": ["--flavor", "dev",
+        "args": ["--flavor", "dev", "--dart-define=FLAVOR=dev", 
         // "--web-renderer", "html"
         // , "--web-port", "49430"
         
@@ -16,54 +16,54 @@
         "request": "launch",
         "type": "dart",
         "flutterMode": "profile",
-        "args": ["--flavor", "dev"]
+        "args": ["--flavor", "dev", "--dart-define=FLAVOR=dev", ]
       },
       {
         "name": "dev (release)",
         "request": "launch",
         "type": "dart",
         "flutterMode": "release",
-        "args": ["--flavor", "dev"]
+        "args": ["--flavor", "dev", "--dart-define=FLAVOR=dev", ]
       },
       {
         "name": "staging",
         "request": "launch",
         "type": "dart",
-        "args": ["--flavor", "staging"]
+        "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging", ]
       },
       {
         "name": "staging (profile)",
         "request": "launch",
         "type": "dart",
         "flutterMode": "profile",
-        "args": ["--flavor", "staging"]
+        "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging",]
       },
       {
         "name": "staging (release)",
         "request": "launch",
         "type": "dart",
         "flutterMode": "release",
-        "args": ["--flavor", "staging"]
+        "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging",]
       },
       {
         "name": "prod",
         "request": "launch",
         "type": "dart",
-        "args": ["--flavor", "production"]
+        "args": ["--flavor", "production", "--dart-define=FLAVOR=production",]
       },
       {
         "name": "prod (profile)",
         "request": "launch",
         "type": "dart",
         "flutterMode": "profile",
-        "args": ["--flavor", "production"]
+        "args": ["--flavor", "production", "--dart-define=FLAVOR=production",]
       },
       {
         "name": "prod (release)",
         "request": "launch",
         "type": "dart",
         "flutterMode": "release",
-        "args": ["--flavor", "production"]
+        "args": ["--flavor", "production", "--dart-define=FLAVOR=production",]
       }
     ]
   }

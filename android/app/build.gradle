@@ -65,32 +65,33 @@ flutter {
     source = "../.."
 }
 
+
 android {
     //TODO: config flavor baseurl later on
     flavorDimensions "default"
-    android {
-        //TODO: config flavor baseurl later on
-        flavorDimensions "default"
-        productFlavors {
-            dev {
-                dimension "default"
-                resValue "string", "app_name", "Health Management Dev"
-                applicationIdSuffix ".dev"
-                // buildConfapply plugin: 'com.android.application'igField "String", "BASE_URL", '"https://dev.api.myapp.com"'
-            }
-            staging {
-                dimension "default"
-                resValue "string", "app_name", "Health Management Staging"
-                applicationIdSuffix ".staging"
-                // buildConfigField "String", "BASE_URL", '"https://staging.api.myapp.com"'
-            }
-            production {
-                dimension "default"
-                resValue "string", "app_name", "Health Management"
-                applicationIdSuffix ".prod"
+    productFlavors {
+        dev {
+            dimension "default"
+            resValue "string", "app_name", "Health Management Dev"
+            applicationIdSuffix ".dev"
+            buildConfigField "String", "FLAVOR", "\"dev\""
 
-                // buildConfigField "String", "BASE_URL", '"https://api.myapp.com"'
-            }
+            // buildConfapply plugin: 'com.android.application'igField "String", "BASE_URL", '"https://dev.api.myapp.com"'
+        }
+        staging {
+            dimension "default"
+            resValue "string", "app_name", "Health Management Staging"
+            applicationIdSuffix ".stg"
+            // buildConfigField "String", "BASE_URL", '"https://staging.api.myapp.com"'
+            buildConfigField "String", "FLAVOR", "\"staging\""
+        }
+        production {
+            dimension "default"
+            resValue "string", "app_name", "Health Management"
+            applicationIdSuffix ".prod"
+            buildConfigField "String", "FLAVOR", "\"production\""
+
+            // buildConfigField "String", "BASE_URL", '"https://api.myapp.com"'
         }
     }
 }

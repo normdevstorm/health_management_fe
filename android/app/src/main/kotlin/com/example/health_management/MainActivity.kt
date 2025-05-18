@@ -31,7 +31,9 @@ class MainActivity: FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 if (call.method == "payOrder") {
                     val token = call.argument<String>("zp_trans_token")
-                    val uriScheme = "health_management_zalopay.dev://app"
+                    val applicationId = this@MainActivity.applicationContext.packageName
+                    val uriScheme = "${applicationId}://app"
+
 
                     if (token == null) {
                         result.error("INVALID_ARGUMENT", "zp_trans_token cannot be null", null)

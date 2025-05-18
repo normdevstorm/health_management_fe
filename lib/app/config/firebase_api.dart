@@ -9,39 +9,34 @@ import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/web.dart';
-import 'package:health_management/firebase_options_cloud_message.dart'
-    as firebase_options_cloud_message;
 
 @injectable
 class FirebaseMessageService {
   Future<void> initNotificaiton() async {
-    await Firebase.initializeApp(
-      options:
-          firebase_options_cloud_message.DefaultFirebaseOptions.currentPlatform,
-    );
     final firebaseMessaging = FirebaseMessaging.instance;
     final firebaseInAppMessaging = FirebaseInAppMessaging.instance;
-      if (!kIsWeb && Platform.isAndroid) {
-  final fcmToken = await firebaseMessaging.getToken();
-  if(fcmToken != null) {
-    await SharedPreferenceManager.saveFcmToken(fcmToken);
-  }
-  final firebaseInstallationId = await FirebaseInstallations.instance.getId();
-  getIt<Logger>().i("FCMToken: $fcmToken");
-  getIt<Logger>().i("InstallationId: $firebaseInstallationId");
-  requestNotificationPermissions(firebaseMessaging);
-  FirebaseMessaging.onBackgroundMessage(_handlerBackgorundMessage);
-  FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    getIt<Logger>().i("onMessageOpenedApp: $message");
-  });
-  FirebaseMessaging.onMessage.listen((message) {
-    getIt<Logger>().i("onMessage: $message");
-  });
-  firebaseInAppMessaging.setAutomaticDataCollectionEnabled(true);
-  FirebaseMessaging.onMessage.listen((message) {
-    getIt<Logger>().i("onMessage: $message");
-  });
-}
+    if (!kIsWeb && Platform.isAndroid) {
+      final fcmToken = await firebaseMessaging.getToken();
+      if (fcmToken != null) {
+        await SharedPreferenceManager.saveFcmToken(fcmToken);
+      }
+      final firebaseInstallationId =
+          await FirebaseInstallations.instance.getId();
+      getIt<Logger>().i("FCMToken: $fcmToken");
+      getIt<Logger>().i("InstallationId: $firebaseInstallationId");
+      requestNotificationPermissions(firebaseMessaging);
+      FirebaseMessaging.onBackgroundMessage(_handlerBackgorundMessage);
+      FirebaseMessaging.onMessageOpenedApp.listen((message) {
+        getIt<Logger>().i("onMessageOpenedApp: $message");
+      });
+      FirebaseMessaging.onMessage.listen((message) {
+        getIt<Logger>().i("onMessage: $message");
+      });
+      firebaseInAppMessaging.setAutomaticDataCollectionEnabled(true);
+      FirebaseMessaging.onMessage.listen((message) {
+        getIt<Logger>().i("onMessage: $message");
+      });
+    }
   }
 }
 

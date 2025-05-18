@@ -2,7 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/data/payment/models/zalopay_oder_response.dart';
-import 'package:health_management/data/payment/models/zalopay_order_request.dart';
 import 'package:logger/logger.dart';
 
 class ZalopayService {

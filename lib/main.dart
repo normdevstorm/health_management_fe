@@ -18,37 +18,25 @@ import 'package:health_management/app/utils/regex/regex_manager.dart';
 import 'package:health_management/domain/auth/usecases/authentication_usecase.dart';
 import 'package:health_management/domain/chat/usecases/app_use_cases.dart';
 import 'package:health_management/domain/user/usecases/user_usecase.dart';
-import 'package:health_management/firebase_options_chat.dart'
-    as firebase_options_chat;
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/common/chucker_log_button.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
-// import 'app/config/firebase_api.dart';
-import 'app/config/firebase_api.dart';
 import 'app/di/injection.dart';
 import 'app/managers/toast_manager.dart';
-import 'app/utils/local_notification/notification_service.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
-import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
-  //create before runApp method to wrap all the procedures
+  //TODO: create before runApp method to wrap all the procedures
   WidgetsFlutterBinding.ensureInitialized();
-  const String flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
-  configureDependencies(FlavorManager.values.firstWhere(
-      (element) => element.name == flavor,
-      orElse: () => FlavorManager.dev));
-  //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
-  // Initialize the cloud message Firebase project
-  await FirebaseMessageService().initNotificaiton();
-  // Initialize the chat Firebase project
-  await Firebase.initializeApp(
-    options: firebase_options_chat.DefaultFirebaseOptions.currentPlatform,
-    //TODO: UNCOMMENT THIS LINE TO RUN ON MOBILE DEVICES
-    name: 'chatApp',
-  );
-  tz.initializeTimeZones();
-  await NotificationService.initializeNotification();
+
+  const String flavor =
+      String.fromEnvironment('FLAVOR', defaultValue: 'staging');
+
+  await configureDependencies(
+      FlavorManager.values.firstWhere((element) => element.name == flavor));
+  // orElse: () => FlavorManager.staging));
+
+  print('Flavor: $flavor');
 
   runApp(CalendarControllerProvider(
     controller: EventController(),
@@ -104,7 +92,7 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   } else {
     currentContext.canPop() ? currentContext.pop() : null;
   }
-
+  //TODO: remove this later after api is available
   if (state is AuthenticationInitial) {
     GoRouter.of(currentContext).goNamed(RouteDefine.homeScreen);
     return;
