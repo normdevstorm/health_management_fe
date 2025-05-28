@@ -45,7 +45,7 @@
         "type": "dart",
         "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging",  
                 "--web-renderer", "html"
-        , "--web-port", "49430"
+        // , "--web-port", "49430"
       ]
       },
       {

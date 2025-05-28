@@ -10,24 +10,25 @@ part 'appointment_api.g.dart';
 @RestApi()
 abstract class AppointmentApi {
   factory AppointmentApi(Dio dio, {String baseUrl}) = _AppointmentApi;
-  @GET('/appointment-record/all')
+  @GET('/appointments/all')
   Future<ApiResponse<List<AppointmentRecordResponse>>>
       getAllAppointmentRecords();
-  @GET('/appointment-record/{id}')
-  Future<ApiResponse<AppointmentRecordResponse>>
-      getAppointmentRecordById(@Path('id') int appointmentId);
-  @POST('/appointment-record/create')
+  @GET('/appointments/{id}')
+  Future<ApiResponse<AppointmentRecordResponse>> getAppointmentRecordById(
+      @Path('id') int appointmentId);
+  @POST('/appointments/create')
   Future<ApiResponse<AppointmentRecordResponse>> createAppointmentRecord(
       @Body() AppointmentRecordRequest appointment);
-  @PUT('/appointment-record/update')
+  @PUT('/appointments/update')
   Future<ApiResponse<AppointmentRecordResponse>> updateAppointmentRecord(
       @Body() UpdateAppointmentRecordRequest appointment);
-  @DELETE('/appointment-record/delete/{id}')
+  @DELETE('/appointments/delete/{id}')
   Future<ApiResponse<String>> deleteAppointmentRecord(
       @Path('id') int appointmentId);
-  @GET('/appointment-record/user/{id}')
+  @GET('/appointments/user/{id}')
   Future<ApiResponse<List<AppointmentRecordResponse>>>
       getAppointmentRecordByUserId(@Path('id') int userId);
-  @GET('/appointment-record/doctor/{id}')
-  Future<ApiResponse<List<AppointmentRecordResponse>>> getAppointmentRecordByDoctorId(@Path('id') int doctorId);
+  @GET('/appointments/doctor/{id}')
+  Future<ApiResponse<List<AppointmentRecordResponse>>>
+      getAppointmentRecordByDoctorId(@Path('id') int doctorId);
 }
