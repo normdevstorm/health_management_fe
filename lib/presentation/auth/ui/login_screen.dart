@@ -85,7 +85,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Handle login logic here
                     if (_emailFormKey.currentState!.validate()) {
                       GoRouter.of(context).goNamed(RouteDefine.homeScreen);
-                      //TODO: UNCOMMENT THIS AFTER FIXING BUGS
                       context.read<AuthenticationBloc>().add(LoginSubmitEvent(
                             _emailController.text,
                             _passwordController.text,

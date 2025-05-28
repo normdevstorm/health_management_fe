@@ -28,7 +28,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchUser();
     });
-
   }
 
   Future<void> fetchUser() async {
@@ -86,7 +85,6 @@ class _ArticleScreenState extends State<ArticleScreen> {
                       .compareTo(b.title?.toUpperCase() ?? "") ??
                   0);
             } catch (e) {
-              // TODO
               articles = [];
             }
 

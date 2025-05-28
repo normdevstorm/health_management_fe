@@ -12,7 +12,6 @@ sealed class ArticleEvent extends Equatable {
 final class GetAllArticleEvent extends ArticleEvent {
   const GetAllArticleEvent();
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -93,6 +92,5 @@ final class GetArticleByIdEvent extends ArticleEvent {
   const GetArticleByIdEvent(this.articleId);
 
   @override
-  // TODO: implement props
   List<Object?> get props => [articleId];
 }
