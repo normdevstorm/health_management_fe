@@ -759,7 +759,6 @@ class AppointmentCard extends StatelessWidget {
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10.r),
-                    //TODO: to refractor this to a common widget
                     child: CustomNetworkImage(avatarUrl: avatarUrl),
                   ),
                 ),

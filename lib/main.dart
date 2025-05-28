@@ -25,7 +25,6 @@ import 'app/managers/toast_manager.dart';
 import 'domain/verify_code/usecases/verify_code_usecase.dart';
 
 void main() async {
-  //TODO: create before runApp method to wrap all the procedures
   WidgetsFlutterBinding.ensureInitialized();
 
   const String flavor =
@@ -33,7 +32,6 @@ void main() async {
 
   await configureDependencies(
       FlavorManager.values.firstWhere((element) => element.name == flavor));
-  // orElse: () => FlavorManager.staging));
 
   print('Flavor: $flavor');
 
@@ -91,7 +89,6 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   } else {
     currentContext.canPop() ? currentContext.pop() : null;
   }
-  //TODO: remove this later after api is available
   if (state is AuthenticationInitial) {
     GoRouter.of(currentContext).goNamed(RouteDefine.login);
     return;

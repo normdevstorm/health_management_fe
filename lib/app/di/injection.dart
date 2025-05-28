@@ -94,8 +94,6 @@ final getIt = GetIt.instance;
   initializerName: 'init',
   preferRelativeImports: true,
   asExtension: true,
-  // TODO: refine generated dir later on
-  // generateForDir:
 )
 Future<void> configureDependencies(FlavorManager flavor) async {
   getIt.init();
