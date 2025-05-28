@@ -5,7 +5,6 @@ enum FlavorManager { dev, staging, production }
 class ConfigManager {
   final String apiBaseUrl;
   final FlavorManager appFlavor;
-  //TODO: Add more config variables here
   final FirebaseOptions firebaseOptions;
 
   ConfigManager._({
@@ -23,7 +22,7 @@ class ConfigManager {
   );
 
   static ConfigManager stagingConfig = ConfigManager._(
-    apiBaseUrl: 'http://localhost:8080/api/v1/core',
+    apiBaseUrl: 'http://localhost:3000/api/v1/core',
     appFlavor: FlavorManager.staging,
     firebaseOptions: DefaultFirebaseOptionsStg.currentPlatform,
   );

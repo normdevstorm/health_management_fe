@@ -136,51 +136,52 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                                   : AddButtonWidget(
                                       onPressed: () async {
                                         //TODO: TEMPORARILY USED FOR PAYMENT FUNCTIONALITY
-                                        ZaloPayOrderRequest zaloPayRequest =
-                                            ZaloPayOrderRequest(
-                                          amount: 200000,
-                                          appId: 2553,
-                                          appUser: 'Android_Demo',
-                                          appTime: DateTime.now()
-                                              .millisecondsSinceEpoch,
-                                          embedData: '{}',
-                                          item: '[]',
-                                          bankCode: 'zalopayapp',
-                                          description: 'Thanh toán đơn hàng',
-                                          // callbackUrl:
-                                          //     'health_management_zalopay.dev://app',
-                                        );
-                                        Map<String, String> hMacAndTransId =
-                                            await ZalopayService
-                                                .getHMacAndTransId(
-                                          amount:
-                                              zaloPayRequest.amount.toString(),
-                                          appId:
-                                              zaloPayRequest.appId.toString(),
-                                          appUser: zaloPayRequest.appUser,
-                                          appTime:
-                                              zaloPayRequest.appTime.toString(),
-                                          embedData: zaloPayRequest.embedData,
-                                          items: zaloPayRequest.item,
-                                          appTransId: zaloPayRequest.appTransId,
-                                        );
+                                        // ZaloPayOrderRequest zaloPayRequest =
+                                        //     ZaloPayOrderRequest(
+                                        //   amount: 200000,
+                                        //   appId: 2553,
+                                        //   appUser: 'Android_Demo',
+                                        //   appTime: DateTime.now()
+                                        //       .millisecondsSinceEpoch,
+                                        //   embedData: '{}',
+                                        //   item: '[]',
+                                        //   bankCode: 'zalopayapp',
+                                        //   description: 'Thanh toán đơn hàng',
+                                        //   // callbackUrl:
+                                        //   //     'health_management_zalopay.dev://app',
+                                        // );
+                                        // Map<String, String> hMacAndTransId =
+                                        //     await ZalopayService
+                                        //         .getHMacAndTransId(
+                                        //   amount:
+                                        //       zaloPayRequest.amount.toString(),
+                                        //   appId:
+                                        //       zaloPayRequest.appId.toString(),
+                                        //   appUser: zaloPayRequest.appUser,
+                                        //   appTime:
+                                        //       zaloPayRequest.appTime.toString(),
+                                        //   embedData: zaloPayRequest.embedData,
+                                        //   items: zaloPayRequest.item,
+                                        //   appTransId: zaloPayRequest.appTransId,
+                                        // );
 
-                                        ZaloPayOrderResponse
-                                            zaloPayOrderResponse =
-                                            await getIt<ZalopayApi>().createOrder(
-                                                zaloPayRequest.copyWith(
-                                                    mac: hMacAndTransId['mac'],
-                                                    appTransId: hMacAndTransId[
-                                                        'app_trans_id']));
+                                        // ZaloPayOrderResponse
+                                        //     zaloPayOrderResponse =
+                                        //     await getIt<ZalopayApi>().createOrder(
+                                        //         zaloPayRequest.copyWith(
+                                        //             mac: hMacAndTransId['mac'],
+                                        //             appTransId: hMacAndTransId[
+                                        //                 'app_trans_id']));
 
-                                        // context.pushNamed(RouteDefine                                        // context.pushNamed(RouteDefine
-                                        //     .createAppointmentChooseProvider);
+                                        context.pushNamed(
+                                            RouteDefine // context.pushNamed(RouteDefine
+                                                .createAppointmentChooseProvider);
 
-                                        String result =
-                                            await ZalopayService.payOrder(
-                                                    zaloPayOrderResponse) ??
-                                                "Payment failed";
-                                        print(result);
+                                        // String result =
+                                        //     await ZalopayService.payOrder(
+                                        //             zaloPayOrderResponse) ??
+                                        //         "Payment failed";
+                                        // print(result);
                                       },
                                     ),
                             )
@@ -322,24 +323,22 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                               });
                             }
                           }
-                          return ShimmerLoading(
-                            isLoading: isLoading,
-                            child: ListView(
-                              controller: _appointmentListScrollController,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              children: [
-                                ListAppointmentRecordWidget(
-                                    isForPatient: !_isDoctorNotifier.value,
-                                    appointmentRecords: isLoading
-                                        ? List.generate(
-                                            3,
-                                            (index) =>
-                                                const AppointmentRecordEntity(),
-                                          )
-                                        : activeAppointmentRecords),
-                              ],
-                            ),
+                          return ListView(
+                            controller: _appointmentListScrollController,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: [
+                              ListAppointmentRecordWidget(
+                                  isLoading: isLoading,
+                                  isForPatient: !_isDoctorNotifier.value,
+                                  appointmentRecords: isLoading
+                                      ? List.generate(
+                                          3,
+                                          (index) =>
+                                              const AppointmentRecordEntity(),
+                                        )
+                                      : activeAppointmentRecords),
+                            ],
                           );
                         },
                       )
@@ -358,10 +357,12 @@ class ListAppointmentRecordWidget extends StatelessWidget {
     super.key,
     required this.appointmentRecords,
     required this.isForPatient,
+    required this.isLoading,
   });
 
   final List<AppointmentRecordEntity> appointmentRecords;
   final bool isForPatient;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -370,70 +371,73 @@ class ListAppointmentRecordWidget extends StatelessWidget {
         appointmentRecords.length,
         (index) => Padding(
           padding: const EdgeInsets.only(top: 10.0),
-          child: isForPatient
-              ? AppointmentCard.doctor(
-                  id: appointmentRecords[index].id,
-                  prescription: appointmentRecords[index].prescription,
-                  onCancel: () {
-                    if (appointmentRecords[index].id != null) {
-                      context.read<AppointmentBloc>().add(
-                          DeleteAppointmentRecordEvent(
-                              appointmentId: appointmentRecords[index].id!));
-                    }
-                  },
-                  doctorType: appointmentRecords[index]
-                      .doctor
-                      ?.doctorProfile
-                      ?.specialization
-                      ?.name
-                      .toUpperCase(),
-                  doctorRating: appointmentRecords[index]
-                      .doctor
-                      ?.doctorProfile
-                      ?.rating
-                      ?.toInt(),
-                  doctorName: appointmentRecords[index].doctor?.firstName,
-                  date: appointmentRecords[index].scheduledAt != null
-                      ? DateConverter.convertToYearMonthDay(
-                          appointmentRecords[index].scheduledAt!,
-                        )
-                      : null,
-                  time: appointmentRecords[index].scheduledAt != null
-                      ? DateConverter.convertToHourMinuteSecond(
-                          appointmentRecords[index].scheduledAt!,
-                        )
-                      : null,
-                  isCompleted: appointmentRecords[index].status ==
-                      AppointmentStatus.completed,
-                  avatarUrl: appointmentRecords[index].doctor?.avatarUrl,
-                )
-              : AppointmentCard.patient(
-                  id: appointmentRecords[index].id,
-                  prescription: appointmentRecords[index].prescription,
-                  onCancel: () {
-                    if (appointmentRecords[index].id != null) {
-                      context.read<AppointmentBloc>().add(
-                          DeleteAppointmentRecordEvent(
-                              appointmentId: appointmentRecords[index].id!));
-                    }
-                  },
-                  patientName: appointmentRecords[index].user?.firstName,
-                  patientCondition:
-                      appointmentRecords[index].user?.gender ?? "Patient",
-                  date: appointmentRecords[index].scheduledAt != null
-                      ? DateConverter.convertToYearMonthDay(
-                          appointmentRecords[index].scheduledAt!,
-                        )
-                      : null,
-                  time: appointmentRecords[index].scheduledAt != null
-                      ? DateConverter.convertToHourMinuteSecond(
-                          appointmentRecords[index].scheduledAt!,
-                        )
-                      : null,
-                  isCompleted: appointmentRecords[index].status ==
-                      AppointmentStatus.completed,
-                  avatarUrl: appointmentRecords[index].user?.avatarUrl,
-                ),
+          child: ShimmerLoading(
+            isLoading: isLoading,
+            child: isForPatient
+                ? AppointmentCard.doctor(
+                    id: appointmentRecords[index].id,
+                    prescription: appointmentRecords[index].prescription,
+                    onCancel: () {
+                      if (appointmentRecords[index].id != null) {
+                        context.read<AppointmentBloc>().add(
+                            DeleteAppointmentRecordEvent(
+                                appointmentId: appointmentRecords[index].id!));
+                      }
+                    },
+                    doctorType: appointmentRecords[index]
+                        .doctor
+                        ?.doctorProfile
+                        ?.specialization
+                        ?.name
+                        .toUpperCase(),
+                    doctorRating: appointmentRecords[index]
+                        .doctor
+                        ?.doctorProfile
+                        ?.rating
+                        ?.toInt(),
+                    doctorName: appointmentRecords[index].doctor?.firstName,
+                    date: appointmentRecords[index].scheduledAt != null
+                        ? DateConverter.convertToYearMonthDay(
+                            appointmentRecords[index].scheduledAt!,
+                          )
+                        : null,
+                    time: appointmentRecords[index].scheduledAt != null
+                        ? DateConverter.convertToHourMinuteSecond(
+                            appointmentRecords[index].scheduledAt!,
+                          )
+                        : null,
+                    isCompleted: appointmentRecords[index].status ==
+                        AppointmentStatus.completed,
+                    avatarUrl: appointmentRecords[index].doctor?.avatarUrl,
+                  )
+                : AppointmentCard.patient(
+                    id: appointmentRecords[index].id,
+                    prescription: appointmentRecords[index].prescription,
+                    onCancel: () {
+                      if (appointmentRecords[index].id != null) {
+                        context.read<AppointmentBloc>().add(
+                            DeleteAppointmentRecordEvent(
+                                appointmentId: appointmentRecords[index].id!));
+                      }
+                    },
+                    patientName: appointmentRecords[index].user?.firstName,
+                    patientCondition:
+                        appointmentRecords[index].user?.gender ?? "Patient",
+                    date: appointmentRecords[index].scheduledAt != null
+                        ? DateConverter.convertToYearMonthDay(
+                            appointmentRecords[index].scheduledAt!,
+                          )
+                        : null,
+                    time: appointmentRecords[index].scheduledAt != null
+                        ? DateConverter.convertToHourMinuteSecond(
+                            appointmentRecords[index].scheduledAt!,
+                          )
+                        : null,
+                    isCompleted: appointmentRecords[index].status ==
+                        AppointmentStatus.completed,
+                    avatarUrl: appointmentRecords[index].user?.avatarUrl,
+                  ),
+          ),
         ),
       ),
     );
@@ -812,7 +816,9 @@ class AppointmentCard extends StatelessWidget {
   }
 
   bool isInThePast() {
-    return (DateTime.parse('${date!} ${time!}')).isBefore(DateTime.now());
+    return (date == null) || (time == null)
+        ? true
+        : (DateTime.parse('${date!} ${time!}')).isBefore(DateTime.now());
   }
 }
 

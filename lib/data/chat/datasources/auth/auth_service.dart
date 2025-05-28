@@ -1,12 +1,12 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/data/chat/datasources/auth/auth_local.dart';
 import 'package:health_management/data/chat/datasources/firebase_service.dart';
+import 'package:logger/logger.dart';
 
 class AuthService {
   AuthService();
-  final   _auth = FirebaseService.auth;
+  final _auth = FirebaseService.auth;
   final _firestore = FirebaseService.firestore;
   final _authLocalDataSource = getIt<AuthLocalDataSource>();
   /* final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -61,15 +61,13 @@ class AuthService {
     return currentUser!.uid;
   }
 
-
-
   Future<void> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
     } catch (e) {
       rethrow;
     }
-  } 
+  }
 
   Future<bool> isUserLoggedIn() async {
     if (await _authLocalDataSource.isUserLoggedIn()) {
@@ -80,9 +78,13 @@ class AuthService {
 
   Future<bool> hasExistedUser(String email) async {
     try {
-      final accountRecords = await _firestore.collection('accounts').where('email', isEqualTo: email).get();
+      final accountRecords = await _firestore
+          .collection('accounts')
+          .where('email', isEqualTo: email)
+          .get();
       return accountRecords.docs.isNotEmpty;
     } catch (e) {
+      getIt<Logger>().e('Error checking if user exists: $e');
       rethrow;
     }
   }

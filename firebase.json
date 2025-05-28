@@ -1,1 +1,83 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"health-mn-prod","appId":"1:266512718933:android:f9491b2b8b2debe21b88dc","fileOutput":"android/app/google-services.json"},"buildConfigurations":{"src\\dev\\cloud-message":{"projectId":"cloud-message-test-1d41b","appId":"1:810131365389:android:9ff7ef5a8617c6bfe77f44","fileOutput":"android/app/src/dev/cloud-message/google-services.json"},"src\\dev\\chat":{"projectId":"chat-app-5d601","appId":"1:155656307072:android:858feb2136fb5912044165","fileOutput":"android/app/src/dev/chat/google-services.json"},"src/production":{"projectId":"health-mn-prod","appId":"1:266512718933:android:59124d5553363b541b88dc","fileOutput":"android/app/src/production/google-services.json"},"src/staging":{"projectId":"health-mn-staging","appId":"1:412909355967:android:08f8eb629e52b4957d970a","fileOutput":"android/app/src/staging/google-services.json"}}},"dart":{"lib/firebase_options_dev.dart":{"projectId":"chat-app-5d601","configurations":{"android":"1:155656307072:android:f2ea46f210f4876d044165","ios":"1:155656307072:ios:0341b1f2c827fd3b044165","macos":"1:155656307072:ios:0341b1f2c827fd3b044165","web":"1:155656307072:web:44151850d5793818044165","windows":"1:155656307072:web:6fd2179a46ddec7f044165"}},"lib/firebase_options_cloud_message.dart":{"projectId":"cloud-message-test-1d41b","configurations":{"android":"1:810131365389:android:9ff7ef5a8617c6bfe77f44","ios":"1:810131365389:ios:3ed5ad2032fa5829e77f44","macos":"1:810131365389:ios:3ed5ad2032fa5829e77f44","web":"1:810131365389:web:120679da06b36943e77f44","windows":"1:810131365389:web:120679da06b36943e77f44"}},"lib/firebase_options_chat.dart":{"projectId":"chat-app-5d601","configurations":{"android":"1:155656307072:android:858feb2136fb5912044165","ios":"1:155656307072:ios:0341b1f2c827fd3b044165","macos":"1:155656307072:ios:0341b1f2c827fd3b044165","web":"1:155656307072:web:44151850d5793818044165","windows":"1:155656307072:web:6fd2179a46ddec7f044165"}},"firebase/firebase_options_prod.dart":{"projectId":"health-mn-prod","configurations":{"android":"1:266512718933:android:f9491b2b8b2debe21b88dc","web":"1:266512718933:web:8528709e06d90e011b88dc","windows":"1:266512718933:web:55ea20a53b0612011b88dc"}},"lib/firebase/firebase_options_stg.dart":{"projectId":"health-mn-staging","configurations":{"android":"1:412909355967:android:08f8eb629e52b4957d970a","web":"1:412909355967:web:5892843364ed559e7d970a","windows":"1:412909355967:web:7d55220b85af030e7d970a"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "health-mn-prod",
+                    "appId": "1:266512718933:android:f9491b2b8b2debe21b88dc",
+                    "fileOutput": "android/app/google-services.json"
+                },
+                "buildConfigurations": {
+                    "src\\dev\\cloud-message": {
+                        "projectId": "cloud-message-test-1d41b",
+                        "appId": "1:810131365389:android:9ff7ef5a8617c6bfe77f44",
+                        "fileOutput": "android/app/src/dev/cloud-message/google-services.json"
+                    },
+                    "src\\dev\\chat": {
+                        "projectId": "chat-app-5d601",
+                        "appId": "1:155656307072:android:858feb2136fb5912044165",
+                        "fileOutput": "android/app/src/dev/chat/google-services.json"
+                    },
+                    "src/production": {
+                        "projectId": "health-mn-prod",
+                        "appId": "1:266512718933:android:59124d5553363b541b88dc",
+                        "fileOutput": "android/app/src/production/google-services.json"
+                    },
+                    "src/staging": {
+                        "projectId": "health-mn-staging",
+                        "appId": "1:412909355967:android:08f8eb629e52b4957d970a",
+                        "fileOutput": "android/app/src/staging/google-services.json"
+                    }
+                }
+            },
+            "dart": {
+                "lib/firebase_options_dev.dart": {
+                    "projectId": "chat-app-5d601",
+                    "configurations": {
+                        "android": "1:155656307072:android:f2ea46f210f4876d044165",
+                        "ios": "1:155656307072:ios:0341b1f2c827fd3b044165",
+                        "macos": "1:155656307072:ios:0341b1f2c827fd3b044165",
+                        "web": "1:155656307072:web:44151850d5793818044165",
+                        "windows": "1:155656307072:web:6fd2179a46ddec7f044165"
+                    }
+                },
+                "lib/firebase_options_cloud_message.dart": {
+                    "projectId": "cloud-message-test-1d41b",
+                    "configurations": {
+                        "android": "1:810131365389:android:9ff7ef5a8617c6bfe77f44",
+                        "ios": "1:810131365389:ios:3ed5ad2032fa5829e77f44",
+                        "macos": "1:810131365389:ios:3ed5ad2032fa5829e77f44",
+                        "web": "1:810131365389:web:120679da06b36943e77f44",
+                        "windows": "1:810131365389:web:120679da06b36943e77f44"
+                    }
+                },
+                "lib/firebase_options_chat.dart": {
+                    "projectId": "chat-app-5d601",
+                    "configurations": {
+                        "android": "1:155656307072:android:858feb2136fb5912044165",
+                        "ios": "1:155656307072:ios:0341b1f2c827fd3b044165",
+                        "macos": "1:155656307072:ios:0341b1f2c827fd3b044165",
+                        "web": "1:155656307072:web:44151850d5793818044165",
+                        "windows": "1:155656307072:web:6fd2179a46ddec7f044165"
+                    }
+                },
+                "firebase/firebase_options_prod.dart": {
+                    "projectId": "health-mn-prod",
+                    "configurations": {
+                        "android": "1:266512718933:android:f9491b2b8b2debe21b88dc",
+                        "web": "1:266512718933:web:8528709e06d90e011b88dc",
+                        "windows": "1:266512718933:web:55ea20a53b0612011b88dc"
+                    }
+                },
+                "lib/firebase/firebase_options_stg.dart": {
+                    "projectId": "health-mn-staging",
+                    "configurations": {
+                        "android": "1:412909355967:android:08f8eb629e52b4957d970a",
+                        "web": "1:412909355967:web:5892843364ed559e7d970a",
+                        "windows": "1:412909355967:web:7d55220b85af030e7d970a"
+                    }
+                }
+            }
+        }
+    }
+}

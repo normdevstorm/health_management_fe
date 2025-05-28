@@ -9,6 +9,7 @@ class ZalopayService {
       MethodChannel('com.example.health_management/zalopay');
   static const MethodChannel _hMacChannel =
       MethodChannel('com.example.health_management/macHelper');
+
   static Future<String?> payOrder(
       ZaloPayOrderResponse zaloPayOrderResponse) async {
     try {
@@ -46,8 +47,8 @@ class ZalopayService {
       });
       print(result);
 
-      String? mac = (result["mac"] as String) ?? "";
-      appTransId = (result["app_trans_id"] as String) ?? "";
+      String? mac = (result["mac"] as String);
+      appTransId = (result["app_trans_id"] as String);
 
       return Map.of({"mac": mac, "app_trans_id": appTransId});
     } on PlatformException catch (e) {

@@ -26,10 +26,27 @@
         "args": ["--flavor", "dev", "--dart-define=FLAVOR=dev", ]
       },
       {
+        "name": "dev (chrome)",
+        "request": "launch",
+        "type": "dart",
+        "args": [
+          "--flavor", 
+          "dev", 
+          "--dart-define=FLAVOR=dev",
+          "-d",
+          "chrome",
+          "--web-renderer",
+          "html"
+        ]
+      },
+      {
         "name": "staging",
         "request": "launch",
         "type": "dart",
-        "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging", ]
+        "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging",  
+                "--web-renderer", "html"
+        , "--web-port", "49430"
+      ]
       },
       {
         "name": "staging (profile)",
@@ -44,6 +61,18 @@
         "type": "dart",
         "flutterMode": "release",
         "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging",]
+      },
+      {
+        "name": "staging (chrome)",
+        "request": "launch",
+        "type": "dart",
+        "args": [
+          "--flavor", 
+          "staging", 
+          "--dart-define=FLAVOR=staging",
+          "-d",
+          "web-server" ,"--web-port", "10000"
+        ]
       },
       {
         "name": "prod",
@@ -64,7 +93,20 @@
         "type": "dart",
         "flutterMode": "release",
         "args": ["--flavor", "production", "--dart-define=FLAVOR=production",]
+      },
+      {
+        "name": "prod (chrome)",
+        "request": "launch",
+        "type": "dart",
+        "args": [
+          "--flavor", 
+          "production", 
+          "--dart-define=FLAVOR=production",
+          "-d",
+          "chrome",
+          "--web-renderer", 
+          "html"
+        ]
       }
     ]
   }
-  

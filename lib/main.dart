@@ -1,7 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_localization_loader/easy_localization_loader.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui' as ui;
@@ -94,7 +93,7 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
   }
   //TODO: remove this later after api is available
   if (state is AuthenticationInitial) {
-    GoRouter.of(currentContext).goNamed(RouteDefine.homeScreen);
+    GoRouter.of(currentContext).goNamed(RouteDefine.login);
     return;
   }
 
@@ -122,7 +121,7 @@ void _authenticationListener(BuildContext context, AuthenticationState state) {
     //todo: localize this message
     ToastManager.showToast(context: currentContext, message: errorMessage);
     if (state.runtimeType == CheckLoginStatusErrorState) {
-      GoRouter.of(currentContext).goNamed(RouteDefine.homeScreen);
+      GoRouter.of(currentContext).goNamed(RouteDefine.login);
     }
     return;
   }

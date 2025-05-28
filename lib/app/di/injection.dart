@@ -116,7 +116,8 @@ Future<void> setUpAppUtilitis(FlavorManager flavor) async {
   // Initialize Firebase project
   await Firebase.initializeApp(
       options:
-          ConfigManager.getInstance(flavorName: flavor.name).firebaseOptions);
+          ConfigManager.getInstance(flavorName: flavor.name).firebaseOptions,
+      name: "[DEFAULT]");
 
   // Initialize Firebase Messaging
   await FirebaseMessageService().initNotificaiton();
