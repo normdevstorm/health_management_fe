@@ -43,8 +43,10 @@ final class CollectDataHealthProviderEvent extends AppointmentEvent {
 
 final class ColectDataDoctorEvent extends AppointmentEvent {
   final int doctorId;
+  final String? doctorName;
 
-  const ColectDataDoctorEvent({required this.doctorId});
+  const ColectDataDoctorEvent(
+      {required this.doctorId, required this.doctorName});
 
   @override
   List<Object> get props => [doctorId];

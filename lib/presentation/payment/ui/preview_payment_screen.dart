@@ -241,6 +241,11 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
                                 'Unknown Provider'),
                         SizedBox(height: 8.h),
                         _buildInfoRow(
+                            'Note for doctor'.tr(),
+                            widget.appointment.note ??
+                                'Unknown Note for doctor'),
+                        SizedBox(height: 8.h),
+                        _buildInfoRow(
                           'Date time Scheduled'.tr(),
                           widget.appointment.scheduledAt
                                   .toString()

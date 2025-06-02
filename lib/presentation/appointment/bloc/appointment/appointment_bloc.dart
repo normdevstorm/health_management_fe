@@ -122,23 +122,36 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       Emitter<AppointmentState> emit) async {
     emit(CreateAppointmentRecordState.initial());
     final int? providerId = event.appointmentRecordEntity.healthProvider?.id;
+    final String? providerName =
+        event.appointmentRecordEntity.healthProvider?.name;
     final int userId = (await SharedPreferenceManager.getUser())!.id!;
+    // final String? firstDoctorName =
+    //     event.appointmentRecordEntity.doctor?.firstName;
+    // final String? lastDoctorName =
+    //     event.appointmentRecordEntity.doctor?.lastName;
     emit(CreateAppointmentRecordState.inProgress(
-        createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
-            .copyWith(
+        createAppointmentRecordEntity:
+            (state.data as AppointmentRecordEntity).copyWith(
                 user: UserEntity(id: userId),
-                healthProvider: HealthProviderEntity(id: providerId),
+                // doctor: UserEntity(
+                //     lastName: lastDoctorName, firstName: firstDoctorName),
+                healthProvider: HealthProviderEntity(
+                  id: providerId,
+                  name: providerName,
+                ),
                 appointmentType: AppointmentType.inPerson)));
   }
 
   _onColectDataDoctorEvent(
       ColectDataDoctorEvent event, Emitter<AppointmentState> emit) {
     final int doctorId = event.doctorId;
+    final String? doctorName = event.doctorName;
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
             .copyWith(
-                doctor:
-                    UserEntity(doctorProfile: DoctorEntity(id: doctorId)))));
+                doctor: UserEntity(
+                    doctorProfile: DoctorEntity(id: doctorId),
+                    firstName: doctorName))));
   }
 
   _onCollectDataDatetimeEvent(

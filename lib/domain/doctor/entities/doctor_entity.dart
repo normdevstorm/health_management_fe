@@ -4,6 +4,7 @@ part 'doctor_entity.g.dart';
 
 @JsonSerializable()
 class DoctorEntity {
+  final String? name;
   final int? id;
   final HospitalSpecialty? specialization;
   final double? experience;
@@ -12,6 +13,7 @@ class DoctorEntity {
   final String? about;
 
   DoctorEntity({
+    this.name,
     this.id,
     this.specialization,
     this.experience,
@@ -21,6 +23,7 @@ class DoctorEntity {
   });
 
   DoctorEntity copyWith({
+    String? name,
     int? id,
     HospitalSpecialty? specialization,
     double? experience,
@@ -29,6 +32,7 @@ class DoctorEntity {
     String? about,
   }) {
     return DoctorEntity(
+      name: name ?? this.name,
       id: id ?? this.id,
       specialization: specialization ?? this.specialization,
       experience: experience ?? this.experience,
@@ -38,6 +42,7 @@ class DoctorEntity {
     );
   }
 
-  factory DoctorEntity.fromJson(Map<String, dynamic> json) => _$DoctorEntityFromJson(json);
+  factory DoctorEntity.fromJson(Map<String, dynamic> json) =>
+      _$DoctorEntityFromJson(json);
   Map<String, dynamic> toJson() => _$DoctorEntityToJson(this);
 }
