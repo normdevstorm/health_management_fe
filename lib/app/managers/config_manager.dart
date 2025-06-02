@@ -22,7 +22,7 @@ class ConfigManager {
   );
 
   static ConfigManager stagingConfig = ConfigManager._(
-    apiBaseUrl: 'http://localhost:3000/api/v1/core',
+    apiBaseUrl: 'https://api.duynguyendev.xyz/api/v1/core',
     appFlavor: FlavorManager.staging,
     firebaseOptions: DefaultFirebaseOptionsStg.currentPlatform,
   );
