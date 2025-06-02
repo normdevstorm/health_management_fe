@@ -8,6 +8,6 @@ part 'medication_api.g.dart';
 abstract class MedicationApi {
   factory MedicationApi(Dio dio, {String baseUrl}) = _MedicationApi;
 
-  @GET("/appointment-record/medication/all")
+  @GET("/appointments/medication/all")
   Future<ApiResponse<List<Medication>>> getAllMedications();
 }

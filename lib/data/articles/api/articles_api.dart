@@ -10,28 +10,28 @@ part 'articles_api.g.dart';
 @RestApi()
 abstract class ArticlesApi {
   factory ArticlesApi(Dio dio, {String baseUrl}) = _ArticlesApi;
-  @GET('/health-articles/get-all')
+  @GET('/articles/get-all')
   Future<ApiResponse<List<ArticlesResponse>>> getAllArticles();
-  @GET('/health-articles/get-by-id')
+  @GET('/articles/get-by-id')
   Future<ApiResponse<ArticlesResponse>> getArticleById(@Query('id') int id);
-  @GET('/health-articles/get-by-user-id')
+  @GET('/articles/get-by-user-id')
   Future<ApiResponse<List<ArticlesResponse>>> getAllArticlesByUserId(
       @Query('userId') int userId);
-  @POST('/health-articles/create')
+  @POST('/articles/create')
   Future<ApiResponse<ArticlesResponse>> createArticle(
       @Body() ArticleRequest article, @Query('userId') int userId);
-  @DELETE('/health-articles/delete')
+  @DELETE('/articles/delete')
   Future<ApiResponse<String>> deleteArticle(
       @Query('id') int articleId, @Query('userId') int userId);
-  @POST('/health-articles/update')
+  @POST('/articles/update')
   Future<ApiResponse<ArticlesResponse>> updateArticle(
       @Body() ArticleRequest article, @Query('userId') int userId);
-  @POST('/health-articles/comment')
+  @POST('/articles/comment')
   Future<ApiResponse<ArticlesCommentResponse>> commentArticle(
       @Query('articleId') int articleId,
       @Query('userId') int userId,
       @Body() ArticleCommentRequest articleCommentRequest);
-  @POST('/health-articles/vote')
+  @POST('/articles/vote')
   Future<ApiResponse<String>> voteArticle(@Query('article_id') int articleId,
       @Query('user_id') int userId, @Query('vote_type') String voteType);
 }
