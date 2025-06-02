@@ -145,6 +145,7 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       CollectDataDatetimeAndNoteEvent event, Emitter<AppointmentState> emit) {
     final DateTime scheduledAt = event.scheduledAt;
     final String? note = event.note;
+
     emit(CreateAppointmentRecordState.inProgress(
         createAppointmentRecordEntity: (state.data as AppointmentRecordEntity)
             .copyWith(

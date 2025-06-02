@@ -10,13 +10,16 @@ class ZalopayService {
   static const MethodChannel _hMacChannel =
       MethodChannel('com.example.health_management/macHelper');
 
-  static Future<String?> payOrder(
-      ZaloPayOrderResponse zaloPayOrderResponse) async {
+  static Future<String?> payOrder(String zpTransToken) async {
     try {
       // pass results to payOrder method
-      final String result = await _channel.invokeMethod(
-          'payOrder', zaloPayOrderResponse.toJson());
-      return result;
+      // final String result = await _channel.invokeMethod(
+      //   'payOrder',
+      //   {
+      //     'zp_trans_token': zpTransToken,
+      //   },
+      // );
+      return 'PAYMENT_FAILED';
     } on PlatformException catch (e) {
       getIt<Logger>().e(e.message);
       //TODO: to handle this error later on

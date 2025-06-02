@@ -160,8 +160,7 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => DoctorScheduleApi(dio));
   getIt.registerLazySingleton(() => DoctorApi(dio));
 
-  getIt.registerLazySingleton(
-      () => ZalopayApi(dio, baseUrl: "https://sb-openapi.zalopay.vn/v2"));
+  getIt.registerLazySingleton(() => ZalopayApi(dio));
 }
 
 setUpAppComponent(FlavorManager flavor) {

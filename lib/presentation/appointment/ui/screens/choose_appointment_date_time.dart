@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
+import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/doctor_schedule/entities/doctor_schedule_entity.dart';
 import 'package:health_management/domain/doctor_schedule/entities/shift_time_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/appointment/appointment_bloc.dart';
@@ -307,17 +307,36 @@ class _ChooseAppointmentDateTimeScreenState
                                     key: _saveButtonKey,
                                     onPressed: () {
                                       // Handle the save action
-                                      context.read<AppointmentBloc>()
-                                        ..add(CollectDataDatetimeAndNoteEvent(
-                                          scheduledAt: selectedDateNotifier
-                                              .value
-                                              .copyWith(
-                                                  hour: selectedTimeNotifier
-                                                      .value),
-                                          note: noteEditingController.text,
-                                        ))
-                                        ..add(
-                                            const CreateAppointmentRecordEvent());
+                                      // context.read<AppointmentBloc>()
+                                      //   ..add(CollectDataDatetimeAndNoteEvent(
+                                      //     scheduledAt: selectedDateNotifier
+                                      //         .value
+                                      //         .copyWith(
+                                      //             hour: selectedTimeNotifier
+                                      //                 .value),
+                                      //     note: noteEditingController.text,
+                                      //   ))
+                                      //   ..add(
+                                      //       const CreateAppointmentRecordEvent());
+                                      context.read<AppointmentBloc>().add(
+                                            CollectDataDatetimeAndNoteEvent(
+                                              scheduledAt: selectedDateNotifier
+                                                  .value
+                                                  .copyWith(
+                                                      hour: selectedTimeNotifier
+                                                          .value),
+                                              note: noteEditingController.text,
+                                            ),
+                                          );
+                                      print(
+                                          'Passing appointment data: ${context.read<AppointmentBloc>().state.data}');
+                                      context.pushNamed(
+                                        RouteDefine.previewPayment,
+                                        extra: context
+                                            .read<AppointmentBloc>()
+                                            .state
+                                            .data as AppointmentRecordEntity,
+                                      );
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: ColorManager
@@ -330,7 +349,7 @@ class _ChooseAppointmentDateTimeScreenState
                                           horizontal: 50.w, vertical: 15.h),
                                     ),
                                     child: Text(
-                                      'Save Appointment',
+                                      'Continue',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 16.sp,

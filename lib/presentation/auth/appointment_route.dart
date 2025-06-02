@@ -13,6 +13,7 @@ import 'package:health_management/presentation/appointment/ui/screens/choose_app
 import 'package:health_management/presentation/appointment/ui/screens/choose_doctor_screen.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_health_provider_screen.dart';
 import 'package:health_management/presentation/chat/ui/main/home/chat_screen/chat_page.dart';
+import '../../domain/appointment/entities/appointment_record_entity.dart';
 import '../../domain/prescription/entities/prescription_entity.dart';
 import '../appointment/bloc/appointment/appointment_bloc.dart';
 import '../appointment/bloc/medication/medication_bloc.dart';
@@ -24,8 +25,10 @@ import '../chat/bloc/contacts/contacts_cubit.dart';
 import '../chat/bloc/others/background_chat/background_cubit.dart';
 import '../chat/bloc/status/status_cubit.dart';
 import '../chat/bloc/user/user_cubit.dart';
+import '../payment/ui/preview_payment_screen.dart';
 import '../prescription/bloc/prescription_ai_analysis_bloc.dart';
 import '../prescription/ui/screens/prescription_screen.dart';
+
 part 'appointment_route.g.dart';
 
 @TypedShellRoute<AppointmentRoute>(
@@ -64,6 +67,8 @@ part 'appointment_route.g.dart';
           TypedGoRoute<AppointmentCreateChooseTime>(
               path: "/choose-time",
               name: RouteDefine.createAppointmentChooseTime),
+          TypedGoRoute<AppointmentCreatePreviewPaymentRoute>(
+              path: "/preview-payment", name: RouteDefine.previewPayment),
         ]),
   ],
 )
@@ -117,13 +122,15 @@ class AppointmentDetailsPrescription extends GoRouteData {
 class AppointmentDetailsRoute extends GoRouteData {
   final int appointmentId;
   AppointmentDetailsRoute({required this.appointmentId});
+
   @override
   Widget build(BuildContext context, GoRouterState state) {
     int appointmentId =
         int.tryParse(state.pathParameters['appointmentId'] ?? '0') ?? 0;
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ContactsCubit>.value(value: context.read<ContactsCubit>()..getAllContacts()),
+        BlocProvider<ContactsCubit>.value(
+            value: context.read<ContactsCubit>()..getAllContacts()),
       ],
       child: AppointmentDetails(appointmentId: appointmentId),
     );
@@ -192,5 +199,14 @@ class AppointmentCreateChooseDoctor extends AppointmentCreateRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return ChooseDoctorScreen(doctors: state.extra as List<UserEntity>);
+  }
+}
+
+class AppointmentCreatePreviewPaymentRoute extends AppointmentCreateRoute {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    final AppointmentRecordEntity appointment =
+        state.extra as AppointmentRecordEntity;
+    return PreviewPaymentScreen(appointment: appointment);
   }
 }
