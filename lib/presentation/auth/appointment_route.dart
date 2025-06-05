@@ -205,8 +205,6 @@ class AppointmentCreateChooseDoctor extends AppointmentCreateRoute {
 class AppointmentCreatePreviewPaymentRoute extends AppointmentCreateRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    final AppointmentRecordEntity appointment =
-        state.extra as AppointmentRecordEntity;
-    return PreviewPaymentScreen(appointment: appointment);
+    return const PreviewPaymentScreen();
   }
 }

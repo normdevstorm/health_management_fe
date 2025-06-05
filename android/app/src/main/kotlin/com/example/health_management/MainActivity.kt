@@ -21,7 +21,7 @@ class MainActivity: FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Ensure ZaloPaySDK is initialized if needed
-        ZaloPaySDK.init(2553, Environment.SANDBOX) // If initialization is required
+        ZaloPaySDK.init(2554, Environment.SANDBOX) // If initialization is required
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -44,7 +44,7 @@ class MainActivity: FlutterActivity() {
 
                     ZaloPaySDK.getInstance().payOrder(this@MainActivity, token, uriScheme, object : PayOrderListener {
                         override fun onPaymentCanceled(zpTransToken: String?, appTransID: String?) {
-                            result.success("User Canceled") // Send result back to Flutter
+                            result.success("PAYMENT_CANCELLED") // Send result back to Flutter
                         }
 
                         override fun onPaymentError(zaloPayErrorCode: ZaloPayError?, zpTransToken: String?, appTransID: String?) {
@@ -54,11 +54,11 @@ class MainActivity: FlutterActivity() {
                             // } else {
                             //     result.error("PAYMENT_FAILED", "Payment failed: ${zaloPayErrorCode?.name}", null)
                             // }
-                            result.success("Payment failed") // Simplified for now
+                            result.success("PAYMENT_FAILED") // Simplified for now
                         }
 
                         override fun onPaymentSucceeded(transactionId: String, transToken: String, appTransID: String?) {
-                            result.success("Payment Success") // Send result back to Flutter
+                            result.success("PAYMENT_SUCCESS") // Send result back to Flutter
                         }
                     })
                 } else {

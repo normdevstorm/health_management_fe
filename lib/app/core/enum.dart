@@ -133,3 +133,12 @@ enum UploadImageType {
   @JsonValue("ARTICLE")
   article,
 }
+
+enum PaymentStatus {
+  @JsonValue("PAYMENT_CANCELLED")
+  cancelled,
+  @JsonValue("PAYMENT_SUCCESS")
+  success,
+  @JsonValue("PAYMENT_FAILED")
+  failed
+}

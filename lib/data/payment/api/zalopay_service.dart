@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
+import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/app/di/injection.dart';
+import 'package:health_management/app/utils/extensions/payment_utils.dart';
 import 'package:health_management/data/payment/models/zalopay_oder_response.dart';
 import 'package:logger/logger.dart';
 
@@ -10,16 +12,15 @@ class ZalopayService {
   static const MethodChannel _hMacChannel =
       MethodChannel('com.example.health_management/macHelper');
 
-  static Future<String?> payOrder(String zpTransToken) async {
+  static Future<PaymentStatus?> payOrder(String zpTransToken) async {
     try {
-      // pass results to payOrder method
-      // final String result = await _channel.invokeMethod(
-      //   'payOrder',
-      //   {
-      //     'zp_trans_token': zpTransToken,
-      //   },
-      // );
-      return 'PAYMENT_FAILED';
+      final String result = await _channel.invokeMethod(
+        'payOrder',
+        {
+          'zp_trans_token': zpTransToken,
+        },
+      );
+      return PaymentUtils.getPaymentStatusFromString(result);
     } on PlatformException catch (e) {
       getIt<Logger>().e(e.message);
       //TODO: to handle this error later on
