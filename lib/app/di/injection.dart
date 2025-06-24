@@ -71,6 +71,7 @@ import '../../data/chat/datasources/user/user_data_source.dart';
 import '../../data/chat/repositories/auth_repository.dart';
 import '../../data/chat/repositories/chat_contact_repository.dart';
 import '../../data/chat/repositories/chat_repository.dart';
+import '../../data/payment/repositories/zalopay_repository_impl.dart';
 import '../../data/prescription/api/medication_api.dart';
 import '../../data/prescription/api/prescription_api.dart';
 import '../../data/user/api/user_api.dart';
@@ -79,6 +80,8 @@ import '../../data/verify_code/repositories/verify_code_repository_impl.dart';
 import '../../domain/auth/repositories/authentication_repository.dart';
 import '../../domain/doctor_schedule/repositories/doctor_schedule_repository.dart';
 import '../../domain/health_provider/usecases/health_provider_usecase.dart';
+import '../../domain/payment/repositories/zalopay_repository.dart';
+import '../../domain/payment/usecases/zalopay_usecase.dart';
 import '../../domain/prescription/repositories/prescription_repository.dart';
 import '../../domain/prescription/usecases/prescription_usecase.dart';
 import '../../domain/user/usecases/user_usecase.dart';
@@ -183,6 +186,8 @@ setUpAppComponent(FlavorManager flavor) {
       () => ArticleRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton<DoctorRepository>(
       () => DoctorRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton<ZalopayRepository>(
+      () => ZalopayRepositoryImpl(getIt(), getIt()));
 
   //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));
@@ -195,6 +200,7 @@ setUpAppComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => PrescriptionUseCase(getIt()));
   getIt.registerLazySingleton(() => DoctorScheduleUseCase(getIt()));
   getIt.registerLazySingleton(() => DoctorUseCase(getIt()));
+  getIt.registerLazySingleton(() => ZalopayUsecase(getIt()));
 
   // Inject chat dpendencies
   //DataSources

@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
-import 'package:health_management/app/app.dart';
 import 'package:health_management/app/config/api_exception.dart';
 import 'package:health_management/app/di/injection.dart';
-import 'package:health_management/app/utils/extensions/payment_utils.dart';
-import 'package:health_management/data/payment/models/zalopay_oder_response.dart';
 import 'package:logger/logger.dart';
+
+import '../models/zalopay_payment_response.dart';
 
 class ZalopayService {
   static const MethodChannel _channel =
@@ -12,7 +13,7 @@ class ZalopayService {
   static const MethodChannel _hMacChannel =
       MethodChannel('com.example.health_management/macHelper');
 
-  static Future<PaymentStatus?> payOrder(String zpTransToken) async {
+  static Future<ZalopayPaymentResponse?> payOrder(String zpTransToken) async {
     try {
       final String result = await _channel.invokeMethod(
         'payOrder',
@@ -20,10 +21,14 @@ class ZalopayService {
           'zp_trans_token': zpTransToken,
         },
       );
-      return PaymentUtils.getPaymentStatusFromString(result);
+      // Parse the JSON string response from native code
+      final Map<String, dynamic> jsonResponse = Map<String, dynamic>.from(
+          jsonDecode(result) as Map<dynamic, dynamic>);
+      ZalopayPaymentResponse paymentResponse =
+          ZalopayPaymentResponse.fromJson(jsonResponse);
+      return paymentResponse;
     } on PlatformException catch (e) {
       getIt<Logger>().e(e.message);
-      //TODO: to handle this error later on
       throw ApiException.notImplemented(e.code);
     }
   }

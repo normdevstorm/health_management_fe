@@ -4,6 +4,8 @@ import 'package:health_management/data/payment/models/create_order_request.dart'
 import 'package:health_management/data/payment/models/create_order_response.dart';
 import 'package:retrofit/retrofit.dart';
 
+import '../models/update_transaction_request.dart';
+
 part 'zalopay_api.g.dart';
 
 @RestApi()
@@ -13,4 +15,8 @@ abstract class ZalopayApi {
   @POST("/payment/zalo/create-order")
   Future<ApiResponse<ZaloPayOrderData>> createOrder(
       @Body() CreateOrderRequest zaloPayRequest);
+
+  @POST("/payment/zalo/update-order")
+  Future<ApiResponse<String>> updateOrder(
+      @Body() UpdateTransactionRequest updateTransactionRequest);
 }

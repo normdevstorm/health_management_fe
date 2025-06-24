@@ -44,21 +44,33 @@ class MainActivity: FlutterActivity() {
 
                     ZaloPaySDK.getInstance().payOrder(this@MainActivity, token, uriScheme, object : PayOrderListener {
                         override fun onPaymentCanceled(zpTransToken: String?, appTransID: String?) {
-                            result.success("PAYMENT_CANCELLED") // Send result back to Flutter
+                            val resultJson = mapOf(
+                                "status" to "PAYMENT_CANCELED",
+                            )
+                            result.success(
+                                org.json.JSONObject(resultJson).toString()
+                            ) // Send result back to Flutter                        }
                         }
-
                         override fun onPaymentError(zaloPayErrorCode: ZaloPayError?, zpTransToken: String?, appTransID: String?) {
                             // Consider sending more specific error information
                             // if (zaloPayErrorCode == ZaloPayError.PAYMENT_APP_NOT_FOUND) {
                             //     result.error("APP_NOT_FOUND", "ZaloPay app not found", null)
                             // } else {
-                            //     result.error("PAYMENT_FAILED", "Payment failed: ${zaloPayErrorCode?.name}", null)
+                            //     result.error({"status" :"PAYMENT_FAILED"}, "Payment failed: ${zaloPayErrorCode?.name}", null)
                             // }
-                            result.success("PAYMENT_FAILED") // Simplified for now
+                            val resultJson = mapOf(
+                                "status" to "PAYMENT_FAILED",
+                            )
+                            result.success(org.json.JSONObject(resultJson).toString()) // Send result back to Flutter
                         }
-
+                        
                         override fun onPaymentSucceeded(transactionId: String, transToken: String, appTransID: String?) {
-                            result.success("PAYMENT_SUCCESS") // Send result back to Flutter
+                            val resultJson = mapOf(
+                                "status" to "PAYMENT_SUCCESS",
+                                "zp_trans_token" to transToken,
+                                "transaction_id" to transactionId
+                            )
+                            result.success(org.json.JSONObject(resultJson).toString()) // Send result back to Flutter
                         }
                     })
                 } else {

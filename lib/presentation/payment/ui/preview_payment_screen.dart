@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,9 +14,13 @@ import 'package:health_management/data/payment/api/zalopay_api.dart';
 import 'package:health_management/data/payment/api/zalopay_service.dart';
 import 'package:health_management/data/payment/models/create_order_request.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
+import 'package:health_management/domain/payment/entities/zalopay_create_order_entity.dart';
+import 'package:health_management/domain/payment/usecases/zalopay_usecase.dart';
 import 'package:health_management/presentation/appointment/bloc/appointment/appointment_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+
+import '../../../data/payment/models/zalopay_payment_response.dart';
 
 class PreviewPaymentScreen extends StatefulWidget {
   const PreviewPaymentScreen({super.key});
@@ -41,18 +47,19 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
       final user = await SharedPreferenceManager.getUser();
       final int userId = user?.id ?? 123;
 
-      final request = CreateOrderRequest(
+      final request = ZalopayCreateOrderEntity(
         amount: 200000,
+        // appointmentId: a as Long,
         userId: userId,
         description: 'Deposit for appointment',
       );
 
       // Call ZalopayApi to create order
-      final response = await getIt<ZalopayApi>().createOrder(request);
-      getIt<Logger>().i(
-          'ZaloPay API Response: ${response.data?.zpTransToken ?? 'No token'}');
+      final response = await getIt<ZalopayUsecase>().createOrder(request);
+      getIt<Logger>()
+          .i('ZaloPay API Response: ${response.zpTransToken ?? 'No token'}');
 
-      final zpTransToken = response.data?.zpTransToken;
+      final zpTransToken = response.zpTransToken;
 
       if (zpTransToken == null) {
         ToastManager.showToast(
@@ -63,16 +70,22 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
       }
 
       // Call ZalopayService to process payment
-      final PaymentStatus result =
-          await ZalopayService.payOrder(zpTransToken) as PaymentStatus;
-      getIt<Logger>().i('ZalopayService Result: $result');
+      final ZalopayPaymentResponse result =
+          (await ZalopayService.payOrder(zpTransToken)
+              as ZalopayPaymentResponse);
+      final PaymentStatus status = result.status ?? PaymentStatus.failed;
+      getIt<Logger>().i('ZalopayService Result: $status');
+      getIt<Logger>().i(
+          'ZalopayService Transaction ID: ${result.transactionId ?? 'No transaction ID'}');
 
-      if (result == PaymentStatus.success) {
+      if (status == PaymentStatus.success) {
+        // Close any loading dialogs
+
         // Trigger appointment creation
         context
             .read<AppointmentBloc>()
             .add(const CreateAppointmentRecordEvent());
-      } else if (result == PaymentStatus.failed) {
+      } else if (status == PaymentStatus.failed) {
         setState(() {
           _retryCount++;
         });
@@ -91,7 +104,7 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
             ],
           ),
         );
-      } else if (result == PaymentStatus.cancelled) {
+      } else if (status == PaymentStatus.cancelled) {
         // Navigate to AppointmentHome without creating appointment
         context.goNamed(RouteDefine.appointment);
         showDialog(
@@ -110,7 +123,7 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
       } else {
         ToastManager.showToast(
           context: context,
-          message: 'Unknown payment result: $result'.tr(),
+          message: 'Unknown payment result: $status'.tr(),
         );
       }
     } catch (e) {
