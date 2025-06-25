@@ -6,7 +6,7 @@ import 'package:health_management/domain/chat/models/call_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:health_management/domain/chat/models/user_model.dart';
-import 'package:health_management/presentation/chat/ui/main/calls/calling/calling_page.dart';
+// import 'package:health_management/presentation/chat/ui/main/calls/calling/calling_page.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class CallRemoteDataSource {
@@ -120,11 +120,11 @@ class CallRemoteDataSourceImpl extends CallRemoteDataSource {
 
       //Finally, if the user makes a call, the makeCall function automatically navigates the user to the CallingPage with the relevant details of the video call.
       // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, CallingPage.routeName,
-          arguments: CallingPage(
-              channelId: senderCallData.callId,
-              call: senderCallData,
-              isGroupChat: false));
+      // Navigator.pushNamed(context, CallingPage.routeName,
+      //     arguments: CallingPage(
+      //         channelId: senderCallData.callId,
+      //         call: senderCallData,
+      //         isGroupChat: false));
     } catch (e) {
       if (kDebugMode) print(e.toString());
       throw ServerException(e.toString());

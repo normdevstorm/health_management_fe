@@ -53,6 +53,7 @@ import 'package:health_management/domain/chat/usecases/user/user_cases.dart';
 import 'package:health_management/domain/doctor_schedule/usecases/doctor_schedule_usecase.dart';
 import 'package:health_management/domain/doctor/usecases/doctor_usecase.dart';
 import 'package:health_management/domain/doctor/repositories/doctor_repository.dart';
+import 'package:health_management/domain/geolocator/geolocator_usecase.dart';
 import 'package:health_management/domain/health_provider/repositories/health_provider_repository.dart';
 import 'package:health_management/domain/user/repositories/user_repository.dart';
 import 'package:health_management/domain/verify_code/usecases/verify_code_usecase.dart';
@@ -201,6 +202,7 @@ setUpAppComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => DoctorScheduleUseCase(getIt()));
   getIt.registerLazySingleton(() => DoctorUseCase(getIt()));
   getIt.registerLazySingleton(() => ZalopayUsecase(getIt()));
+  getIt.registerLazySingleton(() => GeolocatorUsecase());
 
   // Inject chat dpendencies
   //DataSources
