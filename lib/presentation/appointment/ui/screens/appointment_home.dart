@@ -183,8 +183,22 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                                         //         "Payment failed";
                                         // print(result);
                                       },
+                                      label: "Add",
                                     ),
-                            )
+                            ),
+                            const SizedBox(width: 8),
+                            ValueListenableBuilder(
+                              valueListenable: _isDoctorNotifier,
+                              builder: (context, disabled, child) => disabled
+                                  ? const SizedBox()
+                                  : AddButtonWidget(
+                                      onPressed: () {
+                                        context.pushNamed(RouteDefine
+                                            .createAppointmentWithAI);
+                                      },
+                                      label: "Add with AI",
+                                    ),
+                            ),
                           ]),
                       const SizedBox(height: 16),
                       WeekDaysRowWidget(
@@ -559,30 +573,36 @@ class WeekDayBox extends StatelessWidget {
 
 class AddButtonWidget extends StatelessWidget {
   final VoidCallback? onPressed;
+  final String label; // Added label parameter
+
   const AddButtonWidget({
     super.key,
     this.onPressed,
+    required this.label, // Make label required
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-        style: ButtonStyle(
-            enableFeedback: true,
-            backgroundColor:
-                WidgetStateProperty.all(ColorManager.buttonEnabledColorLight),
-            padding: WidgetStateProperty.all(
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8))),
-        icon: Icon(
-          Icons.add,
-          size: 30.r,
-          color: ColorManager.iconButtonColorLight,
+      style: ButtonStyle(
+        enableFeedback: true,
+        backgroundColor:
+            WidgetStateProperty.all(ColorManager.buttonEnabledColorLight),
+        padding: WidgetStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
-        onPressed: onPressed,
-        label: Text(
-          "Add",
-          style: StyleManager.buttonText,
-        ));
+      ),
+      icon: Icon(
+        Icons.add,
+        size: 30.r,
+        color: ColorManager.iconButtonColorLight,
+      ),
+      onPressed: onPressed,
+      label: Text(
+        label, // Use the provided label
+        style: StyleManager.buttonText,
+      ),
+    );
   }
 }
 

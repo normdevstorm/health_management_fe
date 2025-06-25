@@ -18,6 +18,7 @@ class RouteDefine {
   static const String createAppointmentChooseDoctor = 'choose-doctor';
   static const String createAppointmentChooseTime = 'choose-time';
   static const String previewPayment = 'preview-payment';
+  static const String createAppointmentWithAI = 'createAppointmentWithAI';
 
   static const String settings = 'settings';
   static const String editProfile = 'edit-profile';

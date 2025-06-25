@@ -27,6 +27,7 @@ import 'package:health_management/data/health_provider/api/health_provider_api.d
 import 'package:health_management/data/health_provider/repositories/health_provider_repository_impl.dart';
 import 'package:health_management/data/payment/api/zalopay_api.dart';
 import 'package:health_management/data/prescription/repositories/prescription_repository_impl.dart';
+import 'package:health_management/data/symptom/api/symptom_api.dart';
 import 'package:health_management/data/verify_code/api/verify_code_api.dart';
 import 'package:health_management/domain/appointment/repositories/appointment_repository.dart';
 import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
@@ -54,8 +55,12 @@ import 'package:health_management/domain/doctor_schedule/usecases/doctor_schedul
 import 'package:health_management/domain/doctor/usecases/doctor_usecase.dart';
 import 'package:health_management/domain/doctor/repositories/doctor_repository.dart';
 import 'package:health_management/domain/health_provider/repositories/health_provider_repository.dart';
+import 'package:health_management/domain/symptoms/repositories/symptom_repository.dart';
+import 'package:health_management/domain/symptoms/repositories/symptom_repository_impl.dart';
+import 'package:health_management/domain/symptoms/usecase/symptom_usecase.dart';
 import 'package:health_management/domain/user/repositories/user_repository.dart';
 import 'package:health_management/domain/verify_code/usecases/verify_code_usecase.dart';
+import 'package:health_management/presentation/appointment/bloc/symptoms/symptoms_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -161,6 +166,8 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => DoctorApi(dio));
 
   getIt.registerLazySingleton(() => ZalopayApi(dio));
+
+  getIt.registerLazySingleton<SymptomApi>(() => SymptomApi(getIt<Dio>()));
 }
 
 setUpAppComponent(FlavorManager flavor) {
@@ -183,6 +190,8 @@ setUpAppComponent(FlavorManager flavor) {
       () => ArticleRepositoryImpl(getIt(), getIt()));
   getIt.registerLazySingleton<DoctorRepository>(
       () => DoctorRepositoryImpl(getIt(), getIt()));
+  getIt.registerLazySingleton<SymptomRepository>(
+      () => SymptomRepositoryImpl(symptomApi: getIt()));
 
   //Inject Usecases
   getIt.registerLazySingleton(() => AppointmentUseCase(getIt()));
@@ -195,7 +204,10 @@ setUpAppComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => PrescriptionUseCase(getIt()));
   getIt.registerLazySingleton(() => DoctorScheduleUseCase(getIt()));
   getIt.registerLazySingleton(() => DoctorUseCase(getIt()));
+  getIt.registerLazySingleton<SymptomUseCase>(
+      () => SymptomUseCase(symptomRepository: getIt()));
 
+  getIt.registerFactory<SymptomsBloc>(() => SymptomsBloc(getIt()));
   // Inject chat dpendencies
   //DataSources
   getIt.registerLazySingleton<AuthLocalDataSource>(

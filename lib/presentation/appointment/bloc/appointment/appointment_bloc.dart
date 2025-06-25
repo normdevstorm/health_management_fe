@@ -8,6 +8,7 @@ import 'package:health_management/domain/appointment/usecases/appointment_usecas
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
 import 'package:health_management/domain/health_provider/usecases/health_provider_usecase.dart';
+import 'package:health_management/domain/symptoms/entities/symptoms_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 
 part 'appointment_event.dart';

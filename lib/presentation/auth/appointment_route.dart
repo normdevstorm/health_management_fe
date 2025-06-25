@@ -4,16 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/route/route_define.dart';
+import 'package:health_management/domain/symptoms/usecase/symptom_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/appointment/bloc/doctor_schedule/doctor_schedule_bloc.dart';
 import 'package:health_management/presentation/appointment/bloc/health_provider/health_provider_bloc.dart';
+import 'package:health_management/presentation/appointment/bloc/symptoms/symptoms_bloc.dart';
 import 'package:health_management/presentation/appointment/ui/screens/appointment_details.dart';
 import 'package:health_management/presentation/appointment/ui/screens/appointment_home.dart';
+import 'package:health_management/presentation/appointment/ui/screens/appointment_symptoms.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_appointment_date_time.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_doctor_screen.dart';
 import 'package:health_management/presentation/appointment/ui/screens/choose_health_provider_screen.dart';
 import 'package:health_management/presentation/chat/ui/main/home/chat_screen/chat_page.dart';
-import '../../domain/appointment/entities/appointment_record_entity.dart';
 import '../../domain/prescription/entities/prescription_entity.dart';
 import '../appointment/bloc/appointment/appointment_bloc.dart';
 import '../appointment/bloc/medication/medication_bloc.dart';
@@ -69,6 +71,10 @@ part 'appointment_route.g.dart';
               name: RouteDefine.createAppointmentChooseTime),
           TypedGoRoute<AppointmentCreatePreviewPaymentRoute>(
               path: "/preview-payment", name: RouteDefine.previewPayment),
+          TypedGoRoute<AppointmentCreateWithAIRoute>(
+            path: "/with-ai",
+            name: RouteDefine.createAppointmentWithAI,
+          ),
         ]),
   ],
 )
@@ -206,5 +212,16 @@ class AppointmentCreatePreviewPaymentRoute extends AppointmentCreateRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const PreviewPaymentScreen();
+  }
+}
+
+class AppointmentCreateWithAIRoute extends AppointmentCreateRoute {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return BlocProvider(
+      create: (context) => SymptomsBloc(getIt<SymptomUseCase>())
+        ..add(const FetchSymptomsEvent()),
+      child: const CreateAppointmentWithAIScreen(),
+    );
   }
 }

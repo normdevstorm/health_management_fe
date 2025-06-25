@@ -19,8 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final ValueNotifier<bool> _isHiddenPasswordNotifier =
       ValueNotifier<bool>(true);
   final _emailFormKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'john.doe@example.com');
+  final _passwordController = TextEditingController(text: '12332145');
 
   @override
   Widget build(BuildContext context) {
