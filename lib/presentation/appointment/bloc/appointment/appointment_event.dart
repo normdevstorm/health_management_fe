@@ -101,3 +101,12 @@ final class UpdatePrescriptionEvent extends AppointmentEvent {
   @override
   List<Object> get props => [appointment];
 }
+
+final class CollectDataSymptomEvent extends AppointmentEvent {
+  final SymptomEntity symptom;
+
+  const CollectDataSymptomEvent({required this.symptom});
+
+  @override
+  List<Object> get props => [symptom];
+}

@@ -102,6 +102,7 @@ dependencies:
   build_runner: ^2.4.11
   geocoding: 3.0.0
   geolocator: 13.0.1
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:

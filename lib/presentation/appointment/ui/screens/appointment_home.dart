@@ -119,68 +119,45 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                               fontSize: 16, color: Colors.grey)),
                       const SizedBox(height: 8),
                       Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text('Today',
-                                style: TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.bold)),
-                            ValueListenableBuilder(
-                              valueListenable: _isDoctorNotifier,
-                              builder: (context, disabled, child) => disabled
-                                  ? const SizedBox()
-                                  : AddButtonWidget(
-                                      onPressed: () async {
-                                        //TODO: TEMPORARILY USED FOR PAYMENT FUNCTIONALITY
-                                        // ZaloPayOrderRequest zaloPayRequest =
-                                        //     ZaloPayOrderRequest(
-                                        //   amount: 200000,
-                                        //   appId: 2553,
-                                        //   appUser: 'Android_Demo',
-                                        //   appTime: DateTime.now()
-                                        //       .millisecondsSinceEpoch,
-                                        //   embedData: '{}',
-                                        //   item: '[]',
-                                        //   bankCode: 'zalopayapp',
-                                        //   description: 'Thanh toán đơn hàng',
-                                        //   // callbackUrl:
-                                        //   //     'health_management_zalopay.dev://app',
-                                        // );
-                                        // Map<String, String> hMacAndTransId =
-                                        //     await ZalopayService
-                                        //         .getHMacAndTransId(
-                                        //   amount:
-                                        //       zaloPayRequest.amount.toString(),
-                                        //   appId:
-                                        //       zaloPayRequest.appId.toString(),
-                                        //   appUser: zaloPayRequest.appUser,
-                                        //   appTime:
-                                        //       zaloPayRequest.appTime.toString(),
-                                        //   embedData: zaloPayRequest.embedData,
-                                        //   items: zaloPayRequest.item,
-                                        //   appTransId: zaloPayRequest.appTransId,
-                                        // );
-
-                                        // ZaloPayOrderResponse
-                                        //     zaloPayOrderResponse =
-                                        //     await getIt<ZalopayApi>().createOrder(
-                                        //         zaloPayRequest.copyWith(
-                                        //             mac: hMacAndTransId['mac'],
-                                        //             appTransId: hMacAndTransId[
-                                        //                 'app_trans_id']));
-
-                                        context.pushNamed(
-                                            RouteDefine // context.pushNamed(RouteDefine
-                                                .createAppointmentChooseProvider);
-
-                                        // String result =
-                                        //     await ZalopayService.payOrder(
-                                        //             zaloPayOrderResponse) ??
-                                        //         "Payment failed";
-                                        // print(result);
-                                      },
-                                    ),
-                            )
-                          ]),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Today',
+                            style: TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              ValueListenableBuilder(
+                                valueListenable: _isDoctorNotifier,
+                                builder: (context, disabled, child) => disabled
+                                    ? const SizedBox()
+                                    : AddButtonWidget(
+                                        onPressed: () {
+                                          context.pushNamed(RouteDefine
+                                              .createAppointmentChooseProvider);
+                                        },
+                                        label: "Add",
+                                      ),
+                              ),
+                              SizedBox(width: 8.w),
+                              ValueListenableBuilder(
+                                valueListenable: _isDoctorNotifier,
+                                builder: (context, disabled, child) => disabled
+                                    ? const SizedBox()
+                                    : AddButtonWidget(
+                                        onPressed: () {
+                                          context.pushNamed(RouteDefine
+                                              .createAppointmentWithAI);
+                                        },
+                                        label: "Add AI",
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 16),
                       WeekDaysRowWidget(
                         enableSelection: false,
@@ -556,30 +533,36 @@ class WeekDayBox extends StatelessWidget {
 
 class AddButtonWidget extends StatelessWidget {
   final VoidCallback? onPressed;
+  final String label; // Added label parameter
+
   const AddButtonWidget({
     super.key,
     this.onPressed,
+    required this.label, // Make label required
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-        style: ButtonStyle(
-            enableFeedback: true,
-            backgroundColor:
-                WidgetStateProperty.all(ColorManager.buttonEnabledColorLight),
-            padding: WidgetStateProperty.all(
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8))),
-        icon: Icon(
-          Icons.add,
-          size: 30.r,
-          color: ColorManager.iconButtonColorLight,
+      style: ButtonStyle(
+        enableFeedback: true,
+        backgroundColor:
+            WidgetStateProperty.all(ColorManager.buttonEnabledColorLight),
+        padding: WidgetStateProperty.all(
+          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
-        onPressed: onPressed,
-        label: Text(
-          "Add",
-          style: StyleManager.buttonText,
-        ));
+      ),
+      icon: Icon(
+        Icons.add,
+        size: 30.r,
+        color: ColorManager.iconButtonColorLight,
+      ),
+      onPressed: onPressed,
+      label: Text(
+        label, // Use the provided label
+        style: StyleManager.buttonText,
+      ),
+    );
   }
 }
 

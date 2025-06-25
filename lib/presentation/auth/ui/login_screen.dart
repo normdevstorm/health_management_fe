@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/domain/address/entities/address_entity.dart';
-import 'package:health_management/domain/geolocator/geolocator_usecase.dart';
 import 'package:health_management/presentation/common/button.dart';
 import 'package:health_management/presentation/common/debounce_button.dart';
 import 'package:health_management/presentation/common/input_field.dart';
@@ -24,8 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final ValueNotifier<bool> _isHiddenPasswordNotifier =
       ValueNotifier<bool>(true);
   final _emailFormKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController = TextEditingController(text: 'john.doe@example.com');
+  final _passwordController = TextEditingController(text: '12332145');
 
   @override
   Widget build(BuildContext context) {

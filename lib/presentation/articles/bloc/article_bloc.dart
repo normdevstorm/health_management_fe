@@ -1,8 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:health_management/app/app.dart';
 import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/managers/local_storage.dart';
-import 'package:health_management/domain/articles/entities/article_media_entity.dart';
 import 'package:health_management/domain/articles/usecases/article_usecase.dart';
 import 'package:health_management/domain/user/usecases/user_usecase.dart';
 import 'package:health_management/presentation/articles/bloc/article_event.dart';

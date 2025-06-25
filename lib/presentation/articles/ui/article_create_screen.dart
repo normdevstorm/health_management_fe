@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/utils/functions/image_griphy_picker.dart';
 import 'package:health_management/domain/articles/entities/article_entity.dart';
@@ -79,7 +78,7 @@ class _ArticleCreateScreenState extends State<ArticleCreateScreen> {
       listener: (context, state) {
         if (state.status == BlocStatus.success && state.data is ArticleEntity) {
           // Nếu tạo thành công, fetch lại data và pop màn hình
-           context
+          context
               .read<ArticleBloc>()
               .add(GetAllArticleByUserIdEvent(userId: user?.id ?? 2));
           Navigator.pop(context);

@@ -10,6 +10,7 @@ import 'package:health_management/domain/health_provider/entities/health_provide
 import 'package:health_management/domain/health_provider/usecases/health_provider_usecase.dart';
 import 'package:health_management/domain/payment/entities/zalopay_update_transaction_entity.dart';
 import 'package:health_management/domain/payment/usecases/zalopay_usecase.dart';
+import 'package:health_management/domain/symptoms/entities/symptoms_entity.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 
 part 'appointment_event.dart';
