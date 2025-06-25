@@ -100,7 +100,7 @@ class _AppointmentHomeState extends State<AppointmentHome> {
                   }
                   if ([
                         CreateAppointmentRecordState,
-                        CancelAppointmentRecordState
+                        CancelAppointmentRecordState,
                       ].contains(state.runtimeType) &&
                       state.status == BlocStatus.success) {
                     context
@@ -372,10 +372,11 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                 ? AppointmentCard.doctor(
                     id: appointmentRecords[index].id,
                     prescription: appointmentRecords[index].prescription,
-                    onCancel: () {
+                    onCancel: () async {
                       if (appointmentRecords[index].id != null) {
                         context.read<AppointmentBloc>().add(
-                            DeleteAppointmentRecordEvent(
+                            CancelAppointmentRecordEvent(
+                                userId: appointmentRecords[index].user?.id ?? 0,
                                 appointmentId: appointmentRecords[index].id!));
                       }
                     },
@@ -411,7 +412,8 @@ class ListAppointmentRecordWidget extends StatelessWidget {
                     onCancel: () {
                       if (appointmentRecords[index].id != null) {
                         context.read<AppointmentBloc>().add(
-                            DeleteAppointmentRecordEvent(
+                            CancelAppointmentRecordEvent(
+                                userId: appointmentRecords[index].user?.id ?? 0,
                                 appointmentId: appointmentRecords[index].id!));
                       }
                     },

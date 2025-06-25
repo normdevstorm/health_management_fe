@@ -71,9 +71,10 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
       throw ApiException.getDioException(e);
     }
   }
-  
+
   @override
-  Future<AppointmentRecordEntity> getAppointmentRecordById(int appointmentId) async{    
+  Future<AppointmentRecordEntity> getAppointmentRecordById(
+      int appointmentId) async {
     try {
       final response = await api.getAppointmentRecordById(appointmentId);
       return response.data?.toEntity() ?? const AppointmentRecordEntity();
@@ -89,6 +90,17 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
     try {
       final response = await api.getAppointmentRecordByDoctorId(doctorId);
       return (response.data ?? []).map((e) => e.toEntity()).toList();
+    } catch (e) {
+      logger.e(e);
+      throw ApiException.getDioException(e);
+    }
+  }
+
+  @override
+  Future<String> cancelAppointmentRecord(int userId, int appointmentId) async {
+    try {
+      final response = await api.cancelAppointmentRecord(userId, appointmentId);
+      return response.data ?? "Failed to cancel appointment";
     } catch (e) {
       logger.e(e);
       throw ApiException.getDioException(e);

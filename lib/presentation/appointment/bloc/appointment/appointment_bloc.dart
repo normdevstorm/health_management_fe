@@ -41,6 +41,8 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
         (event, emit) => _onUpdateAppointmentRecordEvent(event, emit));
     on<DeleteAppointmentRecordEvent>(
         (event, emit) => _onDeleteAppointmentRecordEvent(event, emit));
+    on<CancelAppointmentRecordEvent>(
+        (event, emit) => _onCancelAppointmentRecordEvent(event, emit));
     on<UpdatePrescriptionEvent>(
         (event, emit) => _onUpdatePrescriptionEvent(event, emit));
   }
@@ -96,13 +98,13 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
 
   _onDeleteAppointmentRecordEvent(DeleteAppointmentRecordEvent event,
       Emitter<AppointmentState> emit) async {
-    emit(CancelAppointmentRecordState.loading());
+    emit(DeleteAppointmentRecordState.loading());
     try {
       final String message =
           await appointmentUseCase.deleteAppointmentRecord(event.appointmentId);
-      emit(CancelAppointmentRecordState.success(message));
+      emit(DeleteAppointmentRecordState.success(message));
     } on ApiException catch (e) {
-      emit(CancelAppointmentRecordState.error(ApiException.getErrorMessage(e)));
+      emit(DeleteAppointmentRecordState.error(ApiException.getErrorMessage(e)));
     }
   }
 
@@ -193,6 +195,19 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
           appointmentRecordEntity: updatedAppointment));
     } on ApiException catch (e) {
       emit(UpdatePrescriptionState.error(ApiException.getErrorMessage(e)));
+    }
+  }
+
+  _onCancelAppointmentRecordEvent(CancelAppointmentRecordEvent event,
+      Emitter<AppointmentState> emit) async {
+    emit(CancelAppointmentRecordState.loading());
+    try {
+      final String cancelMessage =
+          await appointmentUseCase.cancelAppointmentRecord(
+              userId: event.userId, appointmentId: event.appointmentId);
+      emit(CancelAppointmentRecordState.success(cancelMessage: cancelMessage));
+    } on ApiException catch (e) {
+      emit(CancelAppointmentRecordState.error(ApiException.getErrorMessage(e)));
     }
   }
 }

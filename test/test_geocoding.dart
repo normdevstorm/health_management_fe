@@ -11,15 +11,4 @@ void main() async {
     print(
         "Latitude: ${locations.first.latitude}, Longitude: ${locations.first.longitude}");
   });
-
-  // testWidgets("Test Geocoding (Translate geo location from address)",
-  //     (WidgetTester tester) async {
-  //   tester.runAsync(() async {
-  //     expect(locations.isNotEmpty, true);
-  //     expect(locations.first.latitude, isNotNull);
-  //     expect(locations.first.longitude, isNotNull);
-  //     print(
-  //         "Latitude: ${locations.first.latitude}, Longitude: ${locations.first.longitude}");
-  //   });
-  // });
 }

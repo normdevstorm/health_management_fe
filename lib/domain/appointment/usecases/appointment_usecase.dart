@@ -34,8 +34,13 @@ class AppointmentUseCase {
     return _repository.getAppointmentRecordById(appointmentId);
   }
 
-Future<List<AppointmentRecordEntity>> getAppointmentRecordByDoctorId(
+  Future<List<AppointmentRecordEntity>> getAppointmentRecordByDoctorId(
       {required int doctorId}) async {
     return _repository.getAppointmentRecordByDoctorId(doctorId);
+  }
+
+  Future<String> cancelAppointmentRecord(
+      {required int userId, required int appointmentId}) async {
+    return _repository.cancelAppointmentRecord(userId, appointmentId);
   }
 }

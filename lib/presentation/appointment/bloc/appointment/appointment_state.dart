@@ -41,6 +41,39 @@ class AppointmentState<T> extends Equatable {
   List<Object?> get props => [status, data, errorMessage];
 }
 
+class DeleteAppointmentRecordState extends AppointmentState {
+  const DeleteAppointmentRecordState._({
+    super.data,
+    required super.status,
+    super.errorMessage,
+  }) : super._();
+  factory DeleteAppointmentRecordState.initial() {
+    return const DeleteAppointmentRecordState._(
+      status: BlocStatus.initial,
+    );
+  }
+
+  factory DeleteAppointmentRecordState.loading() {
+    return const DeleteAppointmentRecordState._(
+      status: BlocStatus.loading,
+    );
+  }
+
+  factory DeleteAppointmentRecordState.success(String message) {
+    return DeleteAppointmentRecordState._(
+      status: BlocStatus.success,
+      data: message,
+    );
+  }
+
+  factory DeleteAppointmentRecordState.error(String errorMessage) {
+    return DeleteAppointmentRecordState._(
+      status: BlocStatus.error,
+      errorMessage: errorMessage,
+    );
+  }
+}
+
 class CancelAppointmentRecordState extends AppointmentState {
   const CancelAppointmentRecordState._({
     super.data,
@@ -59,10 +92,12 @@ class CancelAppointmentRecordState extends AppointmentState {
     );
   }
 
-  factory CancelAppointmentRecordState.success(String message) {
+  factory CancelAppointmentRecordState.success({
+    required String cancelMessage,
+  }) {
     return CancelAppointmentRecordState._(
       status: BlocStatus.success,
-      data: message,
+      data: cancelMessage,
     );
   }
 
@@ -156,7 +191,6 @@ class GetAppointmentDetailState extends AppointmentState {
   }
 }
 
-
 class UpdatePrescriptionState extends AppointmentState {
   const UpdatePrescriptionState._({
     super.data,
@@ -191,4 +225,3 @@ class UpdatePrescriptionState extends AppointmentState {
     );
   }
 }
-
