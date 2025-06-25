@@ -7,12 +7,11 @@ class RequestInterceptor extends Interceptor {
     // super.onRequest(options, handler);
 
     if ([
-          '/auth/register',
-          '/auth/login',
-          '/auth/refresh-token',
-          '/mail/verify_code'
-        ].contains(options.path) ||
-        ['https://sb-openapi.zalopay.vn/v2/'].contains(options.baseUrl)) {
+      '/auth/register',
+      '/auth/login',
+      '/auth/refresh-token',
+      '/mail/verify_code'
+    ].contains(options.path)) {
       handler.next(options);
       return;
     } else if (options.path == '/auth/logout') {

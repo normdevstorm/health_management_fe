@@ -79,7 +79,9 @@ class AppointmentRoute extends ShellRouteData {
       providers: [
         BlocProvider(
           create: (context) => AppointmentBloc(
-              appointmentUseCase: getIt(), healthProviderUseCase: getIt()),
+              appointmentUseCase: getIt(),
+              healthProviderUseCase: getIt(),
+              zalopayUsecase: getIt()),
         ),
         BlocProvider(create: (context) => ChatCubit()),
         BlocProvider(create: (context) => InChatCubit()),

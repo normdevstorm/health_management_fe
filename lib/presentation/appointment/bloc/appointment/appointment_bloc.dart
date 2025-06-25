@@ -8,6 +8,8 @@ import 'package:health_management/domain/appointment/usecases/appointment_usecas
 import 'package:health_management/domain/doctor/entities/doctor_entity.dart';
 import 'package:health_management/domain/health_provider/entities/health_provider_entity.dart';
 import 'package:health_management/domain/health_provider/usecases/health_provider_usecase.dart';
+import 'package:health_management/domain/payment/entities/zalopay_update_transaction_entity.dart';
+import 'package:health_management/domain/payment/usecases/zalopay_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 
 part 'appointment_event.dart';
@@ -16,9 +18,12 @@ part 'appointment_state.dart';
 class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
   final AppointmentUseCase appointmentUseCase;
   final HealthProviderUseCase healthProviderUseCase;
+  final ZalopayUsecase zalopayUsecase;
 
   AppointmentBloc(
-      {required this.appointmentUseCase, required this.healthProviderUseCase})
+      {required this.appointmentUseCase,
+      required this.healthProviderUseCase,
+      required this.zalopayUsecase})
       : super(AppointmentState.initial()) {
     on<GetAllAppointmentRecordEvent>(
         (event, emit) => _onGetAllAppointmentRecordEvent(event, emit));
@@ -110,8 +115,19 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     try {
       final appointmentRecord = await appointmentUseCase
           .createAppointmentRecord(filledAppointmentRecordEntity);
-      emit(CreateAppointmentRecordState.success(
-          createdAppointmentRecordEntity: appointmentRecord));
+      // Update transactionId for appointment record
+      // Handle result later on
+      final String updateTransactionResult = await zalopayUsecase.updateOrder(
+          event.zalopayUpdateTransactionEntity
+              .copyWith(appointmentId: appointmentRecord.id!));
+      if (updateTransactionResult ==
+          ConstantManager.successfullyUpdatedTransactionMessage) {
+        emit(CreateAppointmentRecordState.success(
+            createdAppointmentRecordEntity: appointmentRecord));
+      } else {
+        emit(CreateAppointmentRecordState.error(updateTransactionResult,
+            createdAppointmentRecordEntity: filledAppointmentRecordEntity));
+      }
     } on ApiException catch (e) {
       emit(CreateAppointmentRecordState.error(ApiException.getErrorMessage(e),
           createdAppointmentRecordEntity: filledAppointmentRecordEntity));

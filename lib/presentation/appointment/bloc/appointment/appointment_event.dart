@@ -25,11 +25,13 @@ final class GetAppointmentDetailEvent extends AppointmentEvent {
 
 final class CreateAppointmentRecordEvent extends AppointmentEvent {
   // final AppointmentRecordEntity appointmentRecordEntity;
+  final ZalopayUpdateTransactionEntity zalopayUpdateTransactionEntity;
 
-  const CreateAppointmentRecordEvent();
+  const CreateAppointmentRecordEvent(
+      {required this.zalopayUpdateTransactionEntity});
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [zalopayUpdateTransactionEntity];
 }
 
 final class CollectDataHealthProviderEvent extends AppointmentEvent {

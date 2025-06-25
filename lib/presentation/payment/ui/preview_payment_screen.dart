@@ -10,11 +10,10 @@ import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/app/route/route_define.dart';
-import 'package:health_management/data/payment/api/zalopay_api.dart';
 import 'package:health_management/data/payment/api/zalopay_service.dart';
-import 'package:health_management/data/payment/models/create_order_request.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/payment/entities/zalopay_create_order_entity.dart';
+import 'package:health_management/domain/payment/entities/zalopay_update_transaction_entity.dart';
 import 'package:health_management/domain/payment/usecases/zalopay_usecase.dart';
 import 'package:health_management/presentation/appointment/bloc/appointment/appointment_bloc.dart';
 import 'package:intl/intl.dart';
@@ -48,7 +47,7 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
       final int userId = user?.id ?? 123;
 
       final request = ZalopayCreateOrderEntity(
-        amount: 200000,
+        amount: ConstantManager.depositAmount,
         // appointmentId: a as Long,
         userId: userId,
         description: 'Deposit for appointment',
@@ -79,12 +78,12 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
           'ZalopayService Transaction ID: ${result.transactionId ?? 'No transaction ID'}');
 
       if (status == PaymentStatus.success) {
-        // Close any loading dialogs
-
         // Trigger appointment creation
-        context
-            .read<AppointmentBloc>()
-            .add(const CreateAppointmentRecordEvent());
+        context.read<AppointmentBloc>().add(CreateAppointmentRecordEvent(
+            zalopayUpdateTransactionEntity: ZalopayUpdateTransactionEntity(
+                amount: ConstantManager.depositAmount.toDouble(),
+                transactionId: result.transactionId ?? '',
+                zpTransToken: zpTransToken)));
       } else if (status == PaymentStatus.failed) {
         setState(() {
           _retryCount++;
