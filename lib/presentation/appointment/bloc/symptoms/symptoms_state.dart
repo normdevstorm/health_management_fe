@@ -2,12 +2,14 @@ part of 'symptoms_bloc.dart';
 
 class SymptomsState extends Equatable {
   final BlocStatus status;
-  final List<SymptomEntity> symptoms;
+  final List<String> symptoms;
+  final RecommendAiResponse? diagnosisResponse;
   final String? errorMessage;
 
   const SymptomsState._({
     required this.status,
     this.symptoms = const [],
+    this.diagnosisResponse,
     this.errorMessage,
   });
 
@@ -19,10 +21,14 @@ class SymptomsState extends Equatable {
     return const SymptomsState._(status: BlocStatus.loading);
   }
 
-  factory SymptomsState.success({required List<SymptomEntity> symptoms}) {
+  factory SymptomsState.success({
+    required List<String> symptoms,
+    RecommendAiResponse? diagnosisResponse,
+  }) {
     return SymptomsState._(
       status: BlocStatus.success,
       symptoms: symptoms,
+      diagnosisResponse: diagnosisResponse,
     );
   }
 
@@ -35,16 +41,23 @@ class SymptomsState extends Equatable {
 
   SymptomsState copyWith({
     BlocStatus? status,
-    List<SymptomEntity>? symptoms,
+    List<String>? symptoms,
+    RecommendAiResponse? diagnosisResponse,
     String? errorMessage,
   }) {
     return SymptomsState._(
       status: status ?? this.status,
       symptoms: symptoms ?? this.symptoms,
+      diagnosisResponse: diagnosisResponse ?? this.diagnosisResponse,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [status, symptoms, errorMessage];
+  List<Object?> get props => [
+        status,
+        symptoms,
+        diagnosisResponse,
+        errorMessage,
+      ];
 }

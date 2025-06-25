@@ -1,4 +1,5 @@
 import 'package:health_management/data/symptom/api/symptom_api.dart';
+import 'package:health_management/data/symptom/models/recommend_ai_response.dart';
 import 'package:health_management/domain/symptoms/entities/symptoms_entity.dart';
 
 import 'package:health_management/domain/symptoms/repositories/symptom_repository.dart';
@@ -9,14 +10,14 @@ class SymptomRepositoryImpl implements SymptomRepository {
   SymptomRepositoryImpl({required this.symptomApi});
 
   @override
-  Future<List<SymptomEntity>> getSymptoms() async {
+  Future<List<String>> getSymptoms() async {
     final response = await symptomApi.getSymptoms();
-    if (response.data != null) {
-      return response.data!.asMap().entries.map((entry) {
-        return SymptomEntity.fromJson(entry.value, entry.key + 1);
-      }).toList();
-    } else {
-      throw Exception('No symptoms data received');
-    }
+    return response.symptoms.toList();
+  }
+
+  @override
+  Future<RecommendAiResponse> diagnose(List<String> symptoms) {
+    final body = {'symptoms': symptoms};
+    return symptomApi.recommendSymptoms(body);
   }
 }

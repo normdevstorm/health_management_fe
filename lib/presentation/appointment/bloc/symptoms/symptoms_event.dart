@@ -10,3 +10,12 @@ sealed class SymptomsEvent extends Equatable {
 final class FetchSymptomsEvent extends SymptomsEvent {
   const FetchSymptomsEvent();
 }
+
+final class DiagnoseSymptomsEvent extends SymptomsEvent {
+  final List<String> symptoms;
+
+  const DiagnoseSymptomsEvent({required this.symptoms});
+
+  @override
+  List<Object> get props => [symptoms];
+}
