@@ -48,7 +48,7 @@ void main() async {
         supportedLocales: const [Locale('en', 'US'), Locale('vi', 'VN')],
         path: 'assets/resources/langs/langs.csv',
         assetLoader: CsvAssetLoader(),
-        startLocale: const Locale('vi', 'VN'),
+        startLocale: const Locale('en', 'US'),
         useFallbackTranslations: true,
         child: MultiBlocProvider(
           providers: [

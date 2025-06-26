@@ -150,3 +150,18 @@ enum PaymentStatus {
   @JsonValue("PAYMENT_FAILED")
   failed
 }
+
+enum Language {
+  @JsonValue("EN")
+  english,
+  @JsonValue("AR")
+  arabic,
+  @JsonValue("FR")
+  french,
+  @JsonValue("ES")
+  spanish,
+  @JsonValue("DE")
+  german,
+  @JsonValue("VI")
+  vietnamese,
+}

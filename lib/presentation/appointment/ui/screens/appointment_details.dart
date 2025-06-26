@@ -9,10 +9,13 @@ import 'package:health_management/app/app.dart';
 import 'package:health_management/app/managers/size_manager.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
+import 'package:health_management/domain/appointment/usecases/appointment_usecase.dart';
 import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/common/custom_network_image.dart';
 import 'package:health_management/presentation/common/shimmer_loading.dart';
+import 'package:json_annotation/json_annotation.dart';
+import '../../../../app/di/injection.dart';
 import '../../../../app/managers/local_storage.dart';
 import '../../../../app/route/route_define.dart';
 import '../../../../domain/health_provider/entities/health_provider_entity.dart';
@@ -67,6 +70,29 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
               _handleNotidicationRedirect(context);
             },
           ),
+          actions: [
+            IconButton(
+                tooltip: "Export Appointment PDF",
+                icon: Icon(
+                  Icons.download,
+                  size: 30.r,
+                  color: Colors.green,
+                ),
+                onPressed: () async {
+                  String? result = await getIt<AppointmentUseCase>()
+                      .exportAppointmentPDF(
+                          widget.appointmentId, context.locale.languageCode);
+                  if (result != null) {
+                    ToastManager.showToast(
+                        context: context,
+                        message: "Appointment PDF exported successfully");
+                  } else {
+                    ToastManager.showToast(
+                        context: context,
+                        message: "Failed to export appointment PDF");
+                  }
+                })
+          ],
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -272,34 +298,28 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
         ),
         10.verticalSpace,
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('City',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                Text(healthProvider?.address?.city ?? "Loading",
-                    style: TextStyle(fontSize: 16.sp)),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('District',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                Text(healthProvider?.address?.addressLine1 ?? "Loading",
-                    style: TextStyle(fontSize: 16.sp)),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Street',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
-                Text(healthProvider?.address?.streetNumber ?? "Loading",
-                    style: TextStyle(fontSize: 16.sp)),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Address',
+                      style: TextStyle(fontSize: 14.sp, color: Colors.grey)),
+                  Text(
+                    [
+                      healthProvider?.address?.streetNumber,
+                      healthProvider?.address?.addressLine1,
+                      healthProvider?.address?.city
+                    ]
+                        .where((item) => item != null && item.isNotEmpty)
+                        .join(', '),
+                    style: TextStyle(fontSize: 16.sp),
+                    softWrap: true,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -309,18 +329,21 @@ class _AppointmentDetailsState extends State<AppointmentDetails> {
           color: Colors.grey.shade400,
         ),
         20.verticalSpace,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child:  CustomNetworkImage(
-                  avatarUrl:
-               healthProvider?.name == "Heart Center" ?       "https://congchungnguyenvietcuong.com/Uploaded/Images/Original/2023/12/14/Thong_tin_dia_chi_Benh_vien_da_khoa_quoc_te_Vinmec,_TP._HCM_1412165503.jpg" : "https://tamanhhospital.vn/wp-content/uploads/2020/12/benh-vien-da-khoa-tam-anh.jpg",
-                  height: 120,
-                  width: 250,
-                )),
-          ],
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: CustomNetworkImage(
+                    avatarUrl: healthProvider?.name == "Heart Center"
+                        ? "https://congchungnguyenvietcuong.com/Uploaded/Images/Original/2023/12/14/Thong_tin_dia_chi_Benh_vien_da_khoa_quoc_te_Vinmec,_TP._HCM_1412165503.jpg"
+                        : "https://tamanhhospital.vn/wp-content/uploads/2020/12/benh-vien-da-khoa-tam-anh.jpg",
+                    height: 120,
+                    width: 250,
+                  )),
+            ],
+          ),
         ),
         // 15.verticalSpace,
         // Row(

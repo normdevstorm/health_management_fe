@@ -13,4 +13,5 @@ abstract class AppointmentRepository {
   Future<List<AppointmentRecordEntity>> getAppointmentRecordByDoctorId(
       int doctorId);
   Future<String> cancelAppointmentRecord(int userId, int appointmentId);
+  Future<List<int>> exportAppointmentPDF(int id, String language);
 }

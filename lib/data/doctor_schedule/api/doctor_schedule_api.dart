@@ -14,6 +14,7 @@ abstract class DoctorScheduleApi {
       @Path('doctorId') int doctorId);
 
   @GET('/schedule/export/{doctorId}')
+  @DioResponseType(ResponseType.bytes)
   Future<HttpResponse<List<int>>> exportDoctorSchedules(
     @Path('doctorId') int doctorId,
     @Query('startDate') String startDate,

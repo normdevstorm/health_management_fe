@@ -1,14 +1,21 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/di/injection.dart';
+import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/app/route/route_define.dart';
+import 'package:health_management/app/utils/date_converter.dart';
+import 'package:health_management/domain/doctor/usecases/doctor_usecase.dart';
+import 'package:health_management/domain/doctor_schedule/usecases/doctor_schedule_usecase.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/auth/bloc/authentication_bloc.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_bloc.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_event.dart';
 import 'package:health_management/presentation/edit_profile/bloc/edit_profile_state.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -105,6 +112,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   buildMenuItem(context, 'Logout', Icons.logout, () {
                     context.read<AuthenticationBloc>().add(const LogOutEvent());
                   }),
+                  if ((context.read<EditProfileBloc>().state.data as UserEntity)
+                          .account
+                          ?.role ==
+                      Role.doctor)
+                    buildMenuItem(
+                      context,
+                      'Export schedules',
+                      Icons.import_export,
+                      () async {
+                        final doctorId = (context
+                                .read<EditProfileBloc>()
+                                .state
+                                .data as UserEntity)
+                            .doctorProfile
+                            ?.id;
+                        if (doctorId == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Only available for doctors')),
+                          );
+                          return;
+                        }
+
+                        // Default date range (current month)
+                        final now = DateTime.now();
+                        DateTime startDate = DateTime(now.year, now.month, 1);
+                        DateTime endDate = DateTime(now.year, now.month + 1, 0);
+
+                        final DateTimeRange? result = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(DateTime.now().year - 1),
+                          lastDate: DateTime(DateTime.now().year + 1),
+                          initialDateRange: DateTimeRange(
+                            start: startDate,
+                            end: endDate,
+                          ),
+                        );
+
+                        if (result != null) {
+                          startDate = result.start;
+                          endDate = result.end;
+
+                          try {
+                            final String? resultFilePath =
+                                await getIt<DoctorScheduleUseCase>()
+                                    .exportDoctorSchedules(
+                              doctorId,
+                              startDate.toIso8601String(),
+                              endDate.toIso8601String(),
+                              'schedules_dr_${doctorId}_${DateConverter.convertToYearMonthDay(startDate)}_${DateConverter.convertToYearMonthDay(endDate)}.xlsx',
+                            );
+                            if (resultFilePath == null) {
+                              throw Exception('Saved path is null');
+                            }
+                            ToastManager.showToast(
+                                context: context,
+                                message: "'Schedules exported successfully'");
+                          } catch (e) {
+                            ToastManager.showToast(
+                                context: context, message: 'Failed to export');
+                          }
+                        }
+                      },
+                    )
                 ],
               ),
             ),

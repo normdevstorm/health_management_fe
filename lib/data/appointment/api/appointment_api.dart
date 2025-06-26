@@ -34,4 +34,9 @@ abstract class AppointmentApi {
   @GET('/appointments/doctor/{id}')
   Future<ApiResponse<List<AppointmentRecordResponse>>>
       getAppointmentRecordByDoctorId(@Path('id') int doctorId);
+
+  @GET('/appointments/export/{id}')
+  @DioResponseType(ResponseType.bytes)
+  Future<List<int>> exportAppointmentPDF(
+      @Path('id') int id, @Query('lang') String language);
 }

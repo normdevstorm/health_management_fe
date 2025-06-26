@@ -36,43 +36,43 @@ class _CreateAppointmentWithAIScreenState
       appBar: AppBar(
         title: const Text('Create Appointment with AI'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: BlocConsumer<SymptomsBloc, SymptomsState>(
-          listener: (context, state) {
-            if (state.status == BlocStatus.error) {
-              ToastManager.showToast(
-                context: context,
-                message: state.errorMessage ?? 'An error occurred',
-              );
-            }
-          },
-          builder: (context, state) {
-            print(
-                'SymptomsState: ${state.status}, Symptoms: ${state.symptoms.length}'); // Debug
-            return SingleChildScrollView(
-              child: BlocListener<HealthProviderBloc, HealthProviderState>(
-                listener: (context, state) async {
-                  if (state.status == BlocStatus.error) {
-                    ToastManager.showToast(
-                      context: context,
-                      message: state.errorMessage ??
-                          'An error occurred while fetching health providers',
-                    );
-                  }
+      body: BlocListener<HealthProviderBloc, HealthProviderState>(
+        listener: (context, state) async {
+          if (state.status == BlocStatus.error) {
+            ToastManager.showToast(
+              context: context,
+              message: state.errorMessage ??
+                  'An error occurred while fetching health providers',
+            );
+          }
 
-                  if (state.status == BlocStatus.success) {
-                    _healthProviderList.clear();
-                    _healthProviderList
-                        .addAll(state.data as List<HealthProviderEntity>);
-                    if (_healthProviderList.isNotEmpty) {
-                      nearestHealthProviderNotifier.value =
-                          await getClosestHealthProvider();
-                      getIt<Logger>().i(
-                          'Nearest Health Provider: ${nearestHealthProviderNotifier.value?.name ?? 'Unknown'}');
-                    }
-                  }
-                },
+          if (state.status == BlocStatus.success) {
+            _healthProviderList.clear();
+            _healthProviderList
+                .addAll(state.data as List<HealthProviderEntity>);
+            if (_healthProviderList.isNotEmpty) {
+              nearestHealthProviderNotifier.value =
+                  await getClosestHealthProvider();
+              getIt<Logger>().i(
+                  'Nearest Health Provider: ${nearestHealthProviderNotifier.value?.name ?? 'Unknown'}');
+            }
+          }
+        },
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: BlocConsumer<SymptomsBloc, SymptomsState>(
+            listener: (context, state) {
+              if (state.status == BlocStatus.error) {
+                ToastManager.showToast(
+                  context: context,
+                  message: state.errorMessage ?? 'An error occurred',
+                );
+              }
+            },
+            builder: (context, state) {
+              print(
+                  'SymptomsState: ${state.status}, Symptoms: ${state.symptoms.length}'); // Debug
+              return SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -342,9 +342,9 @@ class _CreateAppointmentWithAIScreenState
                     ],
                   ],
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

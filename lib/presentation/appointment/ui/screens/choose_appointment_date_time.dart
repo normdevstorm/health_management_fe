@@ -126,9 +126,7 @@ class _ChooseAppointmentDateTimeScreenState
                           selectedDateNotifier.value.day ==
                               DateTime.now().day) {
                         for (var shift in shifts) {
-                          if ((shift.startTime ?? 0) +
-                                  (shift.partOfDay == "Morning" ? 0 : 12) <
-                              DateTime.now().hour) {
+                          if ((shift.startTime ?? 0) <= DateTime.now().hour) {
                             shift.available = false;
                           } else {
                             shift.available = true;

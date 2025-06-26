@@ -106,4 +106,15 @@ class AppointmentRepositoryImpl implements AppointmentRepository {
       throw ApiException.getDioException(e);
     }
   }
+
+  @override
+  Future<List<int>> exportAppointmentPDF(int id, String language) async {
+    try {
+      final response = await api.exportAppointmentPDF(id, language);
+      return response;
+    } catch (e) {
+      logger.e(e);
+      throw ApiException.getDioException(e);
+    }
+  }
 }
