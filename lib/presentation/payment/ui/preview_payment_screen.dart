@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -139,7 +137,6 @@ class _PreviewPaymentScreenState extends State<PreviewPaymentScreen> {
     // Mock data for invoice
     const String invoiceId = 'INV-001';
     const double depositAmount = 200000;
-    const String paymentMethod = 'ZaloPay';
 
     return Scaffold(
       appBar: AppBar(

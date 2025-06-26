@@ -9,7 +9,14 @@ part 'doctor_schedule_api.g.dart';
 abstract class DoctorScheduleApi {
   factory DoctorScheduleApi(Dio dio, {String baseUrl}) = _DoctorScheduleApi;
 
-  @GET('/schedule/doctor/{doctorId}')
-  Future<ApiResponse<List<DoctorScheduleResponse>>> getDoctorSchedule(@Path('doctorId') int doctorId);
-}
+  @GET('/schedule/{doctorId}/available-times')
+  Future<ApiResponse<List<DoctorAvailableShiftResponse>>> getDoctorSchedule(
+      @Path('doctorId') int doctorId);
 
+  @GET('/schedule/export/{doctorId}')
+  Future<HttpResponse<List<int>>> exportDoctorSchedules(
+    @Path('doctorId') int doctorId,
+    @Query('startDate') String startDate,
+    @Query('endDate') String? endDate,
+  );
+}

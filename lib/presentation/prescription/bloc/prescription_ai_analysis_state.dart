@@ -16,8 +16,10 @@ class PrescriptionAiAnalysisState extends Equatable {
     return const PrescriptionAiAnalysisState._(status: BlocStatus.loading);
   }
 
-  factory PrescriptionAiAnalysisState.success(List<PrescriptionSideEffectRiskEntity> prescriptions) {
-    return PrescriptionAiAnalysisState._(status: BlocStatus.success, risks: prescriptions);
+  factory PrescriptionAiAnalysisState.success(
+      List<PrescriptionSideEffectRiskEntity> prescriptions) {
+    return PrescriptionAiAnalysisState._(
+        status: BlocStatus.success, risks: prescriptions);
   }
 
   factory PrescriptionAiAnalysisState.error(String errorMessage) {
@@ -32,7 +34,7 @@ class PrescriptionAiAnalysisState extends Equatable {
   }) {
     return PrescriptionAiAnalysisState._(
       status: status ?? this.status,
-      risks: prescriptions ?? this.risks,
+      risks: prescriptions ?? risks,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }

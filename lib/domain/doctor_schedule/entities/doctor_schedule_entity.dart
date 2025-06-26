@@ -1,31 +1,19 @@
 class DoctorScheduleEntity {
-  final int? id;
+  final bool? isAvailable;
   final DateTime? startTime;
-  final DateTime? endTime;
-  final int? currentPatientCount;
-  final int? doctorId;
 
   DoctorScheduleEntity({
-    this.id,
     this.startTime,
-    this.endTime,
-    this.currentPatientCount,
-    this.doctorId,
+    this.isAvailable,
   });
 
   DoctorScheduleEntity copyWith({
-    int? id,
+    bool? isAvailable,
     DateTime? startTime,
-    DateTime? endTime,
-    int? currentPatientCount,
-    int? doctorId,
   }) {
     return DoctorScheduleEntity(
-      id: id ?? this.id,
+      isAvailable: isAvailable ?? this.isAvailable,
       startTime: startTime ?? this.startTime,
-      endTime: endTime ?? this.endTime,
-      currentPatientCount: currentPatientCount ?? this.currentPatientCount,
-      doctorId: doctorId ?? this.doctorId,
     );
   }
 }

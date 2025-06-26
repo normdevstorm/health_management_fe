@@ -49,7 +49,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
         );
 
         context.read<ArticleBloc>().add(CommentArticleEvent(
-            widget.articleId ?? 0, user?.id ?? 2, commentEntity));
+            widget.articleId, user?.id ?? 2, commentEntity));
         _commentController.clear();
         _commentNotifier.value = false;
       } catch (e) {

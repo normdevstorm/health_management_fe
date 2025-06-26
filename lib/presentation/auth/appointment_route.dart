@@ -220,9 +220,18 @@ class AppointmentCreatePreviewPaymentRoute extends AppointmentCreateRoute {
 class AppointmentCreateWithAIRoute extends AppointmentCreateRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return BlocProvider(
-      create: (context) => SymptomsBloc(getIt<SymptomUseCase>())
-        ..add(const FetchSymptomsEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => SymptomsBloc(getIt<SymptomUseCase>())
+            ..add(const FetchSymptomsEvent()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              HealthProviderBloc(healthProviderUseCase: getIt())
+                ..add(GetAllHealthProviderEvent()),
+        ),
+      ],
       child: const CreateAppointmentWithAIScreen(),
     );
   }

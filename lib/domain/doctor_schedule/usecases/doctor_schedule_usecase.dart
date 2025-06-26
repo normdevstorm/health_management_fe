@@ -9,5 +9,9 @@ class DoctorScheduleUseCase {
   Future<List<DoctorScheduleEntity>> getDoctorSchedule(int doctorId) {
     return _repository.getDoctorSchedule(doctorId);
   }
-}
 
+  Future<List<int>> exportDoctorSchedules(
+      int doctorId, String startDate, String? endDate) {
+    return _repository.exportDoctorSchedules(doctorId, startDate, endDate);
+  }
+}

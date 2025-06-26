@@ -28,9 +28,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     controller = PageController(initialPage: 1);
   }
 
-  void _navigateToEditProfile() {
-    context.pushNamed(RouteDefine.editProfile);
-  }
+  // void _navigateToEditProfile() {
+  //   context.pushNamed(RouteDefine.editProfile);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,18 +94,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   buildMenuItem(context, 'Personal Data', Icons.person, () {
                     context.pushNamed(RouteDefine.editProfile);
                   }),
-                  buildMenuItem(context, 'Settings', Icons.settings, () {
-                  }),
+                  buildMenuItem(context, 'Settings', Icons.settings, () {}),
                   buildMenuItem(context, 'My Articles', Icons.receipt_long, () {
                     context.goNamed(RouteDefine.article);
                   }),
-                  buildMenuItem(context, 'Referral Code', Icons.card_giftcard,
-                      () {
-                  }),
-                  buildMenuItem(context, 'FAQs', Icons.help_outline, () {
-                  }),
-                  buildMenuItem(context, 'Our Handbook', Icons.book, () {
-                  }),
+                  buildMenuItem(
+                      context, 'Referral Code', Icons.card_giftcard, () {}),
+                  buildMenuItem(context, 'FAQs', Icons.help_outline, () {}),
+                  buildMenuItem(context, 'Our Handbook', Icons.book, () {}),
                   buildMenuItem(context, 'Logout', Icons.logout, () {
                     context.read<AuthenticationBloc>().add(const LogOutEvent());
                   }),

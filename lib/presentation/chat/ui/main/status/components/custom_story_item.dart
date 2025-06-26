@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:story_view/story_view.dart';
 
@@ -14,17 +13,15 @@ class StoryItemPage extends StoryItem {
     required Duration duration,
     bool shown = false,
   }) : super(
-    _buildPageView(color, caption, photoUrl),
-    duration: duration,
-    shown: shown,
-  );
+          _buildPageView(color, caption, photoUrl),
+          duration: duration,
+          shown: shown,
+        );
 
   static Widget _buildPageView(Color color, String caption, String photoUrl) {
     return CustomStoryView(color: color, caption: caption, photoUrl: photoUrl);
   }
 }
-
-
 
 class CustomStoryView extends StatelessWidget {
   final Color color;
@@ -40,7 +37,8 @@ class CustomStoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String shortenedCaption = caption.length > 20 ? "${caption.substring(0, 20)}" : caption;
+    final String shortenedCaption =
+        caption.length > 20 ? caption.substring(0, 20) : caption;
     final String seeMoreText = caption.length > 20 ? "...see more" : "";
     return SizedBox(
       height: MediaQuery.of(context).size.height,
@@ -84,4 +82,3 @@ class CustomStoryView extends StatelessWidget {
     );
   }
 }
-

@@ -90,7 +90,15 @@ enum HospitalSpecialty {
   @JsonValue("DIETICIAN")
   dietician,
   @JsonValue("PSYCHOLOGIST")
-  psychologist,
+  psychologist;
+
+  static HospitalSpecialty fromName(String value) {
+    return values.firstWhere(
+      (e) => e.name.toLowerCase() == value.toLowerCase(),
+      orElse: () =>
+          throw ArgumentError('Invalid HospitalSpecialty name: $value'),
+    );
+  }
 }
 
 enum ArticleStatus {

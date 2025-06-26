@@ -124,8 +124,8 @@ class _ChooseAppointmentDateTimeScreenState
                                 ?.copyWith(hour: 0, minute: 0, second: 0) ==
                             selectedDateNotifier.value) {
                           for (var shift in shifts) {
-                            if (element.startTime?.hour == shift.startTime &&
-                                element.currentPatientCount == 2) {
+                            if ((element.startTime?.hour == shift.startTime &&
+                                element.isAvailable != true)) {
                               shift.available = false;
                             }
                           }

@@ -9,11 +9,11 @@ class HomeState<T> extends Equatable {
   const HomeState._({required this.status, this.data, this.errorMessage});
 
   factory HomeState.initial() {
-    return HomeState._(status: BlocStatus.initial);
+    return const HomeState._(status: BlocStatus.initial);
   }
 
   factory HomeState.loading() {
-    return HomeState._(status: BlocStatus.loading);
+    return const HomeState._(status: BlocStatus.loading);
   }
 
   factory HomeState.success(T data) {

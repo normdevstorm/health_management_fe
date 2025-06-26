@@ -21,4 +21,17 @@ class DoctorScheduleRepositoryImpl implements DoctorScheduleRepository {
       throw ApiException.getDioException(e);
     }
   }
+
+  @override
+  Future<List<int>> exportDoctorSchedules(
+      int doctorId, String startDate, String? endDate) async {
+    try {
+      final response =
+          await api.exportDoctorSchedules(doctorId, startDate, endDate);
+      return response.data;
+    } catch (e) {
+      logger.e(e);
+      throw ApiException.getDioException(e);
+    }
+  }
 }
