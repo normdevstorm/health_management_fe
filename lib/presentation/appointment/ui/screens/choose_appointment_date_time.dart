@@ -119,13 +119,29 @@ class _ChooseAppointmentDateTimeScreenState
                       // compare the date
                       List<DoctorScheduleEntity> doctorSchedules =
                           state.data ?? [];
+                      if (selectedDateNotifier.value.year ==
+                              DateTime.now().year &&
+                          selectedDateNotifier.value.month ==
+                              DateTime.now().month &&
+                          selectedDateNotifier.value.day ==
+                              DateTime.now().day) {
+                        for (var shift in shifts) {
+                          if ((shift.startTime ?? 0) +
+                                  (shift.partOfDay == "Morning" ? 0 : 12) <
+                              DateTime.now().hour) {
+                            shift.available = false;
+                          } else {
+                            shift.available = true;
+                          }
+                        }
+                      }
                       for (var element in doctorSchedules) {
                         if (element.startTime
                                 ?.copyWith(hour: 0, minute: 0, second: 0) ==
                             selectedDateNotifier.value) {
                           for (var shift in shifts) {
-                            if ((element.startTime?.hour == shift.startTime &&
-                                element.isAvailable != true)) {
+                            if (((element.startTime?.hour == shift.startTime &&
+                                element.isAvailable == false))) {
                               shift.available = false;
                             }
                           }
