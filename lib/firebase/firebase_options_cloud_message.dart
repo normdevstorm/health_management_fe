@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart'
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
 /// ```
-class DefaultFirebaseOptions {
+class DefaultCloudMessageFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -46,7 +46,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '810131365389',
     projectId: 'cloud-message-test-1d41b',
     authDomain: 'cloud-message-test-1d41b.firebaseapp.com',
-    databaseURL: 'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
     measurementId: 'G-Q8ETWEZRKE',
   );
@@ -56,7 +57,8 @@ class DefaultFirebaseOptions {
     appId: '1:810131365389:android:9ff7ef5a8617c6bfe77f44',
     messagingSenderId: '810131365389',
     projectId: 'cloud-message-test-1d41b',
-    databaseURL: 'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
   );
 
@@ -65,7 +67,8 @@ class DefaultFirebaseOptions {
     appId: '1:810131365389:ios:3ed5ad2032fa5829e77f44',
     messagingSenderId: '810131365389',
     projectId: 'cloud-message-test-1d41b',
-    databaseURL: 'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
     iosBundleId: 'com.example.healthManagement',
   );
@@ -75,7 +78,8 @@ class DefaultFirebaseOptions {
     appId: '1:810131365389:ios:3ed5ad2032fa5829e77f44',
     messagingSenderId: '810131365389',
     projectId: 'cloud-message-test-1d41b',
-    databaseURL: 'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
     iosBundleId: 'com.example.healthManagement',
   );
@@ -86,7 +90,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '810131365389',
     projectId: 'cloud-message-test-1d41b',
     authDomain: 'cloud-message-test-1d41b.firebaseapp.com',
-    databaseURL: 'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://cloud-message-test-1d41b-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'cloud-message-test-1d41b.appspot.com',
     measurementId: 'G-Q8ETWEZRKE',
   );

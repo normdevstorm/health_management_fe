@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart'
 ///   options: DefaultFirebaseOptions.currentPlatform,
 /// );
 /// ```
-class DefaultFirebaseOptions {
+class DefaultChatFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
       return web;
@@ -46,7 +46,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '155656307072',
     projectId: 'chat-app-5d601',
     authDomain: 'chat-app-5d601.firebaseapp.com',
-    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chat-app-5d601.appspot.com',
     measurementId: 'G-CSK1PJWHLQ',
   );
@@ -56,7 +57,8 @@ class DefaultFirebaseOptions {
     appId: '1:155656307072:android:858feb2136fb5912044165',
     messagingSenderId: '155656307072',
     projectId: 'chat-app-5d601',
-    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chat-app-5d601.appspot.com',
   );
 
@@ -65,7 +67,8 @@ class DefaultFirebaseOptions {
     appId: '1:155656307072:ios:0341b1f2c827fd3b044165',
     messagingSenderId: '155656307072',
     projectId: 'chat-app-5d601',
-    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chat-app-5d601.appspot.com',
     iosBundleId: 'com.example.healthManagement',
   );
@@ -75,7 +78,8 @@ class DefaultFirebaseOptions {
     appId: '1:155656307072:ios:0341b1f2c827fd3b044165',
     messagingSenderId: '155656307072',
     projectId: 'chat-app-5d601',
-    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chat-app-5d601.appspot.com',
     iosBundleId: 'com.example.healthManagement',
   );
@@ -86,7 +90,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '155656307072',
     projectId: 'chat-app-5d601',
     authDomain: 'chat-app-5d601.firebaseapp.com',
-    databaseURL: 'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://chat-app-5d601-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'chat-app-5d601.appspot.com',
     measurementId: 'G-QLVHZ4RT1M',
   );

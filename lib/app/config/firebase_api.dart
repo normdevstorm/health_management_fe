@@ -9,10 +9,15 @@ import 'package:health_management/app/di/injection.dart';
 import 'package:health_management/app/managers/local_storage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/web.dart';
+import 'package:health_management/firebase/firebase_options_cloud_message.dart';
 
 @injectable
 class FirebaseMessageService {
   Future<void> initNotificaiton() async {
+    await Firebase.initializeApp(
+      options: DefaultCloudMessageFirebaseOptions.currentPlatform,
+      name: "[DEFAULT]",
+    );
     final firebaseMessaging = FirebaseMessaging.instance;
     final firebaseInAppMessaging = FirebaseInAppMessaging.instance;
     if (!kIsWeb && Platform.isAndroid) {

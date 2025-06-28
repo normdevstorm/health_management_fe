@@ -92,6 +92,7 @@ import '../../domain/prescription/repositories/prescription_repository.dart';
 import '../../domain/prescription/usecases/prescription_usecase.dart';
 import '../../domain/user/usecases/user_usecase.dart';
 import '../../domain/verify_code/repositories/verify_code_repository.dart';
+import '../../firebase/firebase_options_chat.dart';
 import '../app.dart';
 import '../managers/local_storage.dart';
 import 'injection.config.dart';
@@ -121,13 +122,23 @@ Future<void> setUpAppUtilitis(FlavorManager flavor) async {
   ));
 
   // Initialize Firebase project
-  await Firebase.initializeApp(
-      options:
-          ConfigManager.getInstance(flavorName: flavor.name).firebaseOptions,
-      name: "[DEFAULT]");
+  // await Firebase.initializeApp(
+  //     options:
+  //         ConfigManager.getInstance(flavorName: flavor.name).firebaseOptions,
+  //     name: "[DEFAULT]");
 
-  // Initialize Firebase Messaging
+  // // Initialize Firebase Messaging
+  // await FirebaseMessageService().initNotificaiton();
+
+  //TODO: UNCOMMENT THESE 2 LINES TO RUN ON MOBILE DEVICES
+  // Initialize the cloud message Firebase project
   await FirebaseMessageService().initNotificaiton();
+  // Initialize the chat Firebase project
+  await Firebase.initializeApp(
+    options: DefaultChatFirebaseOptions.currentPlatform,
+    //TODO: UNCOMMENT THIS LINE TO RUN ON MOBILE DEVICES
+    name: 'chatApp',
+  );
 
   // Initialize Notification Service
   tz.initializeTimeZones();
