@@ -4,6 +4,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/managers/local_storage.dart';
 import 'package:health_management/app/managers/toast_manager.dart';
 import 'package:health_management/domain/appointment/entities/appointment_record_entity.dart';
 import 'package:health_management/domain/doctor_schedule/entities/doctor_schedule_entity.dart';
@@ -13,6 +14,7 @@ import 'package:health_management/presentation/appointment/bloc/doctor_schedule/
 import 'package:health_management/presentation/common/tag.dart';
 
 import '../../../../app/route/route_define.dart';
+import '../../../../domain/user/entities/user_entity.dart';
 
 class ChooseAppointmentDateTimeScreen extends StatefulWidget {
   final int doctorId;
@@ -42,9 +44,16 @@ class _ChooseAppointmentDateTimeScreenState
   @override
   void initState() {
     super.initState();
-    context
-        .read<DoctorScheduleBloc>()
-        .add(GetDoctorScheduleEvent(doctorId: widget.doctorId));
+    String? userIdInString;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      userIdInString = (await SharedPreferenceManager.getUser())?.id.toString();
+      if (userIdInString == null || userIdInString == '') {
+        return;
+      }
+      int userId = int.parse(userIdInString!);
+      context.read<DoctorScheduleBloc>().add(
+          GetDoctorScheduleEvent(doctorId: widget.doctorId, patientId: userId));
+    });
   }
 
   @override

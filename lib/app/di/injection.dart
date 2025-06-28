@@ -159,10 +159,10 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => AppointmentApi(dio));
   getIt.registerLazySingleton(() => UserApi(dio));
   getIt.registerLazySingleton(() => PrescriptionApi(dio,
-      baseUrl: 'https://api.duynguyendev.xyz/api/v1/openai/chat/'));
+      baseUrl: 'https://api.ndwcdy.me/api/v1/openai/chat/'));
   getIt.registerLazySingleton(() => MedicationApi(dio));
   getIt.registerLazySingleton(
-      () => VerifyCodeApi(dio, baseUrl: 'https://api.duynguyendev.xyz/api/v1'));
+      () => VerifyCodeApi(dio, baseUrl: 'https://api.ndwcdy.me/api/v1'));
   getIt.registerLazySingleton(() => HealthProviderApi(dio));
 
   getIt.registerLazySingleton(() => ArticlesApi(dio));
@@ -172,7 +172,7 @@ void setUpNetworkComponent(FlavorManager flavor) {
   getIt.registerLazySingleton(() => ZalopayApi(dio));
 
   getIt.registerLazySingleton(
-      () => SymptomApi(dio, baseUrl: 'http://127.0.0.1:8000/api'));
+      () => SymptomApi(dio, baseUrl: 'https://api.ndwcdy.me/api/v1/openai'));
 }
 
 setUpAppComponent(FlavorManager flavor) {

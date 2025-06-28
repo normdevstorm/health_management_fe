@@ -12,9 +12,10 @@ class DoctorScheduleRepositoryImpl implements DoctorScheduleRepository {
   DoctorScheduleRepositoryImpl(this.api, this.logger);
 
   @override
-  Future<List<DoctorScheduleEntity>> getDoctorSchedule(int doctorId) async {
+  Future<List<DoctorScheduleEntity>> getDoctorSchedule(
+      int doctorId, int patientId) async {
     try {
-      final response = await api.getDoctorSchedule(doctorId);
+      final response = await api.getDoctorSchedule(doctorId, patientId);
       return response.data!.map((e) => e.toEntity()).toList();
     } catch (e) {
       logger.e(e);

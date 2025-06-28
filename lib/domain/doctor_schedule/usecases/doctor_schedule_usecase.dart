@@ -13,8 +13,9 @@ class DoctorScheduleUseCase {
 
   DoctorScheduleUseCase(this._repository);
 
-  Future<List<DoctorScheduleEntity>> getDoctorSchedule(int doctorId) {
-    return _repository.getDoctorSchedule(doctorId);
+  Future<List<DoctorScheduleEntity>> getDoctorSchedule(
+      int doctorId, int patientId) {
+    return _repository.getDoctorSchedule(doctorId, patientId);
   }
 
   Future<String?> exportDoctorSchedules(

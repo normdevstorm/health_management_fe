@@ -38,7 +38,8 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<LoginResponse?> login(LoginRequest request) async {
     try {
       LoginResponse apiResponse = await api.login(request);
-      await SharedPreferenceManager.setUser(apiResponse.userResponse.toEntity());
+      await SharedPreferenceManager.setUser(
+          apiResponse.userResponse.toEntity());
       SessionManager().setSession(
           LoginEntity(
               accessToken: apiResponse.accessToken,
@@ -46,6 +47,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
           true);
       return apiResponse;
     } catch (e) {
+      // SessionManager().clearSession();
       throw ApiException.getDioException(e);
     }
   }
@@ -54,18 +56,19 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   Future<LoginEntity?> refreshToken(String refreshToken) async {
     try {
       final response = await api.refreshToken({"refresh_token": refreshToken});
-      if(response.data == null) {
+      if (response.data == null) {
         throw const ApiException.defaultError("Failed to refresh token");
       }
-      RefreshResponse refreshResponse = response.data! ;
-       SessionManager().setSession(
+      RefreshResponse refreshResponse = response.data!;
+      SessionManager().setSession(
           LoginEntity(
               accessToken: refreshResponse.accessToken,
               refreshToken: refreshResponse.refreshToken),
           true);
       return LoginEntity(
-          accessToken: refreshResponse.accessToken,
-          refreshToken: refreshResponse.refreshToken,);
+        accessToken: refreshResponse.accessToken,
+        refreshToken: refreshResponse.refreshToken,
+      );
     } catch (e) {
       throw ApiException.getDioException(e);
     }

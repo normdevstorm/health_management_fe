@@ -22,7 +22,7 @@ class ConfigManager {
   );
 
   static ConfigManager stagingConfig = ConfigManager._(
-    apiBaseUrl: 'http://localhost:8080/api/v1/core',
+    apiBaseUrl: 'https://api.ndwcdy.me/api/v1/core',
     appFlavor: FlavorManager.staging,
     firebaseOptions: DefaultFirebaseOptionsStg.currentPlatform,
   );

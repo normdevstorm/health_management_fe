@@ -14,7 +14,6 @@ import 'package:health_management/domain/chat/models/user_model.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 import 'package:health_management/presentation/common/custom_network_image.dart';
 import 'package:health_management/presentation/common/shimmer_loading.dart';
-import 'package:json_annotation/json_annotation.dart';
 import '../../../../app/di/injection.dart';
 import '../../../../app/managers/local_storage.dart';
 import '../../../../app/route/route_define.dart';

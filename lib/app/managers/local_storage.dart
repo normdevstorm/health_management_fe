@@ -68,6 +68,15 @@ class SharedPreferenceManager {
     return null;
   }
 
+  static Future<bool> deleteUser() async {
+    String? userRes = _instance.getString("user");
+    bool result = false;
+    if (userRes != null) {
+      result = await _instance.remove("user");
+    }
+    return result;
+  }
+
   static Future<Role> getUserRole() async {
     UserEntity? user = await getUser();
     if (user != null) {

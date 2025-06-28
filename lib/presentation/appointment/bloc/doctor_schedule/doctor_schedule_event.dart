@@ -9,9 +9,11 @@ class DoctorScheduleEvent extends Equatable {
 
 final class GetDoctorScheduleEvent extends DoctorScheduleEvent {
   final int doctorId;
+  final int patientId;
 
-  const GetDoctorScheduleEvent({required this.doctorId});
+  const GetDoctorScheduleEvent(
+      {required this.doctorId, required this.patientId});
 
   @override
-  List<Object?> get props => [doctorId];
+  List<Object?> get props => [doctorId, patientId];
 }

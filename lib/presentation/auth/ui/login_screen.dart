@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ValueNotifier<bool>(true);
   final _emailFormKey = GlobalKey<FormState>();
   final _emailController =
-      TextEditingController(text: 'emily.davis@example.com');
+      TextEditingController(text: 'nguyenducduypc160903@gmail.com');
   final _passwordController = TextEditingController(text: '12332145');
 
   @override
@@ -85,7 +85,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     // Handle login logic here
                     if (_emailFormKey.currentState!.validate()) {
-                      GoRouter.of(context).goNamed(RouteDefine.homeScreen);
                       context.read<AuthenticationBloc>().add(LoginSubmitEvent(
                             _emailController.text,
                             _passwordController.text,
