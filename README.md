@@ -1,6 +1,6 @@
 # Health Management App
 
-A Flutter application for health management and tracking, built with clean architecture principles.
+A Flutter application for appointment booking, medical community interaction and integrating AI-powered features, built with clean architecture principles.
 
 ## Features
 
