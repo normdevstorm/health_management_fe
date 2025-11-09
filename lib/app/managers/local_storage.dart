@@ -1,15 +1,40 @@
 import 'dart:convert';
+import 'dart:developer' as dev;
 
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:health_management/app/app.dart';
+import 'package:health_management/app/utils/constants/app_keys.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferenceManager {
   //TODO: ENCRYPT THE DATA INTO STORAGE
-  static late final SharedPreferences _instance;
+  static late final EncryptedSharedPreferences _instance;
 
   static Future init() async {
-    _instance = await SharedPreferences.getInstance();
+    // Get encryption key from environment variables
+    const encryptionKey = AppKeys.storageEncryptionKey;
+
+    // Security warning in debug mode
+    if (AppKeys.isUsingDefaultKey) {
+      dev.log(
+        '⚠️ WARNING: Using default encryption key. '
+        'Define STORAGE_ENCRYPTION_KEY for production!',
+        name: 'SharedPreferenceManager',
+      );
+    }
+    await EncryptedSharedPreferences.initialize(encryptionKey);
+    _instance = EncryptedSharedPreferences.getInstance();
+
+    _instance.observe(key: 'access-token').listen((event) {
+      // event = key
+      print("test encrypt$event.");
+    });
+
+    _instance.observe(key: 'refresh-token').listen((event) {
+      // event = key
+      String? value = _instance.getString("access-token");
+      print("test encrypt$value");
+    });
   }
 
   static Future<void> setAccessToken(String accessToken) async {

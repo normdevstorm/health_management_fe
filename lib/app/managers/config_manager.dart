@@ -6,6 +6,7 @@ class ConfigManager {
   final String apiBaseUrl;
   final FlavorManager appFlavor;
   final FirebaseOptions firebaseOptions;
+  final String dataEncryptionKey = AppKeys.storageEncryptionKey;
 
   ConfigManager._({
     required this.apiBaseUrl,
@@ -22,7 +23,8 @@ class ConfigManager {
   );
 
   static ConfigManager stagingConfig = ConfigManager._(
-    apiBaseUrl: 'https://api.ndwcdy.me/api/v1/core',
+    // apiBaseUrl: 'https://api.ndwcdy.me/api/v1/core',
+    apiBaseUrl: 'http://localhost:8080/api/v1/core',
     appFlavor: FlavorManager.staging,
     firebaseOptions: DefaultFirebaseOptionsStg.currentPlatform,
   );

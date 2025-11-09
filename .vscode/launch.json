@@ -5,7 +5,11 @@
         "name": "dev",
         "request": "launch",
         "type": "dart",
-        "args": ["--flavor", "dev", "--dart-define=FLAVOR=dev", 
+        "args": [
+          "--flavor", 
+          "dev", 
+          "--dart-define=FLAVOR=dev",
+          "--dart-define=STORAGE_ENCRYPTION_KEY=BaEIBWC8Si2TL99O"
         // "--web-renderer", "html"
         // , "--web-port", "49430"
         
@@ -43,8 +47,13 @@
         "name": "staging",
         "request": "launch",
         "type": "dart",
-        "args": ["--flavor", "staging", "--dart-define=FLAVOR=staging",  
-                "--web-renderer", "html"
+        "args": [
+          "--flavor", 
+          "staging", 
+          "--dart-define=FLAVOR=staging",
+          "--dart-define=STORAGE_ENCRYPTION_KEY=staging_encryption_key_87654321098765",
+          "--web-renderer", 
+          "html"
         // , "--web-port", "49430"
       ]
       },
@@ -86,6 +95,8 @@
           "--flavor", 
           "staging", 
           "--dart-define=FLAVOR=staging",
+                    "--dart-define=STORAGE_ENCRYPTION_KEY=BaEIBWC8Si2TL99O",
+
           "-d",
           "chrome",
           "--web-renderer",
