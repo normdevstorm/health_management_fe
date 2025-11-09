@@ -87,16 +87,17 @@ class AuthenticationBloc
       if (!hasRegistered) {
         SharedPreferenceManager.getUser().then((value) {
           if (value != null) {
-              registerToFirebase(
-                  email: event.email,
-                  password: event.password,
-                  username: event.email,
-                  mainServiceId: (value.account!.role!  == Role.doctor) ? value.doctorProfile?.id : value.id,
-                  role: value.account!.role!) ;
+            registerToFirebase(
+                email: event.email,
+                password: event.password,
+                username: event.email,
+                mainServiceId: (value.account!.role! == Role.doctor)
+                    ? value.doctorProfile?.id
+                    : value.id,
+                role: value.account!.role!);
           }
         });
-      } 
-      else {
+      } else {
         appChatUseCases.auth.signIn(event.email, event.password);
       }
     });

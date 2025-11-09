@@ -1,4 +1,4 @@
-import 'package:cached_video_player/cached_video_player.dart';
+import 'package:video_player/video_player.dart';
 import 'package:health_management/app/utils/constants/app_color.dart';
 import 'package:health_management/domain/chat/models/message_model.dart';
 import 'package:flutter/material.dart';
@@ -15,16 +15,16 @@ class VideoMessagePreview extends StatefulWidget {
 }
 
 class _VideoMessagePreviewState extends State<VideoMessagePreview> {
-  late CachedVideoPlayerController _videoPlayerController;
+  late VideoPlayerController _videoPlayerController;
   bool isPlay = false;
 
   @override
   void initState() {
     super.initState();
-    //_controller object is initialized with a CachedVideoPlayerController that is created from a network and pass widget.messageData.text as url.
+    //_controller object is initialized with a VideoPlayerController that is created from a network and pass widget.messageData.content as url.
     // The initialize() method is called on the _controller object to initialize the video player, and a then() callback is used to trigger a setVolume after the video is initialized,
     _videoPlayerController =
-        CachedVideoPlayerController.network(widget.messageData.content)
+        VideoPlayerController.network(widget.messageData.content)
           ..initialize().then((value) {
             _videoPlayerController.setVolume(1);
             _videoPlayerController.addListener(() {
@@ -38,6 +38,12 @@ class _VideoMessagePreviewState extends State<VideoMessagePreview> {
   }
 
   @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
@@ -47,7 +53,7 @@ class _VideoMessagePreviewState extends State<VideoMessagePreview> {
           aspectRatio: _videoPlayerController.value.aspectRatio,
           child: Stack(
             children: [
-              CachedVideoPlayer(_videoPlayerController),
+              VideoPlayer(_videoPlayerController),
               buildPlayPauseButton()
             ],
           ),

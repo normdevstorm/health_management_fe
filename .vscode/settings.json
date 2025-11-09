@@ -27,5 +27,9 @@
     }
   },
   "dart.flutterSdkPath": ".fvm/versions/3.24.3",
+  "dart.env": {
+    "CHROME_EXECUTABLE": "/usr/bin/chromium"
+  },
+  "cmake.sourceDirectory": "/run/media/normdevstorm/data-linux/UNI/ANDROID-APP-PROGRAMMING/health_management_fe/linux",
   // "cmake.sourceDirectory": "D:/WEB DEV/BE/HEALTH MANAGEMENT/health_management/windows/runner"
 }

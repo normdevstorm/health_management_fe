@@ -1,4 +1,4 @@
-import 'package:cached_video_player/cached_video_player.dart';
+import 'package:video_player/video_player.dart';
 import 'package:health_management/app/utils/constants/app_color.dart';
 import 'package:health_management/domain/chat/models/message_model.dart';
 import 'package:flutter/material.dart';
@@ -17,16 +17,16 @@ class VideoMessageWidget extends StatefulWidget {
 }
 
 class _VideoMessageWidgetState extends State<VideoMessageWidget> {
-  late CachedVideoPlayerController _videoPlayerController;
+  late VideoPlayerController _videoPlayerController;
   bool isPlay = false;
 
   @override
   void initState() {
     super.initState();
-    //_controller object is initialized with a CachedVideoPlayerController that is created from a network and pass widget.messageData.text as url.
+    //_controller object is initialized with a VideoPlayerController that is created from a network and pass widget.messageData.content as url.
     // The initialize() method is called on the _controller object to initialize the video player, and a then() callback is used to trigger a setVolume after the video is initialized,
     _videoPlayerController =
-        CachedVideoPlayerController.network(widget.messageData.content)
+        VideoPlayerController.network(widget.messageData.content)
           ..initialize().then((value) {
             _videoPlayerController.setVolume(1);
             _videoPlayerController.addListener(() {
@@ -60,7 +60,7 @@ class _VideoMessageWidgetState extends State<VideoMessageWidget> {
             aspectRatio: 16 / 9,
             child: Stack(
               children: [
-                CachedVideoPlayer(_videoPlayerController),
+                VideoPlayer(_videoPlayerController),
                 buildPlayPauseButton(),
                 Positioned(
                   bottom: 2,

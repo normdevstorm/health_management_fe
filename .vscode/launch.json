@@ -71,7 +71,33 @@
           "staging", 
           "--dart-define=FLAVOR=staging",
           "-d",
-          "web-server" ,"--web-port", "10000"
+          "web-server",
+          "--web-renderer",
+          "html",
+          "--web-port",
+          "10000"
+        ]
+      },
+      {
+        "name": "staging (chrome-direct)",
+        "request": "launch",
+        "type": "dart",
+        "args": [
+          "--flavor", 
+          "staging", 
+          "--dart-define=FLAVOR=staging",
+          "-d",
+          "chrome",
+          "--web-renderer",
+          "html",
+          "--web-port",
+          "10000",
+          "--web-browser-flag",
+          "--disable-web-security",
+          "--web-browser-flag",
+          "--disable-features=VizDisplayCompositor",
+          "--web-browser-flag",
+          "--user-data-dir=/tmp/chrome_dev_session"
         ]
       },
       {
