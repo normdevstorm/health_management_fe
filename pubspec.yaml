@@ -51,6 +51,7 @@ dependencies:
   json_annotation: ^4.9.0
   logger: ^2.4.0
   dio: ^5.7.0
+  dio_cache_interceptor: ^4.0.5
   bloc: ^8.1.4
   equatable: ^2.0.5
   flutter_bloc: ^8.1.6

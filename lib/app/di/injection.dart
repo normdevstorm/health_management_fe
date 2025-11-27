@@ -2,11 +2,13 @@
 import 'dart:io';
 import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:health_management/app/config/firebase_api.dart';
 import 'package:health_management/app/config/refresh_token_interceptor.dart';
 import 'package:health_management/app/config/request_interceptor.dart';
+import 'package:health_management/app/managers/cache_manager.dart';
 import 'package:health_management/app/utils/local_notification/notification_service.dart';
 import 'package:health_management/data/appointment/api/appointment_api.dart';
 import 'package:health_management/data/appointment/repositories/appointment_repository_impl.dart';
@@ -164,6 +166,7 @@ void setUpNetworkComponent(FlavorManager flavor) {
     ChuckerDioInterceptor(),
     RefreshTokenInterceptor(),
     RequestInterceptor(),
+    DioCacheInterceptor(options: CacheManager.dioCacheoptions),
   ]);
   getIt.registerSingleton<Dio>(dio);
   getIt.registerLazySingleton(() => AuthenticationApi(dio));
