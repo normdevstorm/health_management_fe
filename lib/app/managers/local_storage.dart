@@ -7,7 +7,6 @@ import 'package:health_management/app/utils/constants/app_keys.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
 
 class SharedPreferenceManager {
-  //TODO: ENCRYPT THE DATA INTO STORAGE
   static late final EncryptedSharedPreferences _instance;
 
   static Future init() async {

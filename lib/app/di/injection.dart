@@ -109,7 +109,7 @@ final getIt = GetIt.instance;
 )
 Future<void> configureDependencies(FlavorManager flavor) async {
   getIt.init();
-  setUpNetworkComponent(flavor);
+  await setUpNetworkComponent(flavor);
   await setUpAppUtilitis(flavor);
   setUpAppComponent(flavor);
 }
@@ -147,7 +147,9 @@ Future<void> setUpAppUtilitis(FlavorManager flavor) async {
   await NotificationService.initializeNotification();
 }
 
-void setUpNetworkComponent(FlavorManager flavor) {
+Future<void> setUpNetworkComponent(FlavorManager flavor) async {
+  final cacheOption = await CacheManager.dioCacheoptions();
+
   Dio dio = Dio(BaseOptions(
     baseUrl: ConfigManager.getInstance(flavorName: flavor.name).apiBaseUrl,
     contentType: Headers.jsonContentType,
@@ -166,7 +168,7 @@ void setUpNetworkComponent(FlavorManager flavor) {
     ChuckerDioInterceptor(),
     RefreshTokenInterceptor(),
     RequestInterceptor(),
-    DioCacheInterceptor(options: CacheManager.dioCacheoptions),
+    DioCacheInterceptor(options: cacheOption),
   ]);
   getIt.registerSingleton<Dio>(dio);
   getIt.registerLazySingleton(() => AuthenticationApi(dio));
