@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
+import 'dart:math';
 
 import 'package:encrypt_shared_preferences/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:health_management/app/app.dart';
 import 'package:health_management/app/utils/constants/app_keys.dart';
 import 'package:health_management/domain/user/entities/user_entity.dart';
@@ -9,18 +11,30 @@ import 'package:health_management/domain/user/entities/user_entity.dart';
 class SharedPreferenceManager {
   static late final EncryptedSharedPreferences _instance;
 
-  static Future init() async {
-    // Get encryption key from environment variables
-    const encryptionKey = AppKeys.storageEncryptionKey;
+  // Key used to store the runtime-generated encryption key in secure storage.
+  static const String _secureStorageKeyName = 'storage_encryption_key';
+  static const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
-    // Security warning in debug mode
+  static Future init() async {
+    // Prefer a runtime-generated key stored in secure storage.
+    // This avoids shipping a static key in the app binary.
+    final encryptionKey = await _getOrCreateEncryptionKey();
+
+    // Security warning in debug mode if we ever fall back to the default key.
     if (AppKeys.isUsingDefaultKey) {
       dev.log(
         '⚠️ WARNING: Using default encryption key. '
-        'Define STORAGE_ENCRYPTION_KEY for production!',
+        'Configure a secure runtime key strategy for production!',
         name: 'SharedPreferenceManager',
       );
     }
+
+    dev.log(
+      'Initializing EncryptedSharedPreferences with 16-character key (length: ${encryptionKey.length})',
+      name: 'SharedPreferenceManager',
+    );
+
+    // Initialize with default encryptor (requires exactly 16-character key)
     await EncryptedSharedPreferences.initialize(encryptionKey);
     _instance = EncryptedSharedPreferences.getInstance();
 
@@ -34,6 +48,38 @@ class SharedPreferenceManager {
       String? value = _instance.getString("access-token");
       print("test encrypt$value");
     });
+  }
+
+  /// - First, tries to load a previously generated key from secure storage.
+  /// - If none exists, generates a new random key, persists it securely,
+  ///   and uses that from now on.
+  ///
+  /// Note: The default AES encryptor requires exactly 16 characters.
+  static Future<String> _getOrCreateEncryptionKey() async {
+    // 1. Try to read an existing key from secure storage.
+    final existingKey = await _secureStorage.read(key: _secureStorageKeyName);
+    if (existingKey != null &&
+        existingKey.isNotEmpty &&
+        existingKey.length == 16) {
+      return existingKey;
+    }
+
+    // 2. No key yet → generate a new 16-character random key (for AES-128).
+    // The default AES encryptor requires exactly 16 characters (not bytes).
+    final random = Random.secure();
+    final newKey = String.fromCharCodes(
+      List.generate(
+        16,
+        (_) => AppKeys.keyGenerationChars.codeUnitAt(
+          random.nextInt(AppKeys.keyGenerationChars.length),
+        ),
+      ),
+    );
+
+    // 3. Persist the key in secure storage for future app launches.
+    await _secureStorage.write(key: _secureStorageKeyName, value: newKey);
+
+    return newKey;
   }
 
   static Future<void> setAccessToken(String accessToken) async {

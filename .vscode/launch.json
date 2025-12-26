@@ -51,10 +51,7 @@
           "--flavor", 
           "staging", 
           "--dart-define=FLAVOR=staging",
-          "--dart-define=STORAGE_ENCRYPTION_KEY=staging_encryption_key_87654321098765",
-          "--web-renderer", 
-          "html"
-        // , "--web-port", "49430"
+                    "--dart-define=STORAGE_ENCRYPTION_KEY=BaEIBWC8Si2TL99O",
       ]
       },
       {

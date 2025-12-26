@@ -12,4 +12,9 @@ class AppKeys {
   static bool get isUsingDefaultKey =>
       storageEncryptionKey ==
       'dev_default_key_only_for_development_DO_NOT_USE_IN_PROD';
+
+  /// Characters used for generating encryption keys (alphanumeric)
+  /// Used for runtime-generated 16-character keys
+  static const String keyGenerationChars =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 }
